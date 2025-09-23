@@ -29,9 +29,10 @@ Visit  http://127.0.0.1:8000/docs
  to test the API.
 
 Project Structure
+
 data/         # Documents & datasets
 main.py       # FastAPI entry point
-.gitignore    # Ignored files (e.g., .venv, cache)
+.gitignore    
 
 
 Add authentication & user login
