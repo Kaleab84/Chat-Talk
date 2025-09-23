@@ -1,4 +1,4 @@
-This is a backend API for an AI-powered chatbot built with FastAPI. The chatbot retrieves information from documents and provides semantic search + GPT-based responses.
+This is a backend API for an AI-powered chatbot built with FastAPI. The chatbot retrieves information from documents.
 
 Quick Start
 
