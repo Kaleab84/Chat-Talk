@@ -1,219 +1,46 @@
-# CFC Chatbot - Setup and Usage Guide
+# ⚙️ Setup Guide
 
-## 📋 Prerequisites
+Follow these steps and you’ll have the chatbot backend running in minutes.
 
-- **Python 3.10+** (You have Python 3.12.6 ✅)
-- **Pinecone API Key** (Already configured in your code ✅)
-- **Internet connection** for downloading models and connecting to Pinecone
-
-## 🚀 Quick Start
-
-### 1. Install Dependencies
-All required packages have been installed in your virtual environment:
+## 1️⃣ Clone & Install
 ```bash
-# The following packages are now installed:
-- fastapi
-- uvicorn[standard]
-- pydantic
-- pinecone
-- sentence-transformers
-- python-docx
-- numpy
+python -m venv .venv
+.venv\Scripts\activate   # Windows
+pip install -r requirements.txt
 ```
+Tip: keep the virtualenv around so future installs are instant. WE NEED THIS!
 
-### 2. Run the Application
+## 2️⃣ Configure Secrets
 ```bash
-# Navigate to your project directory
-cd "C:\Users\nifta\Documents\GitHub\Chat-Talk"
-
-# Run the FastAPI server
-C:/Users/nifta/Documents/GitHub/Chat-Talk/.venv/Scripts/python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+cp .env.example .env
 ```
+Open `.env` and add:
+- `PINECONE_API_KEY` – required for search.
+- Optional: Supabase + OpenAI keys if you’re connecting cloud storage or GPT later.
+- You can ask me (Nift) or check discord for the Pinconce Key.
 
-Alternative shorter command:
+## 3️⃣ Start the API
 ```bash
-# Activate virtual environment first
-.\.venv\Scripts\activate
-
-# Then run with simpler command
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --reload
 ```
+Browse to [http://localhost:8000/docs](http://localhost:8000/docs) and try out the interactive endpoints.
 
-### 3. Access the Application
-- **API Base URL**: http://localhost:8000
-- **Interactive API Docs**: http://localhost:8000/docs
-- **Alternative Docs**: http://localhost:8000/redoc
-
-## 🔧 API Endpoints
-
-### 1. Health Check
-```http
-GET /
-```
-**Response**: `{"ok": true, "message": "CFC Chatbot API running"}`
-
-### 2. Ingest Documents
-```http
-POST /ingest
-```
-**Purpose**: Process and store document content in Pinecone vector database
-
-**Request Body**:
-```json
-{
-  "filename": "sample_guide.docx"  // Optional, defaults to "sample_guide.docx"
-}
-```
-
-**Response**:
-```json
-{
-  "ok": true,
-  "source": "/path/to/file",
-  "num_chunks": 25,
-  "example_chunk": "First 240 characters of first chunk..."
-}
-```
-
-### 3. Search Documents
-```http
-POST /search
-```
-**Purpose**: Find relevant document chunks based on query
-
-**Request Body**:
-```json
-{
-  "query": "installation process",
-  "top_k": 5  // Optional, defaults to 5
-}
-```
-
-**Response**:
-```json
-{
-  "ok": true,
-  "results": [
-    {
-      "rank": 1,
-      "score": 0.85,
-      "text": "Relevant document chunk text...",
-      "source": "sample_guide.docx"
-    }
-  ]
-}
-```
-
-### 4. Ask Questions
-```http
-POST /ask
-```
-**Purpose**: Get context-aware answers to questions
-
-**Request Body**:
-```json
-{
-  "question": "How do I install the software?",
-  "top_k": 4  // Optional, defaults to 4
-}
-```
-
-**Response**:
-```json
-{
-  "ok": true,
-  "question": "How do I install the software?",
-  "context_snippets": [...],
-  "answer_stub": "First 1200 characters of combined context..."
-}
-```
-
-## 📁 Document Requirements
-
-Your documents should be:
-- **Format**: `.docx` files
-- **Location**: `data/` folder in your project
-- **Content**: Well-structured text content
-
-**Available Documents**:
-- `sample_guide.docx` ✅
-- `rationew_guide.docx` ✅
-- `ratio_guide.DOC` ✅
-- `C5 Reinstallation Tutorial.doc` (Note: .doc format, may need conversion)
-- `AgrisCostImport (1).doc` (Note: .doc format, may need conversion)
-
-## 🔧 Configuration
-
-### Pinecone Settings
-- **Index Name**: `cfc-chatbot`
-- **Dimension**: 384 (matches all-MiniLM-L6-v2 model)
-- **Metric**: cosine
-- **Cloud**: AWS
-- **Region**: us-east-1
-
-### Model Settings
-- **Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2`
-- **Chunk Size**: 600 characters
-- **Chunk Overlap**: 120 characters
-
-## 🛠️ Troubleshooting
-
-### Common Issues
-
-1. **Port Already in Use**
+## 4️⃣ Ingest Docs
+1. Drop `.doc`, `.docx`, or `.txt` files into `data/documents/`.
+2. Call:
    ```bash
-   # Use a different port
-   uvicorn main:app --reload --port 8001
-   ```
-
-2. **Pinecone Connection Issues**
-   - Verify your API key is correct
-   - Check internet connection
-   - Ensure Pinecone service is available
-
-3. **Document Processing Errors**
-   - Ensure .docx files are not corrupted
-   - Check file permissions
-   - Convert .doc files to .docx format if needed
-
-4. **Model Download Issues**
-   - First run may take time to download sentence-transformers model
-   - Ensure stable internet connection
-
-## 📝 Example Usage Workflow
-
-1. **Start the server**:
-   ```bash
-   uvicorn main:app --reload
-   ```
-
-2. **Ingest a document**:
-   ```bash
-   curl -X POST "http://localhost:8000/ingest" \
+   curl -X POST http://localhost:8000/ingest/document \
      -H "Content-Type: application/json" \
-     -d '{"filename": "sample_guide.docx"}'
+     -d '{"filename": "your-file.docx"}'
    ```
+3. Peek at `data/processed/content_repository/<doc-slug>/` – you’ll see readable section JSON files plus any extracted images.
 
-3. **Search for information**:
-   ```bash
-   curl -X POST "http://localhost:8000/search" \
-     -H "Content-Type: application/json" \
-     -d '{"query": "installation steps", "top_k": 3}'
-   ```
+## 5️⃣ Search & Ask
+- `/search` returns the best chunks with section/image paths.
+- `/ask` returns the same context plus a friendly answer stub.
+- `/visibility/vector-store` shows how many vectors Pinecone currently stores.
 
-4. **Ask a question**:
-   ```bash
-   curl -X POST "http://localhost:8000/ask" \
-     -H "Content-Type: application/json" \
-     -d '{"question": "What are the system requirements?"}'
-   ```
-
-## 🚀 Next Steps
-
-1. **Ingest your documents** using the `/ingest` endpoint
-2. **Test the search** functionality with sample queries
-3. **Build a frontend** to interact with your chatbot
-4. **Add authentication** if needed for production use
-5. **Monitor usage** and optimize chunk sizes based on your documents
-
-Your CFC Chatbot API is now ready to use! 🎉
+## 🆘 Need Help?
+- Conversion errors? Make sure Office/LibreOffice is installed for `.doc` conversions.
+- Pinecone issues? Double-check the API key and region in `.env`.
+- Looking ahead? Swap `content_repository.py` for Supabase when you’re ready for cloud storage.
