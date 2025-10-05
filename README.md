@@ -1,10 +1,11 @@
 # Chat-Talk Backend ⚙️
 
-Welcome to the CFC help chatbot backend! This FastAPI service turns company know-how (DOC/DOCX/TXT) into searchable knowledge: we ingest documents, carve them into structured JSON blocks, keep the matching images handy, and use Pinecone to retrieve the best answers for chat users.
+Welcome to the CFC help chatbot backend! This FastAPI service turns company know-how (DOC/DOCX/TXT) into searchable knowledge: we ingest documents, carve them into structured JSON blocks, keep the matching images handy, and use Pinecone to retrieve the best answers for chat users. Once we get videos working we also have a spot saved up for that.
 
 ## 🚀 Why This Setup Works
 - **Lighting-fast onboarding** – drop your docs into a folder and hit `/ingest`.
 - **Human-friendly storage** – sections and images are saved with readable filenames so Supabase (or any storage) stays organised.
+- (**Might not need md format**)
 - **Extensible RAG** – swap embeddings, add GPT answer generation, or plug in a UI without touching the ingestion core.
 
 ## ⚡ Quick Start
