@@ -18,8 +18,11 @@ __pycache__/
 .env
 .env.*
 
-# Local data (raw docs + processed outputs)
-data/
+# Generated data
+# Keep the data folder structure but ignore processed artifacts
+!/data/
+/data/processed/
+/data/processed/**
 
 # OS junk
 .DS_Store
