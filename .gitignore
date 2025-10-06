@@ -1,1 +1,26 @@
+# Virtual environments
 .venv/
+venv/
+
+# Python cache & logs
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Editor / IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# Environment files
+.env
+.env.*
+
+# Local data (raw docs + processed outputs)
+data/
+
+# OS junk
+.DS_Store
+Thumbs.db

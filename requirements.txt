@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pydantic
+pinecone
+sentence-transformers
+python-docx
+numpy
+pathlib
+typing-extensions
+python-dotenv
+pywin32
