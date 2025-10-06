@@ -10,7 +10,7 @@ Welcome to the CFC help chatbot backend! This FastAPI service turns company know
 
 ## ⚡ Quick Start
 1. **Clone & install requirements**
-   : Remember to clone the repo first, if not done.
+   > **Note:** Remember to clone the repo first if you haven't already.
    ```bash
    python -m venv .venv
    .venv\Scripts\activate   # Windows
