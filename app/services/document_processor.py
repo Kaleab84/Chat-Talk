@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 try:
     import win32com.client as win32  # type: ignore
     _HAS_WIN32 = True
-except Exception:
+except (ImportError, ModuleNotFoundError):
     _HAS_WIN32 = False
 
 
