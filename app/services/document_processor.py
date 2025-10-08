@@ -21,6 +21,18 @@ from docx.text.paragraph import Paragraph
 
 from app.config import settings  # if you need settings in the future
 
+# Ensure python-docx exposes VML namespace during xpath calls (needed for legacy images)
+try:
+    from docx.oxml.ns import nsmap as _docx_nsmap
+
+    if "v" not in _docx_nsmap:
+        _docx_nsmap["v"] = "urn:schemas-microsoft-com:vml"
+    if "o" not in _docx_nsmap:
+        _docx_nsmap["o"] = "urn:schemas-microsoft-com:office:office"
+except Exception:
+    # Namespace patching is best-effort; absence just means legacy images may be skipped.
+    pass
+
 logger = logging.getLogger(__name__)
 
 # Optional Windows COM for high-fidelity DOC->DOCX
@@ -481,17 +493,24 @@ class DocumentProcessor:
         and legacy VML (<v:imagedata r:id>), return placeholders with extension:
             images/<image_id>.<ext>
         """
-        ns = {
-            "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
-            "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
-            "v": "urn:schemas-microsoft-com:vml",
-        }
         paths: List[str] = []
+
+        def _xpath(element, query: str):
+            """Call element.xpath with fallback for python-docx namespace quirks."""
+            try:
+                return element.xpath(query, namespaces={
+                    "a": "http://schemas.openxmlformats.org/drawingml/2006/main",
+                    "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+                    "v": "urn:schemas-microsoft-com:vml",
+                })
+            except TypeError:
+                # python-docx>=1.1 overrides xpath(nsmap only); rely on patched ns map.
+                return element.xpath(query)
 
         # Modern drawings
         try:
-            for blip in p._p.xpath(".//a:blip", namespaces=ns):
-                rId = blip.get(f"{{{ns['r']}}}embed")
+            for blip in _xpath(p._p, ".//a:blip"):
+                rId = blip.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed")
                 if not rId:
                     continue
                 meta = rel_to_imgmeta.get(rId)
@@ -503,8 +522,8 @@ class DocumentProcessor:
 
         # Legacy VML images
         try:
-            for im in p._p.xpath(".//v:imagedata", namespaces=ns):
-                rId = im.get(f"{{{ns['r']}}}id")
+            for im in _xpath(p._p, ".//v:imagedata"):
+                rId = im.get("{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id")
                 if not rId:
                     continue
                 meta = rel_to_imgmeta.get(rId)
