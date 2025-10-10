@@ -1,0 +1,376 @@
+[00:00:00.000 --> 00:00:05.000]  Yeah.
+[00:00:05.000 --> 00:00:10.000]  Record has been started. Yes. Yeah, thank you so much.
+[00:00:10.000 --> 00:00:18.000]  This should be recorded. And if you can like send me the recording after this meeting, I'll be right.
+[00:00:18.000 --> 00:00:19.000]  Sure.
+[00:00:19.000 --> 00:00:24.000]  Thank you so much. All right, please. Thank you.
+[00:00:24.000 --> 00:00:43.000]  Yeah. So, you know, and how I got here from our main menu, you've got all these different options and you've got some common options that are listed on the main screen as well as more of them that are listed with these down these drop down menus.
+[00:00:43.000 --> 00:00:50.000]  So for you mentioned ingredients, kind of starting out with ingredients.
+[00:00:50.000 --> 00:01:00.000]  We had poultry meal open so that here's where you would see where you can see the ingredients that you have in the program.
+[00:01:00.000 --> 00:01:03.000]  So this will be all the ingredients that are in the database.
+[00:01:03.000 --> 00:01:11.000]  You can you can add or remove any ingredients that you want. You can give them whatever code that you want to.
+[00:01:11.000 --> 00:01:28.000]  And then you can track whatever nutrients that you want. So we don't the program does not dictate to you what code is used for moisture or dry matter or protein or fat or any nutrients or what unit of measure is being used.
+[00:01:28.000 --> 00:01:40.000]  It's completely up to you what what nutrients that you that you have in the program, how you organize them, what units of measure you use and of course what values you use.
+[00:01:40.000 --> 00:01:56.000]  So, and then, depending on on your on your business, you may have more than one manufacturing facility but at a minimum you're going to have one manufacturing facility or plant as the program term is used.
+[00:01:56.000 --> 00:02:06.000]  And then you're going to have your is your cost that would be for for that particular ingredient at that plant. There's two default costs one called owning and one called market.
+[00:02:06.000 --> 00:02:18.000]  There's really nothing different about owning versus market. As far as the program is concerned, it's just one cost versus another could be cost number one and cost number two, but they're called owning and market.
+[00:02:18.000 --> 00:02:25.000]  Now, this this information, of course, you know you as a user would maintain.
+[00:02:25.000 --> 00:02:29.000]  And then, when you work with a formula.
+[00:02:29.000 --> 00:02:41.000]  You've got several different methods you can use I'm not see if I've got any freeze dried products, probably all.
+[00:02:41.000 --> 00:02:50.000]  They're probably all products that are that are conventional.
+[00:02:50.000 --> 00:02:54.000]  See if we got some freeze dried stuff.
+[00:02:54.000 --> 00:02:57.000]  But it's, it's going to be kind of the same.
+[00:02:57.000 --> 00:03:08.000]  You know, there's there again there's the program technically doesn't know or care if it's freeze dried or if it's extruded or if it's just raw mix or if it's pelleted.
+[00:03:08.000 --> 00:03:24.000]  You know, of course, there are some considerations if you do process a diet and and there's a moisture change in that diet.
+[00:03:24.000 --> 00:03:31.000]  But for freeze dried for the most part or freeze was it freeze dried or just fresh rose.
+[00:03:31.000 --> 00:03:37.000]  It's freeze dried freeze dried so there is there is some moisture change then.
+[00:03:37.000 --> 00:03:40.000]  Yes, in the diet.
+[00:03:40.000 --> 00:03:52.000]  Okay, that that does that that does come into play. Although, it's my understanding of freeze dried that there's not multiple processes involved.
+[00:03:52.000 --> 00:03:59.000]  It's basically you mix all your ingredients together. They undergo this freeze drying process and then they're and then they're packaged right.
+[00:03:59.000 --> 00:04:00.000]  Yes.
+[00:04:00.000 --> 00:04:06.000]  So so they lose moisture. All the ingredients lose moisture basically together.
+[00:04:06.000 --> 00:04:18.000]  Not in multiple stages, and there's not a like a draw a cooling and a drying and an extruding and a heating and a baking or any of those kinds of process.
+[00:04:18.000 --> 00:04:22.000]  There is a shooting involved.
+[00:04:22.000 --> 00:04:25.000]  Okay.
+[00:04:25.000 --> 00:04:31.000]  Are you talking about the extruding after freeze drying or before freeze dry.
+[00:04:31.000 --> 00:04:42.000]  Well, however, what what either way what what what process do you guys use what what what happens in your in your type of products.
+[00:04:42.000 --> 00:04:46.000]  Typically we extrude before freeze drying machine.
+[00:04:46.000 --> 00:04:52.000]  So we just mix the raw material extrude then put in the freeze drying machine.
+[00:04:52.000 --> 00:04:57.000]  So does that will affect anything in the C5.
+[00:04:57.000 --> 00:05:05.000]  Well, it potentially
+[00:05:05.000 --> 00:05:13.000]  different tools that are available, depending on on on what you what your process looks like.
+[00:05:13.000 --> 00:05:20.000]  Let me ask you this when you when you extrude the product.
+[00:05:20.000 --> 00:05:26.000]  You're taking a mixture of ingredients raw materials and you're extruding them.
+[00:05:26.000 --> 00:05:36.000]  So are you adding to those ingredients or to that product after extrusion right you are you adding any additional ingredients after extrusion.
+[00:05:36.000 --> 00:05:38.000]  No, no, we are not.
+[00:05:38.000 --> 00:05:46.000]  Okay, so there's no spray on fats or or palatins or anything like that that are added.
+[00:05:46.000 --> 00:05:56.000]  Does it go into like a, but might not really matter if it goes in any kind of pre drying or cooling or anything or if it goes right into the freezer.
+[00:05:56.000 --> 00:06:01.000]  Basically what happens is after it comes out of the extruder you're losing more moisture, right.
+[00:06:01.000 --> 00:06:15.000]  It's just a method that you're using to losing that moisture.
+[00:06:15.000 --> 00:06:26.000]  The program can handle these different scenarios these different manufacturing scenarios.
+[00:06:26.000 --> 00:06:40.000]  What it boils down to is, if that's a little more complicated, which this is not too bad but I mean there's some there is some degree of complexity here because you're losing moisture.
+[00:06:40.000 --> 00:06:50.000]  There's tools that can make it easier. It's not saying that it can't be done but it but there are tools that does make that they do make things easier. Unfortunately, those tools can be kind of expensive.
+[00:06:50.000 --> 00:06:55.000]  And I really don't I'm not I'm not convinced that you guys would need them.
+[00:06:55.000 --> 00:07:15.000]  The tool that I'm referring to is called multi step. And the idea behind multi step is it lets you established established not only the raw materials that can that you know are going to be used in the solution, but also the manufacturing process so for instance, in like in a
+[00:07:15.000 --> 00:07:20.000]  traditional extruded product.
+[00:07:20.000 --> 00:07:26.000]  You've got probably at what they might call a dry mix so they've got the dry ingredients.
+[00:07:26.000 --> 00:07:37.000]  Any kind of maybe vitamin trace mineral premixes those types of things that are added in the dry mix, and then they add moisture to that.
+[00:07:37.000 --> 00:07:50.000]  So that's what we're going to do. We're going to put in the form of water and or in the pre conditioner of the extruder. So now the moisture content of that mixture goes up.
+[00:07:50.000 --> 00:07:58.000]  And at that particular point it probably doesn't really matter as you can actually kind of consider that moisture.
+[00:07:58.000 --> 00:08:15.000]  And then it's going to just change, you know, the weight of the mixture at that particular point in time and also the nutrient content of that mixture, once that what moisture is added, and then my grocery extruder and it's going to and it's going to lose some
+[00:08:15.000 --> 00:08:33.000]  moisture in the drying process afterwards which is similar to what you guys do in that you know the drying process that that conventionally that you one would think of of course would be, you know, heat, right, you stick it in
+[00:08:34.000 --> 00:08:47.000]  or even just air to cool it and have air applied to it and dry it down and then a lot of times there's a further operation where they add palatins or fats and things of that nature.
+[00:08:47.000 --> 00:09:09.000]  So, since the moisture is being changed at different stages of the mixing process your nutrient content goes up and it goes down because it gets less concentrated or more concentrated diluted or concentrated during those processes and that affects your end nutrient content.
+[00:09:09.000 --> 00:09:18.000]  So when you define what you want your nutrient value and the pounds of ingredient that you use, there's going to be yield consideration right.
+[00:09:18.000 --> 00:09:31.000]  The pounds of ingredient that you use you might use 2150 pounds of raw material to get a 2000 pound ton of finished product.
+[00:09:32.000 --> 00:09:33.000]  Right.
+[00:09:33.000 --> 00:09:37.000]  Because you lose you lose some of the weight in the form of moisture.
+[00:09:37.000 --> 00:09:55.000]  So, so when you define what you want your nutrient content to be that definition needs to be on that on that finished dry matter basis as opposed to what one might call the as mixed basis fear just take all the ingredients and mix them together and put them in a big pot.
+[00:09:56.000 --> 00:10:06.000]  You know, your, your moisture content might be 30% moisture and maybe it's, you know, 18% crude protein.
+[00:10:06.000 --> 00:10:13.000]  But then when you dry it down to whatever the process is you dry it down to seven and a half.
+[00:10:13.000 --> 00:10:18.000]  Well, now you've concentrated that protein and now you're maybe a 21% protein.
+[00:10:18.000 --> 00:10:19.000]  Right.
+[00:10:19.000 --> 00:10:32.000]  So, so it can get tricky telling the program, you know what your requirement is on on the as mixed basis versus on a finished dry matter or target dry matter basis.
+[00:10:32.000 --> 00:10:37.000]  And that for that that that is further compounded.
+[00:10:37.000 --> 00:10:50.000]  If that moisture loss occurs to some ingredients but not all because of where the where in the process that moisture change occurs, like at the extruder or the dryer.
+[00:10:50.000 --> 00:10:56.000]  So that can that can create some challenges.
+[00:10:56.000 --> 00:11:08.000]  Now, the formulation program concept five, you know, is originally created for the animal feed industry back however long ago, right back in the 70s and 80s.
+[00:11:08.000 --> 00:11:25.000]  So when when you look at at a screen where you define what your requirements are for for animal feed that you basically just mix up the ingredients and don't go any through any processing, save for maybe a pellet mill at the most.
+[00:11:26.000 --> 00:11:34.000]  You would define the nutrients on this screen here where you just have a nutrient number and amount and that that assumes that it's as is or as mixed.
+[00:11:34.000 --> 00:11:36.000]  But with pet food.
+[00:11:36.000 --> 00:11:52.000]  What ends up having to happen is you define those requirements on a on a dry matter basis or a or not a not a 100% dry matter but a target dry matter basis.
+[00:11:52.000 --> 00:12:00.000]  So for instance, in this case, rather than having the minimum on this screen, you have the minimum over here established as a ratio.
+[00:12:00.000 --> 00:12:03.000]  And I know that kind of sounds a little bit different.
+[00:12:03.000 --> 00:12:21.000]  It ratio could mean like a calcium to phosphorus ratio, for instance, or it could mean a ratio of a certain nutrient to dry matter, because dry matter is handled for the most part, just like any other nutrient, not 100% like any other nutrient.
+[00:12:21.000 --> 00:12:26.000]  But for for a lot of the math, most of the math is like any other nutrients.
+[00:12:26.000 --> 00:12:43.000]  So rather than saying you want X amount of protein in the finished diet, you can you would say I want this much protein per per a certain amount of dry matter per 91% dry matter.
+[00:12:43.000 --> 00:12:51.000]  So in this case, I what I'm saying is that this particular product, when it's in the bag, I want it to be 9% moisture.
+[00:12:51.000 --> 00:12:55.000]  That's kind of high moisture level, but you know, that's, it's just an example.
+[00:12:55.000 --> 00:13:02.000]  So my minimum here says 22 per 91% dry matter.
+[00:13:02.000 --> 00:13:10.000]  And for the way that you guys manufacture from what I'm hearing you tell me, I think this is this would this method would be sufficient.
+[00:13:10.000 --> 00:13:19.000]  You wouldn't have to use, as you'll notice here, there's no differentiation for these ingredients as to where they get added.
+[00:13:19.000 --> 00:13:24.000]  You know, it's just, it's just this, this is a mixture of ingredients.
+[00:13:24.000 --> 00:13:35.000]  There's nothing, nothing defined right here that says this these ingredients get added first and then these ingredients get added, or these ingredients go through extruder or something like that.
+[00:13:35.000 --> 00:13:44.000]  It's just all a mixture of ingredients, you know, with the assumption that they all get mixed together undergo the same process together.
+[00:13:44.000 --> 00:13:48.000]  Okay, so from what I'm from what I'm hearing you tell me that's what you do.
+[00:13:48.000 --> 00:13:49.000]  Yes.
+[00:13:49.000 --> 00:13:55.000]  Um, okay, so basically, I just want to clear something up.
+[00:13:55.000 --> 00:14:14.000]  We can do like, we can set a target outcome and see five will able to read like recalculate like how much does it how much corn do we need like how much soy meal do we need or how much salt does they need to add is that is that correct.
+[00:14:14.000 --> 00:14:15.000]  Am I understanding correctly?
+[00:14:15.000 --> 00:14:16.000]  Yes.
+[00:14:16.000 --> 00:14:17.000]  Yep, that's correct.
+[00:14:17.000 --> 00:14:29.000]  So basically based on a cost basis, as well as the nutrient, you know, just as important if not more important really especially with pet food is on a nutrient basis.
+[00:14:29.000 --> 00:14:40.000]  Here's, you know, the, the, the nutrient concentration that you'll have based on this mixture of ingredients.
+[00:14:40.000 --> 00:14:48.000]  And those those nutrient requirements can be either minimums or maximums or both.
+[00:14:48.000 --> 00:14:55.000]  Okay, you might have some requirements that are both a min and max you want at least as much but not more than than that much.
+[00:14:55.000 --> 00:14:56.000]  Got it.
+[00:14:56.000 --> 00:14:58.000]  So let me ask you a question.
+[00:14:58.000 --> 00:15:04.000]  So we are able to like set a value like outcome value.
+[00:15:04.000 --> 00:15:24.000]  Let's say we want a formula that's 3000 calorie 20% or 30% protein 20% fat, whatever percent fiber and all the calcium phosphate like everything we can put like our like what we aim at and the price.
+[00:15:24.000 --> 00:15:31.000]  And the software recalculated based on based on our final result.
+[00:15:31.000 --> 00:15:33.000]  Correct.
+[00:15:33.000 --> 00:15:40.000]  Yes, except for you met you did mention price.
+[00:15:40.000 --> 00:15:51.000]  The program is always going to provide you with a solution that is that is the least expensive mixture.
+[00:15:51.000 --> 00:15:52.000]  Okay, okay, got it.
+[00:15:52.000 --> 00:15:53.000]  That's great.
+[00:15:53.000 --> 00:15:59.000]  Yeah, you know, you know, you don't tell it hey, you know, give me a mixture that's $100 a ton.
+[00:15:59.000 --> 00:16:04.000]  It's, it's going to it's going to make it as as low as it can, if it can get.
+[00:16:04.000 --> 00:16:09.000]  Yeah, if it can get lower it will if it can't then it then it won't.
+[00:16:09.000 --> 00:16:12.000]  Okay, and the.
+[00:16:12.000 --> 00:16:22.000]  So we can select the ingredients or like we just select what ingredients we want to use and we put basically we're putting the outcome result.
+[00:16:22.000 --> 00:16:39.000]  So we want to use then the software will calculate from our outcome by using the required ingredients that we provided to software and will calculate coming percent of product need to be mixed to achieve the final result.
+[00:16:39.000 --> 00:16:42.000]  With the lowest.
+[00:16:42.000 --> 00:16:47.000]  That that is that is an accurate description of the process.
+[00:16:47.000 --> 00:16:48.000]  Yep, you go.
+[00:16:48.000 --> 00:16:50.000]  Okay, okay.
+[00:16:50.000 --> 00:16:51.000]  Yep.
+[00:16:51.000 --> 00:17:03.000]  And it does get a little bit, you know, more flexible you've, you know, you the the ingredients to for instance what you're seeing right here is a list of what we call offered ingredients.
+[00:17:03.000 --> 00:17:09.000]  So it's a these ingredients are or sometimes you might hear us use the terminology of controlled.
+[00:17:09.000 --> 00:17:15.000]  So fish meal for instance is a controlled ingredient that means that even though there's no minute max on it.
+[00:17:15.000 --> 00:17:17.000]  It's it's it's in them.
+[00:17:17.000 --> 00:17:18.000]  It's in the mathematics.
+[00:17:18.000 --> 00:17:19.000]  Right.
+[00:17:19.000 --> 00:17:21.000]  It's offered in the math.
+[00:17:21.000 --> 00:17:28.000]  So in this case, there's no minute no max on fish meal and none is coming in.
+[00:17:28.000 --> 00:17:34.000]  And in this soy meal, there's no minute no max, but but there is some coming in.
+[00:17:34.000 --> 00:17:37.000]  So so these these are all controlled ingredients.
+[00:17:37.000 --> 00:17:40.000]  There's a lot more ingredients in the database.
+[00:17:40.000 --> 00:17:43.000]  There's many, many, many, you can have as many as you want.
+[00:17:43.000 --> 00:17:59.000]  But these but you're what you're what when you when you add an ingredient to the product specification as a controlled ingredient, you're saying, here's an ingredient you can use if you want, or here's an ingredient that must be used that you know at this minimum and no more at that
+[00:17:59.000 --> 00:18:00.000]  maximum.
+[00:18:00.000 --> 00:18:01.000]  Okay.
+[00:18:01.000 --> 00:18:06.000]  For a minimum maximum, can you do like by percentage or it has to be in pound.
+[00:18:06.000 --> 00:18:08.000]  Yeah, you can do by percent.
+[00:18:08.000 --> 00:18:09.000]  Okay, that's great.
+[00:18:09.000 --> 00:18:12.000]  You can toggle back and forth between percent and pounds.
+[00:18:12.000 --> 00:18:25.000]  And what we've discovered in having actually myself, I used to be a formulator back in my early days in the animal feed industry and some people think in percent.
+[00:18:25.000 --> 00:18:27.000]  Right.
+[00:18:27.000 --> 00:18:31.000]  And personally, I was trained and became a formula, I think in pounds.
+[00:18:31.000 --> 00:18:40.000]  So if you told me that a formula had 500 pounds of wheat mids in it, I would know what that product would look like.
+[00:18:40.000 --> 00:18:42.000]  You know, I would understand.
+[00:18:42.000 --> 00:18:49.000]  But if you told me that it had 25% that that is more of a leap for me to understand I don't.
+[00:18:49.000 --> 00:18:57.000]  So, so yeah, you can because of that because people some people think in percent and something in pounds you can switch back and forth.
+[00:18:57.000 --> 00:19:09.000]  And let's say, but we can also switch orders right let's say today I want to make a formulation that is based on beef liver, but but I find our beef liver is way too expensive.
+[00:19:09.000 --> 00:19:12.000]  So I'm going to use a beef lung as additive.
+[00:19:12.000 --> 00:19:15.000]  So like, like we can switch the order.
+[00:19:15.000 --> 00:19:18.000]  Bring in this can be like beef livers.
+[00:19:18.000 --> 00:19:23.000]  But tomorrow I was like, oh, let's let's move the beef lung as the top.
+[00:19:23.000 --> 00:19:38.000]  We could do that inside of software and they will recalculate like how much percent of like how much percent needed or to how much percent needed to achieve the let's say 30% protein.
+[00:19:38.000 --> 00:19:41.000]  They can do that right the software are able to.
+[00:19:41.000 --> 00:19:52.000]  Well the program is like I can switch around the ingredients list and cat and the software will recalculate it based on my new ingredient list.
+[00:19:52.000 --> 00:19:58.000]  Well, when you say ingredient list.
+[00:19:58.000 --> 00:20:02.000]  You mean the the order of ingredients which ones are the highest user you.
+[00:20:02.000 --> 00:20:07.000]  Yeah, that that of course.
+[00:20:08.000 --> 00:20:10.000]  Excuse me.
+[00:20:10.000 --> 00:20:15.000]  The program is going to give you the cheapest solution.
+[00:20:15.000 --> 00:20:16.000]  Right.
+[00:20:16.000 --> 00:20:26.000]  Let's say that I wanted wheat mids to be first on the list, meaning that I want more wheat mids than corn, right.
+[00:20:26.000 --> 00:20:31.000]  The program if I don't put any men's or max is on on either of those two ingredients.
+[00:20:31.000 --> 00:20:37.000]  The program is going to is going to tell me which ingredient to use and how much.
+[00:20:37.000 --> 00:20:38.000]  Okay.
+[00:20:38.000 --> 00:20:43.000]  So, so in this case, well, I took the maximum off and now use more wheat mids.
+[00:20:43.000 --> 00:20:47.000]  Let's say in this scenario, let's say that we wanted to the other way around.
+[00:20:47.000 --> 00:20:50.000]  Let's say that we wanted corn to be first, right.
+[00:20:50.000 --> 00:20:53.000]  There's no manner no max on either ingredient.
+[00:20:53.000 --> 00:20:59.000]  The program is going to tell me that corn has to be second, not first.
+[00:20:59.000 --> 00:21:16.000]  If I want corn to be first, then I either need to put a minimum on corn that that forces it in at a higher rate or a maximum on wheat meds that forces wheat meds down, which is the way it was before, so that it doesn't use as much.
+[00:21:16.000 --> 00:21:22.000]  So that that is one way that you can control the order of ingredients is by putting on and max is on things.
+[00:21:22.000 --> 00:21:30.000]  The other thing that you can that you can do is you can you can use ingredient ratios.
+[00:21:30.000 --> 00:21:43.000]  So in the the the intended use of ingredient ratios is so that you you might want there to be a corn to mids ratio, or you might want there to be two like a fish.
+[00:21:43.000 --> 00:21:48.000]  You might want anchovies to cod ratio, right?
+[00:21:48.000 --> 00:21:49.000]  Yeah, whatever.
+[00:21:49.000 --> 00:21:57.000]  But you can also use that as a method to to define an ingredient order.
+[00:21:57.000 --> 00:22:06.000]  And let me see if I've got an example already set up. I don't have to go through the. Yeah, here we go. Let's see if this one does.
+[00:22:06.000 --> 00:22:08.000]  Does the job.
+[00:22:08.000 --> 00:22:11.000]  Creating ratios.
+[00:22:11.000 --> 00:22:16.000]  It says ingredient order, but it doesn't.
+[00:22:16.000 --> 00:22:25.000]  Sometimes my data gets a little bit beat up.
+[00:22:25.000 --> 00:22:29.000]  Is that because like, is he doing a lot of demos or.
+[00:22:29.000 --> 00:22:32.000]  Yeah, because I'm doing demos or I'm testing or whatever.
+[00:22:32.000 --> 00:22:33.000]  Okay.
+[00:22:33.000 --> 00:22:36.000]  You know, here's here's an example. So.
+[00:22:36.000 --> 00:22:49.000]  This what I'm what I what I want to happen in this solution is I want my ingredient order to be corn first and then wheat, mids and then meat and bone meal and then soy and then gluten.
+[00:22:49.000 --> 00:22:58.000]  So the way that I control that is I say that I want corn to be one for every one of mids.
+[00:22:58.000 --> 00:23:09.000]  And then I want mids to be one, a minimum of one could be more, a minimum of one for every one of meat and bone meal. See how it kind of it steps down through.
+[00:23:09.000 --> 00:23:16.000]  You got corn and then mids and then mids and then meat and then meat and then soy.
+[00:23:16.000 --> 00:23:23.000]  So, so I've said that I want at least 1.01 that so that there's just a little bit more. I could make it one point.
+[00:23:23.000 --> 00:23:29.000]  I see, I see, I see what you mean. So, in there just show corn is more than wheat.
+[00:23:29.000 --> 00:23:38.000]  That has to be more than 1.1 more than wheat and wheat has to be more than I see so it goes down.
+[00:23:38.000 --> 00:23:52.000]  Right. So, so the solution is going to come back and go well you know I'd like to use more mids but if I do I have to make sure that the corn is at least one or 1.01% of what the mids are right.
+[00:23:52.000 --> 00:24:04.000]  So, if we look at the solution, we'll see that the ingredient list, you know, it's got it's got corn first, you know, barely, and then meat and bone meal and then
+[00:24:04.000 --> 00:24:18.000]  the other ingredients I don't know if we had fat listed in there probably should have been if it wasn't no fat wasn't listed so fat didn't get that's not in the quay in the in the list but I should have listed it.
+[00:24:18.000 --> 00:24:26.000]  So, so that would then if you put minimums and maximums on here.
+[00:24:26.000 --> 00:24:32.000]  You're telling the program to use an exact amount.
+[00:24:32.000 --> 00:24:37.000]  Okay, to force it to be more than another ingredient.
+[00:24:37.000 --> 00:24:48.000]  But, but what, but you as a user might not necessarily know what that optimum amount should be in relation to another ingredient.
+[00:24:48.000 --> 00:24:59.000]  So, if you just tell basically the the the program hey, use as much corn or or mids as you want just make sure that there's more corn than mids.
+[00:24:59.000 --> 00:25:07.000]  And then it will pick what that optimum amount should be for the both of them or all four of them or five of them combined.
+[00:25:07.000 --> 00:25:09.000]  Right.
+[00:25:09.000 --> 00:25:22.000]  So, so yeah, that's how. And there again, see what we're doing what I'm showing you is is we could call it the single step version of formulation.
+[00:25:22.000 --> 00:25:38.000]  And that's not that's not what we've what we call it because it was kind of it came first it was always this way until we created the multi step function with the multi step formulation tool.
+[00:25:38.000 --> 00:25:51.000]  You don't have to create these ratios as kind of a trick to control the order of ingredients there's a there's a tool that there's a there's a feature that says, you know what's the order of ingredients.
+[00:25:51.000 --> 00:26:01.000]  You define that order of ingredients. And in a basically mathematically does the same thing but it's from a user standpoint it's a little more obvious.
+[00:26:01.000 --> 00:26:11.000]  For instance, this is what it would look like ingredient order right.
+[00:26:11.000 --> 00:26:16.000]  So you just say corn and mids then rice and right.
+[00:26:16.000 --> 00:26:21.000]  And then when you're creating a ratio, you just say here's what the order looks like.
+[00:26:21.000 --> 00:26:30.000]  So, so yeah, you can you can do it with single step but multi step makes it a little bit easier.
+[00:26:30.000 --> 00:26:39.000]  Multi step, you tell it what your, your percent of your solution looks like when it's done when it's finished.
+[00:26:39.000 --> 00:26:49.000]  So you put in your nutrient requirements, those nutrient requirements are at 9.5% moisture, not the as mixed.
+[00:26:49.000 --> 00:26:58.000]  So rather than having to do a nutrient ratio of protein to dry matter, you just say well here's what I want my protein to be when we're done.
+[00:26:59.000 --> 00:27:06.000]  So you can you can use multi step to be a little more.
+[00:27:06.000 --> 00:27:21.000]  It's it's designed to to handle the the formulas that you're, you know that undergo these kind of moisture changes and but you don't necessarily it doesn't mean that you can't do it with single step.
+[00:27:21.000 --> 00:27:36.000]  It just means that with single step, you have to go through a few extra a few extra steps in the program in order to come up with the same or close to the same result.
+[00:27:37.000 --> 00:28:03.000]  And the reason that that I would suggest that you consider single step over top of using multi step is that you would gain that those those ease of use things but it really wouldn't change the answer any or at all to save you like money for for your solutions
+[00:28:03.000 --> 00:28:19.000]  you want to make cheaper solutions for you. So it's really not is really there's really not going to be a direct monetary payback, just for being a little bit easier to use and understand the the multi step function does a lot more.
+[00:28:19.000 --> 00:28:29.000]  In addition to what you know we've just talked about, and therefore it comes with a with a pretty high price tag it basically more than doubles the price of the license.
+[00:28:29.000 --> 00:28:38.000]  So in your case, I don't know if I don't think it would be worth your money to spend on it. You know what I mean.
+[00:28:38.000 --> 00:28:48.000]  Yeah, now, in the future, if you guys start making different types of products, if it becomes real parent that yeah we're going to need that tool, you can always add it later.
+[00:28:49.000 --> 00:28:51.000]  Okay.
+[00:28:51.000 --> 00:29:14.000]  But even if you did need it. A lot of times we still suggest that you wait because it's also a lot more difficult to use and a lot more difficult to learn. And it's better sometimes to learn with just the single step and the simpler method, and then graduating kind of towards the towards the more
+[00:29:14.000 --> 00:29:17.000]  complicated formulation tool.
+[00:29:17.000 --> 00:29:19.000]  Okay, got it.
+[00:29:19.000 --> 00:29:32.000]  So first, so if I only use the first I need to go to mutual ratios, put the desired minimum maximum in there.
+[00:29:32.000 --> 00:29:44.000]  Then go to ingredients and add all the ingredients that we want to use for us for the formulations.
+[00:29:44.000 --> 00:29:51.000]  Then it will calculate the lowest price of formulations.
+[00:29:51.000 --> 00:29:53.000]  Is that correct?
+[00:29:53.000 --> 00:30:04.000]  Yeah, it'll calculate the lowest price or lowest cost mixture of ingredients to meet your the parameters that you've defined.
+[00:30:04.000 --> 00:30:13.000]  Okay, got it. And if we want to switch the list, because I'm not always, you know, sometimes you don't want to use the whole list.
+[00:30:13.000 --> 00:30:28.000]  So if you want to change the nutrients, like the ingredients panel, we go to the mutual ratio in there. I need to set, let's I need to set this ingredients, ingredients A is more than ingredients B.
+[00:30:28.000 --> 00:30:36.000]  And they will recalculate how much do we need for this ingredients, for this formulations.
+[00:30:36.000 --> 00:30:37.000]  Right.
+[00:30:37.000 --> 00:30:38.000]  Yep.
+[00:30:38.000 --> 00:30:39.000]  Okay.
+[00:30:39.000 --> 00:30:46.000]  So, for a product or just in the database in general?
+[00:30:46.000 --> 00:30:48.000]  In the database.
+[00:30:48.000 --> 00:30:55.000]  So in the database in general, the under this ingredient maintenance function.
+[00:30:55.000 --> 00:30:56.000]  Okay.
+[00:30:56.000 --> 00:31:00.000]  You have your list of all the ingredients that are currently in the database.
+[00:31:00.000 --> 00:31:01.000]  Right.
+[00:31:01.000 --> 00:31:06.000]  And to add another ingredient, you just would click on add new ingredient.
+[00:31:06.000 --> 00:31:13.000]  You assign that ingredient to code. And then you give it a name and cost and so forth.
+[00:31:13.000 --> 00:31:17.000]  Okay. And for a formula.
+[00:31:17.000 --> 00:31:24.000]  That's a very similar process when you're looking at the main formula or product screen, there's an add a new product.
+[00:31:24.000 --> 00:31:38.000]  And, and what you'll probably find is that it will be, it will be rare that you will use that you will add a new product by clicking on the add new product.
+[00:31:38.000 --> 00:31:42.000]  Most formulators and nutritionists.
+[00:31:42.000 --> 00:31:46.000]  And it's not because they're lazy, it's because they're smart.
+[00:31:46.000 --> 00:31:49.000]  They start with one that that's close to what they already have.
+[00:31:49.000 --> 00:31:50.000]  Right.
+[00:31:50.000 --> 00:31:53.000]  Otherwise you're starting with a completely blank slate.
+[00:31:53.000 --> 00:32:03.000]  And you've got to add all the information in manually, but if you start with something that's close to what you're already making and then just save do a save as you can give it a new product code.
+[00:32:03.000 --> 00:32:11.000]  And then you can make the modifications to this product to make to make it unique to make it new.
+[00:32:11.000 --> 00:32:22.000]  Yeah, either either way you could either do a save as, or if you wanted to start from scratch with from ground zero with the blank slate, well then you would just click on add new product and give it a product code.
+[00:32:22.000 --> 00:32:32.000]  And then you'd have to give it a name and you'd have to go to the, you know, to the screen where you add what ingredients are available, what the requirements are and so forth.
+[00:32:32.000 --> 00:32:40.000]  Okay, so could you show me like let's say if I don't want to read number 40, I'll delete number 40.
+[00:32:40.000 --> 00:32:56.000]  And then you can add the ingredient. Yeah. Okay, so yeah, so when you're working with a, when you're working in it, when you're working in the program in general, there's you're going to you're going to see an edit, and if you're an edit thing I see an on and edit.
+[00:32:56.000 --> 00:33:01.000]  And that's to kind of keep you.
+[00:33:01.000 --> 00:33:14.000]  That's to keep you focused on what you're performing and what you're doing on that screen, and also make sure that the program is on the same page with you so like okay I'm making an edit.
+[00:33:14.000 --> 00:33:24.000]  And then when you're done. Okay I've clearly I'm clearly done editing and making modifications and then it'll say you've made some modifications do you want to store it.
+[00:33:24.000 --> 00:33:35.000]  And that's the thing that people have the biggest hurdle, a learning is to remember to click that edit because you might go hey it's not it's not let me do anything that's because they haven't clicked the edit button.
+[00:33:35.000 --> 00:33:53.000]  So you click edit, and then to make a modification to an ingredient or to remove an ingredient. Now the thing is with removing ingredients is in order to to maintain database integrity.
+[00:33:53.000 --> 00:33:58.000]  And you, you can't just.
+[00:33:58.000 --> 00:34:18.000]  There's some extra steps, if you just simply delete an ingredient, because this this the program has stored this particular product with 33 pound or 33% of ingredient number 40 wheat myths right.
+[00:34:18.000 --> 00:34:27.000]  And then suddenly you said wheat myths is no longer in this formula. Well we can't have just a whole. Right.
+[00:34:27.000 --> 00:34:46.000]  You're, you're, so if you, if you remove or delete an ingredient without telling the without assigning or reformulating an ingredient to replace that in the ingredient that you've removed.
+[00:34:46.000 --> 00:34:50.000]  And that's going to say well the rest of the formula is no longer valid.
+[00:34:50.000 --> 00:34:56.000]  The specs and everything will still be there won't be moved the product, but it's going to say that you know what.
+[00:34:56.000 --> 00:35:04.000]  Now the answer is no longer valid because in order to come up with the answer that was there, we assume that you could get wheat myths.
+[00:35:04.000 --> 00:35:10.000]  Now that we have we can't put in wheat meds now the whole it's a whole new mathematical problem.
+[00:35:10.000 --> 00:35:22.000]  So if we remove wheat meds, we're going to remove the entire solution we're going to remove all the numbers in this column right here, and tell you reformulate and come up with a new answer that doesn't use wheat meds.
+[00:35:22.000 --> 00:35:31.000]  So the process would probably look more if you wanted to kind of maintain housekeeping a little bit and maintain what that old formula look like.
+[00:35:31.000 --> 00:35:37.000]  You probably would be more inclined to say well that's just suppress that ingredient.
+[00:35:37.000 --> 00:35:46.000]  So what a suppress is is saying you know the ingredient is still in the specification it's still a controlled ingredient, but don't use it.
+[00:35:46.000 --> 00:35:55.000]  Okay, so it doesn't remove it it just says for future use your wheat meds is no longer available.
+[00:35:55.000 --> 00:36:00.000]  Now once we once we've suppressed it and reformulated.
+[00:36:00.000 --> 00:36:08.000]  Now we come up with a new answer now. Unfortunately, what this is telling me is that well we can't we can't come up with a solution.
+[00:36:08.000 --> 00:36:25.000]  If we don't at least have wheat meds available. So we're going to have to offer something else like ground bakery let's see. Let's see what happens if we offer that still infeasible, and it might be infeasible because of ratios.
+[00:36:25.000 --> 00:36:37.000]  So this is why it's infeasible because we've said there has to be one pound of wheat meds for every pound of meat and bone meal of wheat meds is no longer available.
+[00:36:37.000 --> 00:36:44.000]  So we're going to have to remove wheat meds from this.
+[00:36:44.000 --> 00:36:48.000]  And now we'll probably be feasible again. Yeah.
+[00:36:48.000 --> 00:37:01.000]  So now we so now wheat meds is no longer used and if we if we click on this, this tab over here, we can see that the solution that was stored previously.
+[00:37:01.000 --> 00:37:04.000]  He was 32.
+[00:37:04.000 --> 00:37:08.000]  Sorry, he was 32%.
+[00:37:08.000 --> 00:37:17.000]  Almost 33% wheat meds. This solution doesn't use any so there's a difference of 32.593.
+[00:37:17.000 --> 00:37:19.000]  Got it.
+[00:37:19.000 --> 00:37:27.000]  And in addition to this, can you guys are you guys able to calculate the density of each product.
+[00:37:27.000 --> 00:37:31.000]  Well,
+[00:37:31.000 --> 00:37:48.000]  yes, if you have accurate density values that that are not affected by particle size.
+[00:37:48.000 --> 00:37:59.000]  But you can get an approximation. The reason I that I hedge that a little bit is because density is a nonlinear thing. Yes.
+[00:37:59.000 --> 00:38:01.000]  Right.
+[00:38:01.000 --> 00:38:13.000]  That whole experiment where you can fill a jar full of rocks and then you can put in it's not really full because you can put marbles because and then it's not really full you can put sand and then you know what I mean.
+[00:38:13.000 --> 00:38:22.000]  So, so, so, so outside of that consideration.
+[00:38:22.000 --> 00:38:25.000]  It's just like another nutrient.
+[00:38:25.000 --> 00:38:29.000]  But it's able to like display it.
+[00:38:29.000 --> 00:38:45.000]  It would display it like it would protein or fat or fiber you could have a density density nutrient and it would be the value would be linear because you're not able to program in the nonlinear aspect of, you know, any kind of particle size
+[00:38:45.000 --> 00:38:49.000]  relationship, which would affect the true density. Okay.
+[00:38:49.000 --> 00:38:52.000]  Okay, got it, got it.
+[00:38:52.000 --> 00:39:04.000]  But it does give you a pretty close approximation, especially if you process your ingredients in such a way before mixing them where they have a similar particle size and shape.
+[00:39:04.000 --> 00:39:05.000]  Okay, okay.
+[00:39:05.000 --> 00:39:11.000]  The fertilizer industry does that quite a bit.
+[00:39:11.000 --> 00:39:30.000]  And they really go through great pains to to process all of their ingredients like the nitrogen the ammonium the urea the so that they all have a very similar particle size and shaped or like little round BBs little pellets, so that when they mix them
+[00:39:30.000 --> 00:39:39.000]  they get a homogenous mixture that they can come to a close approximation on density.
+[00:39:39.000 --> 00:39:44.000]  In order to because the way that they apply it is with.
+[00:39:44.000 --> 00:39:49.000]  It's a volumetric application.
+[00:39:49.000 --> 00:39:51.000]  Okay, got it.
+[00:39:51.000 --> 00:40:01.000]  Yeah, you probably don't maybe care about that but I don't answer I don't I don't always answer that question yes no problem because
+[00:40:01.000 --> 00:40:02.000]  just humans.
+[00:40:02.000 --> 00:40:12.000]  Yeah, it's it's it's a nonlinear parameter and everything in the formulation program it has a linear relationship.
+[00:40:12.000 --> 00:40:14.000]  Got it got it got it.
+[00:40:14.000 --> 00:40:19.000]  Oh, I see.
+[00:40:19.000 --> 00:40:37.000]  And then come close it you know there's been the animal feed industry has put in things like, you know, pellet durability index values density, I've seen density, you know, just so that they can at least get close.
+[00:40:37.000 --> 00:40:50.000]  But there's so many interrelationships and of course if you get any kind of chemical reactions going on because of processing and stuff that that that's not programmed into a linear model.
+[00:40:50.000 --> 00:40:52.000]  Okay, got it got it.
+[00:40:52.000 --> 00:41:00.000]  Um, yeah, I don't I think you're.
+[00:41:00.000 --> 00:41:02.000]  Yeah, well thank you so much.
+[00:41:02.000 --> 00:41:20.000]  You're very welcome. Yeah, if you have other questions or I don't know if Mark offered or mentioned to you that you can get a trial, a free 30 day trial of the program so you can start experimenting with you know your solutions your actual information.
+[00:41:20.000 --> 00:41:25.000]  If you do do that and you enter in data.
+[00:41:25.000 --> 00:41:38.000]  That data stays with with you. So if you decide he had like to buy the program, you know that data that you've maybe have entered in in the 30 days or however long it takes.
+[00:41:38.000 --> 00:41:49.000]  It will remain you won't you won't lose it. If you if you would have happened to have been using or maybe have access to a database.
+[00:41:49.000 --> 00:41:58.000]  So if you want to use for the for this trial period we can convert the data or load that that data in for you.
+[00:41:58.000 --> 00:42:12.000]  And which which could sometimes can help because you know your trial period is spent with real live data rather than trying to imagine what it might look like using demonstration data.
+[00:42:12.000 --> 00:42:18.000]  For the data are we able to like you mentioned we can import it.
+[00:42:18.000 --> 00:42:23.000]  And we both import and export data from this software.
+[00:42:23.000 --> 00:42:36.000]  Yeah, there's quite a bit of different importing and exporting type functionality in the in the program and it and of course does require that you know they the layout of that information matches.
+[00:42:36.000 --> 00:42:41.000]  The assumed layout of that import or export process.
+[00:42:41.000 --> 00:42:55.000]  There's probably more exporting type capabilities, because there's usually more exporting requirements than importing a lot of times the formulation programs because becomes kind of the point of origination for some data.
+[00:42:55.000 --> 00:42:58.000]  You know.
+[00:42:58.000 --> 00:43:03.000]  So I mean, basically likes, which is a nice way of saying it's hand entered.
+[00:43:03.000 --> 00:43:06.000]  Because, because that's where it starts.
+[00:43:06.000 --> 00:43:21.000]  But yeah, I mean if you've got a laboratory where that has an export of data is sometimes the important ingredient nutrient values ingredient costs are probably the most common piece of information that gets imported in.
+[00:43:21.000 --> 00:43:25.000]  And then of course the formulations are usually what you would export.
+[00:43:25.000 --> 00:43:36.000]  Either to a third party, you know, another program for accounting or batching automated batching inventory, process control that type of thing.
+[00:43:36.000 --> 00:43:51.000]  All kinds of options are there's like right from right from here there's a nice, what we call copy export copy function that you let you generate right when you're working with a formula.
+[00:43:51.000 --> 00:44:15.000]  So it would be formula type data, you can either export it to a CSV file or copy it to clipboard and you kind of have some options as to what information you want to be exported or copied to your clipboard and then that gets copied to your clipboard in such a way that you could just paste it into Excel and it would go into the data would go into cells.
+[00:44:15.000 --> 00:44:26.000]  And you have to be careful because if you're generating a report and say hey I want to I want to create a copy of that report or I want to create a text file that report.
+[00:44:26.000 --> 00:44:33.000]  That's just textual data that has no delineation as to what information is in different fields.
+[00:44:33.000 --> 00:44:43.000]  So if you pasted that into something like Excel, it would all go into one cell basically or you'd have to create some type of import template.
+[00:44:43.000 --> 00:45:04.000]  There's different there's some differences in in exporting methods that depending on how you want to use that information if you just wanted to copy a report and paste it into a Word document or an email or something then you could do that with like just a you know pasting or copying a report.
+[00:45:05.000 --> 00:45:06.000]  Got it.
+[00:45:06.000 --> 00:45:13.000]  For when we input when we input our ingredients in there let's say beef.
+[00:45:13.000 --> 00:45:23.000]  Are you are we able to like also attach a like COA or the like other documentations in there or not.
+[00:45:23.000 --> 00:45:26.000]  No, no.
+[00:45:26.000 --> 00:45:44.000]  So just pure data like like like you maybe what would yeah it's just pure data like you maybe want would want with the ingredient data. That's an interesting you know that's not that makes sense we've never been asked that before but yeah like you maybe you had attached files attached to that one that one ingredient.
+[00:45:44.000 --> 00:45:47.000]  That would be a.
+[00:45:47.000 --> 00:45:51.000]  I could see that as being a useful thing.
+[00:45:51.000 --> 00:45:56.000]  Yeah, it's easier for you know to match all the ingredients so we can.
+[00:45:56.000 --> 00:46:00.000]  Yeah, documentation.
+[00:46:00.000 --> 00:46:01.000]  Sure.
+[00:46:01.000 --> 00:46:03.000]  That's a good idea.
+[00:46:03.000 --> 00:46:06.000]  I'm going to write that down.
+[00:46:06.000 --> 00:46:09.000]  Thank you.
+[00:46:09.000 --> 00:46:15.000]  Is there anything else that you needed from us from at this point of time.
+[00:46:15.000 --> 00:46:23.000]  No, not really I mean it's all it's all about you really I mean what do you guys need.
+[00:46:23.000 --> 00:46:36.000]  You know, you know, so you know, depending on you know what you wanted want to do if you if you're going to wait a little bit or if you want to pursue it on a trial basis or what.
+[00:46:36.000 --> 00:46:50.000]  You know, we'll be happy to work with you we know sometimes it's a process and it takes time or maybe you guys you know you want to propose we want costs and stuff you want to get moving on right away whatever whatever you guys want to do there.
+[00:46:50.000 --> 00:46:53.000]  Okay, let us know.
+[00:46:53.000 --> 00:46:55.000]  Yeah, if you can.
+[00:46:55.000 --> 00:46:58.000]  Well thank you so much for for today and thank you for what.
+[00:46:58.000 --> 00:47:09.000]  If you could send us the recording we'll review it and I will get back to you and how I'll get back to you or Mark.
+[00:47:09.000 --> 00:47:11.000]  Okay.
+[00:47:11.000 --> 00:47:12.000]  Thank you.
+[00:47:12.000 --> 00:47:20.000]  I'm glad you reminded me about the recordings I almost forgot we were recording but yeah I'll I'll I'll make sure I save that recording.
+[00:47:20.000 --> 00:47:21.000]  Yeah, yeah, please.
+[00:47:21.000 --> 00:47:22.000]  Thank you so much.
+[00:47:22.000 --> 00:47:33.000]  You bet well thanks for your time been nice chat with you guys and I hope we can, we can do something to help you to meet your needs one way or another.
+[00:47:33.000 --> 00:47:34.000]  Thank you so much.
+[00:47:34.000 --> 00:47:36.000]  You bet take care.
+[00:47:36.000 --> 00:47:38.000]  Bye bye.
+[00:47:52.000 --> 00:47:54.000]  you

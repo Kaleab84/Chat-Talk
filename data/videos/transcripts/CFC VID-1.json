@@ -1,0 +1,1882 @@
+[
+  {
+    "start": 0.0,
+    "end": 5.0,
+    "text": " Yeah."
+  },
+  {
+    "start": 5.0,
+    "end": 10.0,
+    "text": " Record has been started. Yes. Yeah, thank you so much."
+  },
+  {
+    "start": 10.0,
+    "end": 18.0,
+    "text": " This should be recorded. And if you can like send me the recording after this meeting, I'll be right."
+  },
+  {
+    "start": 18.0,
+    "end": 19.0,
+    "text": " Sure."
+  },
+  {
+    "start": 19.0,
+    "end": 24.0,
+    "text": " Thank you so much. All right, please. Thank you."
+  },
+  {
+    "start": 24.0,
+    "end": 43.0,
+    "text": " Yeah. So, you know, and how I got here from our main menu, you've got all these different options and you've got some common options that are listed on the main screen as well as more of them that are listed with these down these drop down menus."
+  },
+  {
+    "start": 43.0,
+    "end": 50.0,
+    "text": " So for you mentioned ingredients, kind of starting out with ingredients."
+  },
+  {
+    "start": 50.0,
+    "end": 60.0,
+    "text": " We had poultry meal open so that here's where you would see where you can see the ingredients that you have in the program."
+  },
+  {
+    "start": 60.0,
+    "end": 63.0,
+    "text": " So this will be all the ingredients that are in the database."
+  },
+  {
+    "start": 63.0,
+    "end": 71.0,
+    "text": " You can you can add or remove any ingredients that you want. You can give them whatever code that you want to."
+  },
+  {
+    "start": 71.0,
+    "end": 88.0,
+    "text": " And then you can track whatever nutrients that you want. So we don't the program does not dictate to you what code is used for moisture or dry matter or protein or fat or any nutrients or what unit of measure is being used."
+  },
+  {
+    "start": 88.0,
+    "end": 100.0,
+    "text": " It's completely up to you what what nutrients that you that you have in the program, how you organize them, what units of measure you use and of course what values you use."
+  },
+  {
+    "start": 100.0,
+    "end": 116.0,
+    "text": " So, and then, depending on on your on your business, you may have more than one manufacturing facility but at a minimum you're going to have one manufacturing facility or plant as the program term is used."
+  },
+  {
+    "start": 116.0,
+    "end": 126.0,
+    "text": " And then you're going to have your is your cost that would be for for that particular ingredient at that plant. There's two default costs one called owning and one called market."
+  },
+  {
+    "start": 126.0,
+    "end": 138.0,
+    "text": " There's really nothing different about owning versus market. As far as the program is concerned, it's just one cost versus another could be cost number one and cost number two, but they're called owning and market."
+  },
+  {
+    "start": 138.0,
+    "end": 145.0,
+    "text": " Now, this this information, of course, you know you as a user would maintain."
+  },
+  {
+    "start": 145.0,
+    "end": 149.0,
+    "text": " And then, when you work with a formula."
+  },
+  {
+    "start": 149.0,
+    "end": 161.0,
+    "text": " You've got several different methods you can use I'm not see if I've got any freeze dried products, probably all."
+  },
+  {
+    "start": 161.0,
+    "end": 170.0,
+    "text": " They're probably all products that are that are conventional."
+  },
+  {
+    "start": 170.0,
+    "end": 174.0,
+    "text": " See if we got some freeze dried stuff."
+  },
+  {
+    "start": 174.0,
+    "end": 177.0,
+    "text": " But it's, it's going to be kind of the same."
+  },
+  {
+    "start": 177.0,
+    "end": 188.0,
+    "text": " You know, there's there again there's the program technically doesn't know or care if it's freeze dried or if it's extruded or if it's just raw mix or if it's pelleted."
+  },
+  {
+    "start": 188.0,
+    "end": 204.0,
+    "text": " You know, of course, there are some considerations if you do process a diet and and there's a moisture change in that diet."
+  },
+  {
+    "start": 204.0,
+    "end": 211.0,
+    "text": " But for freeze dried for the most part or freeze was it freeze dried or just fresh rose."
+  },
+  {
+    "start": 211.0,
+    "end": 217.0,
+    "text": " It's freeze dried freeze dried so there is there is some moisture change then."
+  },
+  {
+    "start": 217.0,
+    "end": 220.0,
+    "text": " Yes, in the diet."
+  },
+  {
+    "start": 220.0,
+    "end": 232.0,
+    "text": " Okay, that that does that that does come into play. Although, it's my understanding of freeze dried that there's not multiple processes involved."
+  },
+  {
+    "start": 232.0,
+    "end": 239.0,
+    "text": " It's basically you mix all your ingredients together. They undergo this freeze drying process and then they're and then they're packaged right."
+  },
+  {
+    "start": 239.0,
+    "end": 240.0,
+    "text": " Yes."
+  },
+  {
+    "start": 240.0,
+    "end": 246.0,
+    "text": " So so they lose moisture. All the ingredients lose moisture basically together."
+  },
+  {
+    "start": 246.0,
+    "end": 258.0,
+    "text": " Not in multiple stages, and there's not a like a draw a cooling and a drying and an extruding and a heating and a baking or any of those kinds of process."
+  },
+  {
+    "start": 258.0,
+    "end": 262.0,
+    "text": " There is a shooting involved."
+  },
+  {
+    "start": 262.0,
+    "end": 265.0,
+    "text": " Okay."
+  },
+  {
+    "start": 265.0,
+    "end": 271.0,
+    "text": " Are you talking about the extruding after freeze drying or before freeze dry."
+  },
+  {
+    "start": 271.0,
+    "end": 282.0,
+    "text": " Well, however, what what either way what what what process do you guys use what what what happens in your in your type of products."
+  },
+  {
+    "start": 282.0,
+    "end": 286.0,
+    "text": " Typically we extrude before freeze drying machine."
+  },
+  {
+    "start": 286.0,
+    "end": 292.0,
+    "text": " So we just mix the raw material extrude then put in the freeze drying machine."
+  },
+  {
+    "start": 292.0,
+    "end": 297.0,
+    "text": " So does that will affect anything in the C5."
+  },
+  {
+    "start": 297.0,
+    "end": 305.0,
+    "text": " Well, it potentially"
+  },
+  {
+    "start": 305.0,
+    "end": 313.0,
+    "text": " different tools that are available, depending on on on what you what your process looks like."
+  },
+  {
+    "start": 313.0,
+    "end": 320.0,
+    "text": " Let me ask you this when you when you extrude the product."
+  },
+  {
+    "start": 320.0,
+    "end": 326.0,
+    "text": " You're taking a mixture of ingredients raw materials and you're extruding them."
+  },
+  {
+    "start": 326.0,
+    "end": 336.0,
+    "text": " So are you adding to those ingredients or to that product after extrusion right you are you adding any additional ingredients after extrusion."
+  },
+  {
+    "start": 336.0,
+    "end": 338.0,
+    "text": " No, no, we are not."
+  },
+  {
+    "start": 338.0,
+    "end": 346.0,
+    "text": " Okay, so there's no spray on fats or or palatins or anything like that that are added."
+  },
+  {
+    "start": 346.0,
+    "end": 356.0,
+    "text": " Does it go into like a, but might not really matter if it goes in any kind of pre drying or cooling or anything or if it goes right into the freezer."
+  },
+  {
+    "start": 356.0,
+    "end": 361.0,
+    "text": " Basically what happens is after it comes out of the extruder you're losing more moisture, right."
+  },
+  {
+    "start": 361.0,
+    "end": 375.0,
+    "text": " It's just a method that you're using to losing that moisture."
+  },
+  {
+    "start": 375.0,
+    "end": 386.0,
+    "text": " The program can handle these different scenarios these different manufacturing scenarios."
+  },
+  {
+    "start": 386.0,
+    "end": 400.0,
+    "text": " What it boils down to is, if that's a little more complicated, which this is not too bad but I mean there's some there is some degree of complexity here because you're losing moisture."
+  },
+  {
+    "start": 400.0,
+    "end": 410.0,
+    "text": " There's tools that can make it easier. It's not saying that it can't be done but it but there are tools that does make that they do make things easier. Unfortunately, those tools can be kind of expensive."
+  },
+  {
+    "start": 410.0,
+    "end": 415.0,
+    "text": " And I really don't I'm not I'm not convinced that you guys would need them."
+  },
+  {
+    "start": 415.0,
+    "end": 435.0,
+    "text": " The tool that I'm referring to is called multi step. And the idea behind multi step is it lets you established established not only the raw materials that can that you know are going to be used in the solution, but also the manufacturing process so for instance, in like in a"
+  },
+  {
+    "start": 435.0,
+    "end": 440.0,
+    "text": " traditional extruded product."
+  },
+  {
+    "start": 440.0,
+    "end": 446.0,
+    "text": " You've got probably at what they might call a dry mix so they've got the dry ingredients."
+  },
+  {
+    "start": 446.0,
+    "end": 457.0,
+    "text": " Any kind of maybe vitamin trace mineral premixes those types of things that are added in the dry mix, and then they add moisture to that."
+  },
+  {
+    "start": 457.0,
+    "end": 470.0,
+    "text": " So that's what we're going to do. We're going to put in the form of water and or in the pre conditioner of the extruder. So now the moisture content of that mixture goes up."
+  },
+  {
+    "start": 470.0,
+    "end": 478.0,
+    "text": " And at that particular point it probably doesn't really matter as you can actually kind of consider that moisture."
+  },
+  {
+    "start": 478.0,
+    "end": 495.0,
+    "text": " And then it's going to just change, you know, the weight of the mixture at that particular point in time and also the nutrient content of that mixture, once that what moisture is added, and then my grocery extruder and it's going to and it's going to lose some"
+  },
+  {
+    "start": 495.0,
+    "end": 513.0,
+    "text": " moisture in the drying process afterwards which is similar to what you guys do in that you know the drying process that that conventionally that you one would think of of course would be, you know, heat, right, you stick it in"
+  },
+  {
+    "start": 514.0,
+    "end": 527.0,
+    "text": " or even just air to cool it and have air applied to it and dry it down and then a lot of times there's a further operation where they add palatins or fats and things of that nature."
+  },
+  {
+    "start": 527.0,
+    "end": 549.0,
+    "text": " So, since the moisture is being changed at different stages of the mixing process your nutrient content goes up and it goes down because it gets less concentrated or more concentrated diluted or concentrated during those processes and that affects your end nutrient content."
+  },
+  {
+    "start": 549.0,
+    "end": 558.0,
+    "text": " So when you define what you want your nutrient value and the pounds of ingredient that you use, there's going to be yield consideration right."
+  },
+  {
+    "start": 558.0,
+    "end": 571.0,
+    "text": " The pounds of ingredient that you use you might use 2150 pounds of raw material to get a 2000 pound ton of finished product."
+  },
+  {
+    "start": 572.0,
+    "end": 573.0,
+    "text": " Right."
+  },
+  {
+    "start": 573.0,
+    "end": 577.0,
+    "text": " Because you lose you lose some of the weight in the form of moisture."
+  },
+  {
+    "start": 577.0,
+    "end": 595.0,
+    "text": " So, so when you define what you want your nutrient content to be that definition needs to be on that on that finished dry matter basis as opposed to what one might call the as mixed basis fear just take all the ingredients and mix them together and put them in a big pot."
+  },
+  {
+    "start": 596.0,
+    "end": 606.0,
+    "text": " You know, your, your moisture content might be 30% moisture and maybe it's, you know, 18% crude protein."
+  },
+  {
+    "start": 606.0,
+    "end": 613.0,
+    "text": " But then when you dry it down to whatever the process is you dry it down to seven and a half."
+  },
+  {
+    "start": 613.0,
+    "end": 618.0,
+    "text": " Well, now you've concentrated that protein and now you're maybe a 21% protein."
+  },
+  {
+    "start": 618.0,
+    "end": 619.0,
+    "text": " Right."
+  },
+  {
+    "start": 619.0,
+    "end": 632.0,
+    "text": " So, so it can get tricky telling the program, you know what your requirement is on on the as mixed basis versus on a finished dry matter or target dry matter basis."
+  },
+  {
+    "start": 632.0,
+    "end": 637.0,
+    "text": " And that for that that that is further compounded."
+  },
+  {
+    "start": 637.0,
+    "end": 650.0,
+    "text": " If that moisture loss occurs to some ingredients but not all because of where the where in the process that moisture change occurs, like at the extruder or the dryer."
+  },
+  {
+    "start": 650.0,
+    "end": 656.0,
+    "text": " So that can that can create some challenges."
+  },
+  {
+    "start": 656.0,
+    "end": 668.0,
+    "text": " Now, the formulation program concept five, you know, is originally created for the animal feed industry back however long ago, right back in the 70s and 80s."
+  },
+  {
+    "start": 668.0,
+    "end": 685.0,
+    "text": " So when when you look at at a screen where you define what your requirements are for for animal feed that you basically just mix up the ingredients and don't go any through any processing, save for maybe a pellet mill at the most."
+  },
+  {
+    "start": 686.0,
+    "end": 694.0,
+    "text": " You would define the nutrients on this screen here where you just have a nutrient number and amount and that that assumes that it's as is or as mixed."
+  },
+  {
+    "start": 694.0,
+    "end": 696.0,
+    "text": " But with pet food."
+  },
+  {
+    "start": 696.0,
+    "end": 712.0,
+    "text": " What ends up having to happen is you define those requirements on a on a dry matter basis or a or not a not a 100% dry matter but a target dry matter basis."
+  },
+  {
+    "start": 712.0,
+    "end": 720.0,
+    "text": " So for instance, in this case, rather than having the minimum on this screen, you have the minimum over here established as a ratio."
+  },
+  {
+    "start": 720.0,
+    "end": 723.0,
+    "text": " And I know that kind of sounds a little bit different."
+  },
+  {
+    "start": 723.0,
+    "end": 741.0,
+    "text": " It ratio could mean like a calcium to phosphorus ratio, for instance, or it could mean a ratio of a certain nutrient to dry matter, because dry matter is handled for the most part, just like any other nutrient, not 100% like any other nutrient."
+  },
+  {
+    "start": 741.0,
+    "end": 746.0,
+    "text": " But for for a lot of the math, most of the math is like any other nutrients."
+  },
+  {
+    "start": 746.0,
+    "end": 763.0,
+    "text": " So rather than saying you want X amount of protein in the finished diet, you can you would say I want this much protein per per a certain amount of dry matter per 91% dry matter."
+  },
+  {
+    "start": 763.0,
+    "end": 771.0,
+    "text": " So in this case, I what I'm saying is that this particular product, when it's in the bag, I want it to be 9% moisture."
+  },
+  {
+    "start": 771.0,
+    "end": 775.0,
+    "text": " That's kind of high moisture level, but you know, that's, it's just an example."
+  },
+  {
+    "start": 775.0,
+    "end": 782.0,
+    "text": " So my minimum here says 22 per 91% dry matter."
+  },
+  {
+    "start": 782.0,
+    "end": 790.0,
+    "text": " And for the way that you guys manufacture from what I'm hearing you tell me, I think this is this would this method would be sufficient."
+  },
+  {
+    "start": 790.0,
+    "end": 799.0,
+    "text": " You wouldn't have to use, as you'll notice here, there's no differentiation for these ingredients as to where they get added."
+  },
+  {
+    "start": 799.0,
+    "end": 804.0,
+    "text": " You know, it's just, it's just this, this is a mixture of ingredients."
+  },
+  {
+    "start": 804.0,
+    "end": 815.0,
+    "text": " There's nothing, nothing defined right here that says this these ingredients get added first and then these ingredients get added, or these ingredients go through extruder or something like that."
+  },
+  {
+    "start": 815.0,
+    "end": 824.0,
+    "text": " It's just all a mixture of ingredients, you know, with the assumption that they all get mixed together undergo the same process together."
+  },
+  {
+    "start": 824.0,
+    "end": 828.0,
+    "text": " Okay, so from what I'm from what I'm hearing you tell me that's what you do."
+  },
+  {
+    "start": 828.0,
+    "end": 829.0,
+    "text": " Yes."
+  },
+  {
+    "start": 829.0,
+    "end": 835.0,
+    "text": " Um, okay, so basically, I just want to clear something up."
+  },
+  {
+    "start": 835.0,
+    "end": 854.0,
+    "text": " We can do like, we can set a target outcome and see five will able to read like recalculate like how much does it how much corn do we need like how much soy meal do we need or how much salt does they need to add is that is that correct."
+  },
+  {
+    "start": 854.0,
+    "end": 855.0,
+    "text": " Am I understanding correctly?"
+  },
+  {
+    "start": 855.0,
+    "end": 856.0,
+    "text": " Yes."
+  },
+  {
+    "start": 856.0,
+    "end": 857.0,
+    "text": " Yep, that's correct."
+  },
+  {
+    "start": 857.0,
+    "end": 869.0,
+    "text": " So basically based on a cost basis, as well as the nutrient, you know, just as important if not more important really especially with pet food is on a nutrient basis."
+  },
+  {
+    "start": 869.0,
+    "end": 880.0,
+    "text": " Here's, you know, the, the, the nutrient concentration that you'll have based on this mixture of ingredients."
+  },
+  {
+    "start": 880.0,
+    "end": 888.0,
+    "text": " And those those nutrient requirements can be either minimums or maximums or both."
+  },
+  {
+    "start": 888.0,
+    "end": 895.0,
+    "text": " Okay, you might have some requirements that are both a min and max you want at least as much but not more than than that much."
+  },
+  {
+    "start": 895.0,
+    "end": 896.0,
+    "text": " Got it."
+  },
+  {
+    "start": 896.0,
+    "end": 898.0,
+    "text": " So let me ask you a question."
+  },
+  {
+    "start": 898.0,
+    "end": 904.0,
+    "text": " So we are able to like set a value like outcome value."
+  },
+  {
+    "start": 904.0,
+    "end": 924.0,
+    "text": " Let's say we want a formula that's 3000 calorie 20% or 30% protein 20% fat, whatever percent fiber and all the calcium phosphate like everything we can put like our like what we aim at and the price."
+  },
+  {
+    "start": 924.0,
+    "end": 931.0,
+    "text": " And the software recalculated based on based on our final result."
+  },
+  {
+    "start": 931.0,
+    "end": 933.0,
+    "text": " Correct."
+  },
+  {
+    "start": 933.0,
+    "end": 940.0,
+    "text": " Yes, except for you met you did mention price."
+  },
+  {
+    "start": 940.0,
+    "end": 951.0,
+    "text": " The program is always going to provide you with a solution that is that is the least expensive mixture."
+  },
+  {
+    "start": 951.0,
+    "end": 952.0,
+    "text": " Okay, okay, got it."
+  },
+  {
+    "start": 952.0,
+    "end": 953.0,
+    "text": " That's great."
+  },
+  {
+    "start": 953.0,
+    "end": 959.0,
+    "text": " Yeah, you know, you know, you don't tell it hey, you know, give me a mixture that's $100 a ton."
+  },
+  {
+    "start": 959.0,
+    "end": 964.0,
+    "text": " It's, it's going to it's going to make it as as low as it can, if it can get."
+  },
+  {
+    "start": 964.0,
+    "end": 969.0,
+    "text": " Yeah, if it can get lower it will if it can't then it then it won't."
+  },
+  {
+    "start": 969.0,
+    "end": 972.0,
+    "text": " Okay, and the."
+  },
+  {
+    "start": 972.0,
+    "end": 982.0,
+    "text": " So we can select the ingredients or like we just select what ingredients we want to use and we put basically we're putting the outcome result."
+  },
+  {
+    "start": 982.0,
+    "end": 999.0,
+    "text": " So we want to use then the software will calculate from our outcome by using the required ingredients that we provided to software and will calculate coming percent of product need to be mixed to achieve the final result."
+  },
+  {
+    "start": 999.0,
+    "end": 1002.0,
+    "text": " With the lowest."
+  },
+  {
+    "start": 1002.0,
+    "end": 1007.0,
+    "text": " That that is that is an accurate description of the process."
+  },
+  {
+    "start": 1007.0,
+    "end": 1008.0,
+    "text": " Yep, you go."
+  },
+  {
+    "start": 1008.0,
+    "end": 1010.0,
+    "text": " Okay, okay."
+  },
+  {
+    "start": 1010.0,
+    "end": 1011.0,
+    "text": " Yep."
+  },
+  {
+    "start": 1011.0,
+    "end": 1023.0,
+    "text": " And it does get a little bit, you know, more flexible you've, you know, you the the ingredients to for instance what you're seeing right here is a list of what we call offered ingredients."
+  },
+  {
+    "start": 1023.0,
+    "end": 1029.0,
+    "text": " So it's a these ingredients are or sometimes you might hear us use the terminology of controlled."
+  },
+  {
+    "start": 1029.0,
+    "end": 1035.0,
+    "text": " So fish meal for instance is a controlled ingredient that means that even though there's no minute max on it."
+  },
+  {
+    "start": 1035.0,
+    "end": 1037.0,
+    "text": " It's it's it's in them."
+  },
+  {
+    "start": 1037.0,
+    "end": 1038.0,
+    "text": " It's in the mathematics."
+  },
+  {
+    "start": 1038.0,
+    "end": 1039.0,
+    "text": " Right."
+  },
+  {
+    "start": 1039.0,
+    "end": 1041.0,
+    "text": " It's offered in the math."
+  },
+  {
+    "start": 1041.0,
+    "end": 1048.0,
+    "text": " So in this case, there's no minute no max on fish meal and none is coming in."
+  },
+  {
+    "start": 1048.0,
+    "end": 1054.0,
+    "text": " And in this soy meal, there's no minute no max, but but there is some coming in."
+  },
+  {
+    "start": 1054.0,
+    "end": 1057.0,
+    "text": " So so these these are all controlled ingredients."
+  },
+  {
+    "start": 1057.0,
+    "end": 1060.0,
+    "text": " There's a lot more ingredients in the database."
+  },
+  {
+    "start": 1060.0,
+    "end": 1063.0,
+    "text": " There's many, many, many, you can have as many as you want."
+  },
+  {
+    "start": 1063.0,
+    "end": 1079.0,
+    "text": " But these but you're what you're what when you when you add an ingredient to the product specification as a controlled ingredient, you're saying, here's an ingredient you can use if you want, or here's an ingredient that must be used that you know at this minimum and no more at that"
+  },
+  {
+    "start": 1079.0,
+    "end": 1080.0,
+    "text": " maximum."
+  },
+  {
+    "start": 1080.0,
+    "end": 1081.0,
+    "text": " Okay."
+  },
+  {
+    "start": 1081.0,
+    "end": 1086.0,
+    "text": " For a minimum maximum, can you do like by percentage or it has to be in pound."
+  },
+  {
+    "start": 1086.0,
+    "end": 1088.0,
+    "text": " Yeah, you can do by percent."
+  },
+  {
+    "start": 1088.0,
+    "end": 1089.0,
+    "text": " Okay, that's great."
+  },
+  {
+    "start": 1089.0,
+    "end": 1092.0,
+    "text": " You can toggle back and forth between percent and pounds."
+  },
+  {
+    "start": 1092.0,
+    "end": 1105.0,
+    "text": " And what we've discovered in having actually myself, I used to be a formulator back in my early days in the animal feed industry and some people think in percent."
+  },
+  {
+    "start": 1105.0,
+    "end": 1107.0,
+    "text": " Right."
+  },
+  {
+    "start": 1107.0,
+    "end": 1111.0,
+    "text": " And personally, I was trained and became a formula, I think in pounds."
+  },
+  {
+    "start": 1111.0,
+    "end": 1120.0,
+    "text": " So if you told me that a formula had 500 pounds of wheat mids in it, I would know what that product would look like."
+  },
+  {
+    "start": 1120.0,
+    "end": 1122.0,
+    "text": " You know, I would understand."
+  },
+  {
+    "start": 1122.0,
+    "end": 1129.0,
+    "text": " But if you told me that it had 25% that that is more of a leap for me to understand I don't."
+  },
+  {
+    "start": 1129.0,
+    "end": 1137.0,
+    "text": " So, so yeah, you can because of that because people some people think in percent and something in pounds you can switch back and forth."
+  },
+  {
+    "start": 1137.0,
+    "end": 1149.0,
+    "text": " And let's say, but we can also switch orders right let's say today I want to make a formulation that is based on beef liver, but but I find our beef liver is way too expensive."
+  },
+  {
+    "start": 1149.0,
+    "end": 1152.0,
+    "text": " So I'm going to use a beef lung as additive."
+  },
+  {
+    "start": 1152.0,
+    "end": 1155.0,
+    "text": " So like, like we can switch the order."
+  },
+  {
+    "start": 1155.0,
+    "end": 1158.0,
+    "text": " Bring in this can be like beef livers."
+  },
+  {
+    "start": 1158.0,
+    "end": 1163.0,
+    "text": " But tomorrow I was like, oh, let's let's move the beef lung as the top."
+  },
+  {
+    "start": 1163.0,
+    "end": 1178.0,
+    "text": " We could do that inside of software and they will recalculate like how much percent of like how much percent needed or to how much percent needed to achieve the let's say 30% protein."
+  },
+  {
+    "start": 1178.0,
+    "end": 1181.0,
+    "text": " They can do that right the software are able to."
+  },
+  {
+    "start": 1181.0,
+    "end": 1192.0,
+    "text": " Well the program is like I can switch around the ingredients list and cat and the software will recalculate it based on my new ingredient list."
+  },
+  {
+    "start": 1192.0,
+    "end": 1198.0,
+    "text": " Well, when you say ingredient list."
+  },
+  {
+    "start": 1198.0,
+    "end": 1202.0,
+    "text": " You mean the the order of ingredients which ones are the highest user you."
+  },
+  {
+    "start": 1202.0,
+    "end": 1207.0,
+    "text": " Yeah, that that of course."
+  },
+  {
+    "start": 1208.0,
+    "end": 1210.0,
+    "text": " Excuse me."
+  },
+  {
+    "start": 1210.0,
+    "end": 1215.0,
+    "text": " The program is going to give you the cheapest solution."
+  },
+  {
+    "start": 1215.0,
+    "end": 1216.0,
+    "text": " Right."
+  },
+  {
+    "start": 1216.0,
+    "end": 1226.0,
+    "text": " Let's say that I wanted wheat mids to be first on the list, meaning that I want more wheat mids than corn, right."
+  },
+  {
+    "start": 1226.0,
+    "end": 1231.0,
+    "text": " The program if I don't put any men's or max is on on either of those two ingredients."
+  },
+  {
+    "start": 1231.0,
+    "end": 1237.0,
+    "text": " The program is going to is going to tell me which ingredient to use and how much."
+  },
+  {
+    "start": 1237.0,
+    "end": 1238.0,
+    "text": " Okay."
+  },
+  {
+    "start": 1238.0,
+    "end": 1243.0,
+    "text": " So, so in this case, well, I took the maximum off and now use more wheat mids."
+  },
+  {
+    "start": 1243.0,
+    "end": 1247.0,
+    "text": " Let's say in this scenario, let's say that we wanted to the other way around."
+  },
+  {
+    "start": 1247.0,
+    "end": 1250.0,
+    "text": " Let's say that we wanted corn to be first, right."
+  },
+  {
+    "start": 1250.0,
+    "end": 1253.0,
+    "text": " There's no manner no max on either ingredient."
+  },
+  {
+    "start": 1253.0,
+    "end": 1259.0,
+    "text": " The program is going to tell me that corn has to be second, not first."
+  },
+  {
+    "start": 1259.0,
+    "end": 1276.0,
+    "text": " If I want corn to be first, then I either need to put a minimum on corn that that forces it in at a higher rate or a maximum on wheat meds that forces wheat meds down, which is the way it was before, so that it doesn't use as much."
+  },
+  {
+    "start": 1276.0,
+    "end": 1282.0,
+    "text": " So that that is one way that you can control the order of ingredients is by putting on and max is on things."
+  },
+  {
+    "start": 1282.0,
+    "end": 1290.0,
+    "text": " The other thing that you can that you can do is you can you can use ingredient ratios."
+  },
+  {
+    "start": 1290.0,
+    "end": 1303.0,
+    "text": " So in the the the intended use of ingredient ratios is so that you you might want there to be a corn to mids ratio, or you might want there to be two like a fish."
+  },
+  {
+    "start": 1303.0,
+    "end": 1308.0,
+    "text": " You might want anchovies to cod ratio, right?"
+  },
+  {
+    "start": 1308.0,
+    "end": 1309.0,
+    "text": " Yeah, whatever."
+  },
+  {
+    "start": 1309.0,
+    "end": 1317.0,
+    "text": " But you can also use that as a method to to define an ingredient order."
+  },
+  {
+    "start": 1317.0,
+    "end": 1326.0,
+    "text": " And let me see if I've got an example already set up. I don't have to go through the. Yeah, here we go. Let's see if this one does."
+  },
+  {
+    "start": 1326.0,
+    "end": 1328.0,
+    "text": " Does the job."
+  },
+  {
+    "start": 1328.0,
+    "end": 1331.0,
+    "text": " Creating ratios."
+  },
+  {
+    "start": 1331.0,
+    "end": 1336.0,
+    "text": " It says ingredient order, but it doesn't."
+  },
+  {
+    "start": 1336.0,
+    "end": 1345.0,
+    "text": " Sometimes my data gets a little bit beat up."
+  },
+  {
+    "start": 1345.0,
+    "end": 1349.0,
+    "text": " Is that because like, is he doing a lot of demos or."
+  },
+  {
+    "start": 1349.0,
+    "end": 1352.0,
+    "text": " Yeah, because I'm doing demos or I'm testing or whatever."
+  },
+  {
+    "start": 1352.0,
+    "end": 1353.0,
+    "text": " Okay."
+  },
+  {
+    "start": 1353.0,
+    "end": 1356.0,
+    "text": " You know, here's here's an example. So."
+  },
+  {
+    "start": 1356.0,
+    "end": 1369.0,
+    "text": " This what I'm what I what I want to happen in this solution is I want my ingredient order to be corn first and then wheat, mids and then meat and bone meal and then soy and then gluten."
+  },
+  {
+    "start": 1369.0,
+    "end": 1378.0,
+    "text": " So the way that I control that is I say that I want corn to be one for every one of mids."
+  },
+  {
+    "start": 1378.0,
+    "end": 1389.0,
+    "text": " And then I want mids to be one, a minimum of one could be more, a minimum of one for every one of meat and bone meal. See how it kind of it steps down through."
+  },
+  {
+    "start": 1389.0,
+    "end": 1396.0,
+    "text": " You got corn and then mids and then mids and then meat and then meat and then soy."
+  },
+  {
+    "start": 1396.0,
+    "end": 1403.0,
+    "text": " So, so I've said that I want at least 1.01 that so that there's just a little bit more. I could make it one point."
+  },
+  {
+    "start": 1403.0,
+    "end": 1409.0,
+    "text": " I see, I see, I see what you mean. So, in there just show corn is more than wheat."
+  },
+  {
+    "start": 1409.0,
+    "end": 1418.0,
+    "text": " That has to be more than 1.1 more than wheat and wheat has to be more than I see so it goes down."
+  },
+  {
+    "start": 1418.0,
+    "end": 1432.0,
+    "text": " Right. So, so the solution is going to come back and go well you know I'd like to use more mids but if I do I have to make sure that the corn is at least one or 1.01% of what the mids are right."
+  },
+  {
+    "start": 1432.0,
+    "end": 1444.0,
+    "text": " So, if we look at the solution, we'll see that the ingredient list, you know, it's got it's got corn first, you know, barely, and then meat and bone meal and then"
+  },
+  {
+    "start": 1444.0,
+    "end": 1458.0,
+    "text": " the other ingredients I don't know if we had fat listed in there probably should have been if it wasn't no fat wasn't listed so fat didn't get that's not in the quay in the in the list but I should have listed it."
+  },
+  {
+    "start": 1458.0,
+    "end": 1466.0,
+    "text": " So, so that would then if you put minimums and maximums on here."
+  },
+  {
+    "start": 1466.0,
+    "end": 1472.0,
+    "text": " You're telling the program to use an exact amount."
+  },
+  {
+    "start": 1472.0,
+    "end": 1477.0,
+    "text": " Okay, to force it to be more than another ingredient."
+  },
+  {
+    "start": 1477.0,
+    "end": 1488.0,
+    "text": " But, but what, but you as a user might not necessarily know what that optimum amount should be in relation to another ingredient."
+  },
+  {
+    "start": 1488.0,
+    "end": 1499.0,
+    "text": " So, if you just tell basically the the the program hey, use as much corn or or mids as you want just make sure that there's more corn than mids."
+  },
+  {
+    "start": 1499.0,
+    "end": 1507.0,
+    "text": " And then it will pick what that optimum amount should be for the both of them or all four of them or five of them combined."
+  },
+  {
+    "start": 1507.0,
+    "end": 1509.0,
+    "text": " Right."
+  },
+  {
+    "start": 1509.0,
+    "end": 1522.0,
+    "text": " So, so yeah, that's how. And there again, see what we're doing what I'm showing you is is we could call it the single step version of formulation."
+  },
+  {
+    "start": 1522.0,
+    "end": 1538.0,
+    "text": " And that's not that's not what we've what we call it because it was kind of it came first it was always this way until we created the multi step function with the multi step formulation tool."
+  },
+  {
+    "start": 1538.0,
+    "end": 1551.0,
+    "text": " You don't have to create these ratios as kind of a trick to control the order of ingredients there's a there's a tool that there's a there's a feature that says, you know what's the order of ingredients."
+  },
+  {
+    "start": 1551.0,
+    "end": 1561.0,
+    "text": " You define that order of ingredients. And in a basically mathematically does the same thing but it's from a user standpoint it's a little more obvious."
+  },
+  {
+    "start": 1561.0,
+    "end": 1571.0,
+    "text": " For instance, this is what it would look like ingredient order right."
+  },
+  {
+    "start": 1571.0,
+    "end": 1576.0,
+    "text": " So you just say corn and mids then rice and right."
+  },
+  {
+    "start": 1576.0,
+    "end": 1581.0,
+    "text": " And then when you're creating a ratio, you just say here's what the order looks like."
+  },
+  {
+    "start": 1581.0,
+    "end": 1590.0,
+    "text": " So, so yeah, you can you can do it with single step but multi step makes it a little bit easier."
+  },
+  {
+    "start": 1590.0,
+    "end": 1599.0,
+    "text": " Multi step, you tell it what your, your percent of your solution looks like when it's done when it's finished."
+  },
+  {
+    "start": 1599.0,
+    "end": 1609.0,
+    "text": " So you put in your nutrient requirements, those nutrient requirements are at 9.5% moisture, not the as mixed."
+  },
+  {
+    "start": 1609.0,
+    "end": 1618.0,
+    "text": " So rather than having to do a nutrient ratio of protein to dry matter, you just say well here's what I want my protein to be when we're done."
+  },
+  {
+    "start": 1619.0,
+    "end": 1626.0,
+    "text": " So you can you can use multi step to be a little more."
+  },
+  {
+    "start": 1626.0,
+    "end": 1641.0,
+    "text": " It's it's designed to to handle the the formulas that you're, you know that undergo these kind of moisture changes and but you don't necessarily it doesn't mean that you can't do it with single step."
+  },
+  {
+    "start": 1641.0,
+    "end": 1656.0,
+    "text": " It just means that with single step, you have to go through a few extra a few extra steps in the program in order to come up with the same or close to the same result."
+  },
+  {
+    "start": 1657.0,
+    "end": 1683.0,
+    "text": " And the reason that that I would suggest that you consider single step over top of using multi step is that you would gain that those those ease of use things but it really wouldn't change the answer any or at all to save you like money for for your solutions"
+  },
+  {
+    "start": 1683.0,
+    "end": 1699.0,
+    "text": " you want to make cheaper solutions for you. So it's really not is really there's really not going to be a direct monetary payback, just for being a little bit easier to use and understand the the multi step function does a lot more."
+  },
+  {
+    "start": 1699.0,
+    "end": 1709.0,
+    "text": " In addition to what you know we've just talked about, and therefore it comes with a with a pretty high price tag it basically more than doubles the price of the license."
+  },
+  {
+    "start": 1709.0,
+    "end": 1718.0,
+    "text": " So in your case, I don't know if I don't think it would be worth your money to spend on it. You know what I mean."
+  },
+  {
+    "start": 1718.0,
+    "end": 1728.0,
+    "text": " Yeah, now, in the future, if you guys start making different types of products, if it becomes real parent that yeah we're going to need that tool, you can always add it later."
+  },
+  {
+    "start": 1729.0,
+    "end": 1731.0,
+    "text": " Okay."
+  },
+  {
+    "start": 1731.0,
+    "end": 1754.0,
+    "text": " But even if you did need it. A lot of times we still suggest that you wait because it's also a lot more difficult to use and a lot more difficult to learn. And it's better sometimes to learn with just the single step and the simpler method, and then graduating kind of towards the towards the more"
+  },
+  {
+    "start": 1754.0,
+    "end": 1757.0,
+    "text": " complicated formulation tool."
+  },
+  {
+    "start": 1757.0,
+    "end": 1759.0,
+    "text": " Okay, got it."
+  },
+  {
+    "start": 1759.0,
+    "end": 1772.0,
+    "text": " So first, so if I only use the first I need to go to mutual ratios, put the desired minimum maximum in there."
+  },
+  {
+    "start": 1772.0,
+    "end": 1784.0,
+    "text": " Then go to ingredients and add all the ingredients that we want to use for us for the formulations."
+  },
+  {
+    "start": 1784.0,
+    "end": 1791.0,
+    "text": " Then it will calculate the lowest price of formulations."
+  },
+  {
+    "start": 1791.0,
+    "end": 1793.0,
+    "text": " Is that correct?"
+  },
+  {
+    "start": 1793.0,
+    "end": 1804.0,
+    "text": " Yeah, it'll calculate the lowest price or lowest cost mixture of ingredients to meet your the parameters that you've defined."
+  },
+  {
+    "start": 1804.0,
+    "end": 1813.0,
+    "text": " Okay, got it. And if we want to switch the list, because I'm not always, you know, sometimes you don't want to use the whole list."
+  },
+  {
+    "start": 1813.0,
+    "end": 1828.0,
+    "text": " So if you want to change the nutrients, like the ingredients panel, we go to the mutual ratio in there. I need to set, let's I need to set this ingredients, ingredients A is more than ingredients B."
+  },
+  {
+    "start": 1828.0,
+    "end": 1836.0,
+    "text": " And they will recalculate how much do we need for this ingredients, for this formulations."
+  },
+  {
+    "start": 1836.0,
+    "end": 1837.0,
+    "text": " Right."
+  },
+  {
+    "start": 1837.0,
+    "end": 1838.0,
+    "text": " Yep."
+  },
+  {
+    "start": 1838.0,
+    "end": 1839.0,
+    "text": " Okay."
+  },
+  {
+    "start": 1839.0,
+    "end": 1846.0,
+    "text": " So, for a product or just in the database in general?"
+  },
+  {
+    "start": 1846.0,
+    "end": 1848.0,
+    "text": " In the database."
+  },
+  {
+    "start": 1848.0,
+    "end": 1855.0,
+    "text": " So in the database in general, the under this ingredient maintenance function."
+  },
+  {
+    "start": 1855.0,
+    "end": 1856.0,
+    "text": " Okay."
+  },
+  {
+    "start": 1856.0,
+    "end": 1860.0,
+    "text": " You have your list of all the ingredients that are currently in the database."
+  },
+  {
+    "start": 1860.0,
+    "end": 1861.0,
+    "text": " Right."
+  },
+  {
+    "start": 1861.0,
+    "end": 1866.0,
+    "text": " And to add another ingredient, you just would click on add new ingredient."
+  },
+  {
+    "start": 1866.0,
+    "end": 1873.0,
+    "text": " You assign that ingredient to code. And then you give it a name and cost and so forth."
+  },
+  {
+    "start": 1873.0,
+    "end": 1877.0,
+    "text": " Okay. And for a formula."
+  },
+  {
+    "start": 1877.0,
+    "end": 1884.0,
+    "text": " That's a very similar process when you're looking at the main formula or product screen, there's an add a new product."
+  },
+  {
+    "start": 1884.0,
+    "end": 1898.0,
+    "text": " And, and what you'll probably find is that it will be, it will be rare that you will use that you will add a new product by clicking on the add new product."
+  },
+  {
+    "start": 1898.0,
+    "end": 1902.0,
+    "text": " Most formulators and nutritionists."
+  },
+  {
+    "start": 1902.0,
+    "end": 1906.0,
+    "text": " And it's not because they're lazy, it's because they're smart."
+  },
+  {
+    "start": 1906.0,
+    "end": 1909.0,
+    "text": " They start with one that that's close to what they already have."
+  },
+  {
+    "start": 1909.0,
+    "end": 1910.0,
+    "text": " Right."
+  },
+  {
+    "start": 1910.0,
+    "end": 1913.0,
+    "text": " Otherwise you're starting with a completely blank slate."
+  },
+  {
+    "start": 1913.0,
+    "end": 1923.0,
+    "text": " And you've got to add all the information in manually, but if you start with something that's close to what you're already making and then just save do a save as you can give it a new product code."
+  },
+  {
+    "start": 1923.0,
+    "end": 1931.0,
+    "text": " And then you can make the modifications to this product to make to make it unique to make it new."
+  },
+  {
+    "start": 1931.0,
+    "end": 1942.0,
+    "text": " Yeah, either either way you could either do a save as, or if you wanted to start from scratch with from ground zero with the blank slate, well then you would just click on add new product and give it a product code."
+  },
+  {
+    "start": 1942.0,
+    "end": 1952.0,
+    "text": " And then you'd have to give it a name and you'd have to go to the, you know, to the screen where you add what ingredients are available, what the requirements are and so forth."
+  },
+  {
+    "start": 1952.0,
+    "end": 1960.0,
+    "text": " Okay, so could you show me like let's say if I don't want to read number 40, I'll delete number 40."
+  },
+  {
+    "start": 1960.0,
+    "end": 1976.0,
+    "text": " And then you can add the ingredient. Yeah. Okay, so yeah, so when you're working with a, when you're working in it, when you're working in the program in general, there's you're going to you're going to see an edit, and if you're an edit thing I see an on and edit."
+  },
+  {
+    "start": 1976.0,
+    "end": 1981.0,
+    "text": " And that's to kind of keep you."
+  },
+  {
+    "start": 1981.0,
+    "end": 1994.0,
+    "text": " That's to keep you focused on what you're performing and what you're doing on that screen, and also make sure that the program is on the same page with you so like okay I'm making an edit."
+  },
+  {
+    "start": 1994.0,
+    "end": 2004.0,
+    "text": " And then when you're done. Okay I've clearly I'm clearly done editing and making modifications and then it'll say you've made some modifications do you want to store it."
+  },
+  {
+    "start": 2004.0,
+    "end": 2015.0,
+    "text": " And that's the thing that people have the biggest hurdle, a learning is to remember to click that edit because you might go hey it's not it's not let me do anything that's because they haven't clicked the edit button."
+  },
+  {
+    "start": 2015.0,
+    "end": 2033.0,
+    "text": " So you click edit, and then to make a modification to an ingredient or to remove an ingredient. Now the thing is with removing ingredients is in order to to maintain database integrity."
+  },
+  {
+    "start": 2033.0,
+    "end": 2038.0,
+    "text": " And you, you can't just."
+  },
+  {
+    "start": 2038.0,
+    "end": 2058.0,
+    "text": " There's some extra steps, if you just simply delete an ingredient, because this this the program has stored this particular product with 33 pound or 33% of ingredient number 40 wheat myths right."
+  },
+  {
+    "start": 2058.0,
+    "end": 2067.0,
+    "text": " And then suddenly you said wheat myths is no longer in this formula. Well we can't have just a whole. Right."
+  },
+  {
+    "start": 2067.0,
+    "end": 2086.0,
+    "text": " You're, you're, so if you, if you remove or delete an ingredient without telling the without assigning or reformulating an ingredient to replace that in the ingredient that you've removed."
+  },
+  {
+    "start": 2086.0,
+    "end": 2090.0,
+    "text": " And that's going to say well the rest of the formula is no longer valid."
+  },
+  {
+    "start": 2090.0,
+    "end": 2096.0,
+    "text": " The specs and everything will still be there won't be moved the product, but it's going to say that you know what."
+  },
+  {
+    "start": 2096.0,
+    "end": 2104.0,
+    "text": " Now the answer is no longer valid because in order to come up with the answer that was there, we assume that you could get wheat myths."
+  },
+  {
+    "start": 2104.0,
+    "end": 2110.0,
+    "text": " Now that we have we can't put in wheat meds now the whole it's a whole new mathematical problem."
+  },
+  {
+    "start": 2110.0,
+    "end": 2122.0,
+    "text": " So if we remove wheat meds, we're going to remove the entire solution we're going to remove all the numbers in this column right here, and tell you reformulate and come up with a new answer that doesn't use wheat meds."
+  },
+  {
+    "start": 2122.0,
+    "end": 2131.0,
+    "text": " So the process would probably look more if you wanted to kind of maintain housekeeping a little bit and maintain what that old formula look like."
+  },
+  {
+    "start": 2131.0,
+    "end": 2137.0,
+    "text": " You probably would be more inclined to say well that's just suppress that ingredient."
+  },
+  {
+    "start": 2137.0,
+    "end": 2146.0,
+    "text": " So what a suppress is is saying you know the ingredient is still in the specification it's still a controlled ingredient, but don't use it."
+  },
+  {
+    "start": 2146.0,
+    "end": 2155.0,
+    "text": " Okay, so it doesn't remove it it just says for future use your wheat meds is no longer available."
+  },
+  {
+    "start": 2155.0,
+    "end": 2160.0,
+    "text": " Now once we once we've suppressed it and reformulated."
+  },
+  {
+    "start": 2160.0,
+    "end": 2168.0,
+    "text": " Now we come up with a new answer now. Unfortunately, what this is telling me is that well we can't we can't come up with a solution."
+  },
+  {
+    "start": 2168.0,
+    "end": 2185.0,
+    "text": " If we don't at least have wheat meds available. So we're going to have to offer something else like ground bakery let's see. Let's see what happens if we offer that still infeasible, and it might be infeasible because of ratios."
+  },
+  {
+    "start": 2185.0,
+    "end": 2197.0,
+    "text": " So this is why it's infeasible because we've said there has to be one pound of wheat meds for every pound of meat and bone meal of wheat meds is no longer available."
+  },
+  {
+    "start": 2197.0,
+    "end": 2204.0,
+    "text": " So we're going to have to remove wheat meds from this."
+  },
+  {
+    "start": 2204.0,
+    "end": 2208.0,
+    "text": " And now we'll probably be feasible again. Yeah."
+  },
+  {
+    "start": 2208.0,
+    "end": 2221.0,
+    "text": " So now we so now wheat meds is no longer used and if we if we click on this, this tab over here, we can see that the solution that was stored previously."
+  },
+  {
+    "start": 2221.0,
+    "end": 2224.0,
+    "text": " He was 32."
+  },
+  {
+    "start": 2224.0,
+    "end": 2228.0,
+    "text": " Sorry, he was 32%."
+  },
+  {
+    "start": 2228.0,
+    "end": 2237.0,
+    "text": " Almost 33% wheat meds. This solution doesn't use any so there's a difference of 32.593."
+  },
+  {
+    "start": 2237.0,
+    "end": 2239.0,
+    "text": " Got it."
+  },
+  {
+    "start": 2239.0,
+    "end": 2247.0,
+    "text": " And in addition to this, can you guys are you guys able to calculate the density of each product."
+  },
+  {
+    "start": 2247.0,
+    "end": 2251.0,
+    "text": " Well,"
+  },
+  {
+    "start": 2251.0,
+    "end": 2268.0,
+    "text": " yes, if you have accurate density values that that are not affected by particle size."
+  },
+  {
+    "start": 2268.0,
+    "end": 2279.0,
+    "text": " But you can get an approximation. The reason I that I hedge that a little bit is because density is a nonlinear thing. Yes."
+  },
+  {
+    "start": 2279.0,
+    "end": 2281.0,
+    "text": " Right."
+  },
+  {
+    "start": 2281.0,
+    "end": 2293.0,
+    "text": " That whole experiment where you can fill a jar full of rocks and then you can put in it's not really full because you can put marbles because and then it's not really full you can put sand and then you know what I mean."
+  },
+  {
+    "start": 2293.0,
+    "end": 2302.0,
+    "text": " So, so, so, so outside of that consideration."
+  },
+  {
+    "start": 2302.0,
+    "end": 2305.0,
+    "text": " It's just like another nutrient."
+  },
+  {
+    "start": 2305.0,
+    "end": 2309.0,
+    "text": " But it's able to like display it."
+  },
+  {
+    "start": 2309.0,
+    "end": 2325.0,
+    "text": " It would display it like it would protein or fat or fiber you could have a density density nutrient and it would be the value would be linear because you're not able to program in the nonlinear aspect of, you know, any kind of particle size"
+  },
+  {
+    "start": 2325.0,
+    "end": 2329.0,
+    "text": " relationship, which would affect the true density. Okay."
+  },
+  {
+    "start": 2329.0,
+    "end": 2332.0,
+    "text": " Okay, got it, got it."
+  },
+  {
+    "start": 2332.0,
+    "end": 2344.0,
+    "text": " But it does give you a pretty close approximation, especially if you process your ingredients in such a way before mixing them where they have a similar particle size and shape."
+  },
+  {
+    "start": 2344.0,
+    "end": 2345.0,
+    "text": " Okay, okay."
+  },
+  {
+    "start": 2345.0,
+    "end": 2351.0,
+    "text": " The fertilizer industry does that quite a bit."
+  },
+  {
+    "start": 2351.0,
+    "end": 2370.0,
+    "text": " And they really go through great pains to to process all of their ingredients like the nitrogen the ammonium the urea the so that they all have a very similar particle size and shaped or like little round BBs little pellets, so that when they mix them"
+  },
+  {
+    "start": 2370.0,
+    "end": 2379.0,
+    "text": " they get a homogenous mixture that they can come to a close approximation on density."
+  },
+  {
+    "start": 2379.0,
+    "end": 2384.0,
+    "text": " In order to because the way that they apply it is with."
+  },
+  {
+    "start": 2384.0,
+    "end": 2389.0,
+    "text": " It's a volumetric application."
+  },
+  {
+    "start": 2389.0,
+    "end": 2391.0,
+    "text": " Okay, got it."
+  },
+  {
+    "start": 2391.0,
+    "end": 2401.0,
+    "text": " Yeah, you probably don't maybe care about that but I don't answer I don't I don't always answer that question yes no problem because"
+  },
+  {
+    "start": 2401.0,
+    "end": 2402.0,
+    "text": " just humans."
+  },
+  {
+    "start": 2402.0,
+    "end": 2412.0,
+    "text": " Yeah, it's it's it's a nonlinear parameter and everything in the formulation program it has a linear relationship."
+  },
+  {
+    "start": 2412.0,
+    "end": 2414.0,
+    "text": " Got it got it got it."
+  },
+  {
+    "start": 2414.0,
+    "end": 2419.0,
+    "text": " Oh, I see."
+  },
+  {
+    "start": 2419.0,
+    "end": 2437.0,
+    "text": " And then come close it you know there's been the animal feed industry has put in things like, you know, pellet durability index values density, I've seen density, you know, just so that they can at least get close."
+  },
+  {
+    "start": 2437.0,
+    "end": 2450.0,
+    "text": " But there's so many interrelationships and of course if you get any kind of chemical reactions going on because of processing and stuff that that that's not programmed into a linear model."
+  },
+  {
+    "start": 2450.0,
+    "end": 2452.0,
+    "text": " Okay, got it got it."
+  },
+  {
+    "start": 2452.0,
+    "end": 2460.0,
+    "text": " Um, yeah, I don't I think you're."
+  },
+  {
+    "start": 2460.0,
+    "end": 2462.0,
+    "text": " Yeah, well thank you so much."
+  },
+  {
+    "start": 2462.0,
+    "end": 2480.0,
+    "text": " You're very welcome. Yeah, if you have other questions or I don't know if Mark offered or mentioned to you that you can get a trial, a free 30 day trial of the program so you can start experimenting with you know your solutions your actual information."
+  },
+  {
+    "start": 2480.0,
+    "end": 2485.0,
+    "text": " If you do do that and you enter in data."
+  },
+  {
+    "start": 2485.0,
+    "end": 2498.0,
+    "text": " That data stays with with you. So if you decide he had like to buy the program, you know that data that you've maybe have entered in in the 30 days or however long it takes."
+  },
+  {
+    "start": 2498.0,
+    "end": 2509.0,
+    "text": " It will remain you won't you won't lose it. If you if you would have happened to have been using or maybe have access to a database."
+  },
+  {
+    "start": 2509.0,
+    "end": 2518.0,
+    "text": " So if you want to use for the for this trial period we can convert the data or load that that data in for you."
+  },
+  {
+    "start": 2518.0,
+    "end": 2532.0,
+    "text": " And which which could sometimes can help because you know your trial period is spent with real live data rather than trying to imagine what it might look like using demonstration data."
+  },
+  {
+    "start": 2532.0,
+    "end": 2538.0,
+    "text": " For the data are we able to like you mentioned we can import it."
+  },
+  {
+    "start": 2538.0,
+    "end": 2543.0,
+    "text": " And we both import and export data from this software."
+  },
+  {
+    "start": 2543.0,
+    "end": 2556.0,
+    "text": " Yeah, there's quite a bit of different importing and exporting type functionality in the in the program and it and of course does require that you know they the layout of that information matches."
+  },
+  {
+    "start": 2556.0,
+    "end": 2561.0,
+    "text": " The assumed layout of that import or export process."
+  },
+  {
+    "start": 2561.0,
+    "end": 2575.0,
+    "text": " There's probably more exporting type capabilities, because there's usually more exporting requirements than importing a lot of times the formulation programs because becomes kind of the point of origination for some data."
+  },
+  {
+    "start": 2575.0,
+    "end": 2578.0,
+    "text": " You know."
+  },
+  {
+    "start": 2578.0,
+    "end": 2583.0,
+    "text": " So I mean, basically likes, which is a nice way of saying it's hand entered."
+  },
+  {
+    "start": 2583.0,
+    "end": 2586.0,
+    "text": " Because, because that's where it starts."
+  },
+  {
+    "start": 2586.0,
+    "end": 2601.0,
+    "text": " But yeah, I mean if you've got a laboratory where that has an export of data is sometimes the important ingredient nutrient values ingredient costs are probably the most common piece of information that gets imported in."
+  },
+  {
+    "start": 2601.0,
+    "end": 2605.0,
+    "text": " And then of course the formulations are usually what you would export."
+  },
+  {
+    "start": 2605.0,
+    "end": 2616.0,
+    "text": " Either to a third party, you know, another program for accounting or batching automated batching inventory, process control that type of thing."
+  },
+  {
+    "start": 2616.0,
+    "end": 2631.0,
+    "text": " All kinds of options are there's like right from right from here there's a nice, what we call copy export copy function that you let you generate right when you're working with a formula."
+  },
+  {
+    "start": 2631.0,
+    "end": 2655.0,
+    "text": " So it would be formula type data, you can either export it to a CSV file or copy it to clipboard and you kind of have some options as to what information you want to be exported or copied to your clipboard and then that gets copied to your clipboard in such a way that you could just paste it into Excel and it would go into the data would go into cells."
+  },
+  {
+    "start": 2655.0,
+    "end": 2666.0,
+    "text": " And you have to be careful because if you're generating a report and say hey I want to I want to create a copy of that report or I want to create a text file that report."
+  },
+  {
+    "start": 2666.0,
+    "end": 2673.0,
+    "text": " That's just textual data that has no delineation as to what information is in different fields."
+  },
+  {
+    "start": 2673.0,
+    "end": 2683.0,
+    "text": " So if you pasted that into something like Excel, it would all go into one cell basically or you'd have to create some type of import template."
+  },
+  {
+    "start": 2683.0,
+    "end": 2704.0,
+    "text": " There's different there's some differences in in exporting methods that depending on how you want to use that information if you just wanted to copy a report and paste it into a Word document or an email or something then you could do that with like just a you know pasting or copying a report."
+  },
+  {
+    "start": 2705.0,
+    "end": 2706.0,
+    "text": " Got it."
+  },
+  {
+    "start": 2706.0,
+    "end": 2713.0,
+    "text": " For when we input when we input our ingredients in there let's say beef."
+  },
+  {
+    "start": 2713.0,
+    "end": 2723.0,
+    "text": " Are you are we able to like also attach a like COA or the like other documentations in there or not."
+  },
+  {
+    "start": 2723.0,
+    "end": 2726.0,
+    "text": " No, no."
+  },
+  {
+    "start": 2726.0,
+    "end": 2744.0,
+    "text": " So just pure data like like like you maybe what would yeah it's just pure data like you maybe want would want with the ingredient data. That's an interesting you know that's not that makes sense we've never been asked that before but yeah like you maybe you had attached files attached to that one that one ingredient."
+  },
+  {
+    "start": 2744.0,
+    "end": 2747.0,
+    "text": " That would be a."
+  },
+  {
+    "start": 2747.0,
+    "end": 2751.0,
+    "text": " I could see that as being a useful thing."
+  },
+  {
+    "start": 2751.0,
+    "end": 2756.0,
+    "text": " Yeah, it's easier for you know to match all the ingredients so we can."
+  },
+  {
+    "start": 2756.0,
+    "end": 2760.0,
+    "text": " Yeah, documentation."
+  },
+  {
+    "start": 2760.0,
+    "end": 2761.0,
+    "text": " Sure."
+  },
+  {
+    "start": 2761.0,
+    "end": 2763.0,
+    "text": " That's a good idea."
+  },
+  {
+    "start": 2763.0,
+    "end": 2766.0,
+    "text": " I'm going to write that down."
+  },
+  {
+    "start": 2766.0,
+    "end": 2769.0,
+    "text": " Thank you."
+  },
+  {
+    "start": 2769.0,
+    "end": 2775.0,
+    "text": " Is there anything else that you needed from us from at this point of time."
+  },
+  {
+    "start": 2775.0,
+    "end": 2783.0,
+    "text": " No, not really I mean it's all it's all about you really I mean what do you guys need."
+  },
+  {
+    "start": 2783.0,
+    "end": 2796.0,
+    "text": " You know, you know, so you know, depending on you know what you wanted want to do if you if you're going to wait a little bit or if you want to pursue it on a trial basis or what."
+  },
+  {
+    "start": 2796.0,
+    "end": 2810.0,
+    "text": " You know, we'll be happy to work with you we know sometimes it's a process and it takes time or maybe you guys you know you want to propose we want costs and stuff you want to get moving on right away whatever whatever you guys want to do there."
+  },
+  {
+    "start": 2810.0,
+    "end": 2813.0,
+    "text": " Okay, let us know."
+  },
+  {
+    "start": 2813.0,
+    "end": 2815.0,
+    "text": " Yeah, if you can."
+  },
+  {
+    "start": 2815.0,
+    "end": 2818.0,
+    "text": " Well thank you so much for for today and thank you for what."
+  },
+  {
+    "start": 2818.0,
+    "end": 2829.0,
+    "text": " If you could send us the recording we'll review it and I will get back to you and how I'll get back to you or Mark."
+  },
+  {
+    "start": 2829.0,
+    "end": 2831.0,
+    "text": " Okay."
+  },
+  {
+    "start": 2831.0,
+    "end": 2832.0,
+    "text": " Thank you."
+  },
+  {
+    "start": 2832.0,
+    "end": 2840.0,
+    "text": " I'm glad you reminded me about the recordings I almost forgot we were recording but yeah I'll I'll I'll make sure I save that recording."
+  },
+  {
+    "start": 2840.0,
+    "end": 2841.0,
+    "text": " Yeah, yeah, please."
+  },
+  {
+    "start": 2841.0,
+    "end": 2842.0,
+    "text": " Thank you so much."
+  },
+  {
+    "start": 2842.0,
+    "end": 2853.0,
+    "text": " You bet well thanks for your time been nice chat with you guys and I hope we can, we can do something to help you to meet your needs one way or another."
+  },
+  {
+    "start": 2853.0,
+    "end": 2854.0,
+    "text": " Thank you so much."
+  },
+  {
+    "start": 2854.0,
+    "end": 2856.0,
+    "text": " You bet take care."
+  },
+  {
+    "start": 2856.0,
+    "end": 2858.0,
+    "text": " Bye bye."
+  },
+  {
+    "start": 2872.0,
+    "end": 2874.0,
+    "text": " you"
+  }
+]
