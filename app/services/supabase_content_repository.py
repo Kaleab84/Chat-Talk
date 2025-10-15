@@ -3,10 +3,12 @@ import os
 import json
 from dataclasses import dataclass
 from typing import Dict, List, Optional
+from pathlib import Path
 from supabase import create_client
 from dotenv import load_dotenv
 
-load_dotenv("app/.env")
+BASE_DIR = Path(__file__).resolve().parents[2]
+load_dotenv(BASE_DIR / ".env")
 
 
 @dataclass

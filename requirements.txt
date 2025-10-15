@@ -10,3 +10,5 @@ typing-extensions
 python-dotenv
 pywin32
 pytest
+supabase
+python-multipart
