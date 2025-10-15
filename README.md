@@ -54,5 +54,3 @@ DOC/DOCX/TXT --> /ingest --> document_processor
 - Replace the placeholder answer generator with GPT (OpenAI key already wired for the future).
 - Add a frontend or CLI that reads the JSON/image paths returned by the API.
 - Extend the processor to cover PDF or video transcript ingestion.
-
-Ask me (Nift) on questions!

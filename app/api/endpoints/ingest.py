@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
@@ -11,8 +10,11 @@ from app.api.models.responses import BulkIngestResponse, IngestResponse
 from app.config import settings
 from app.core.embeddings import EmbeddingModel
 from app.core.vector_store import VectorStore
-from app.services.content_repository import ContentRepository
 from app.services.document_processor import DocumentProcessor
+from app.services.content_repository import ContentRepository
+from app.services.supabase_content_repository import SupabaseContentRepository
+
+
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/ingest", tags=["ingestion"])
@@ -22,6 +24,13 @@ _document_processor = DocumentProcessor()
 _vector_store = VectorStore()
 _embedding_model = EmbeddingModel()
 _content_repository = ContentRepository()
+
+if settings.SUPABASE_URL and settings.SUPABASE_BUCKET:
+    _content_repository = SupabaseContentRepository()
+    logger.info("Using SupabaseContentRepository for document storage.")
+else:
+    _content_repository = ContentRepository()
+    logger.info("Using local ContentRepository for document storage.")
 
 
 @router.post("/document", response_model=IngestResponse)
