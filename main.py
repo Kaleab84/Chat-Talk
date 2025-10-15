@@ -8,12 +8,14 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv("app/.env")
+
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 
 
 # Import the organized modules
 from app.config import settings
-from app.api.endpoints import health, ingest, chat
+from app.api.endpoints import health, ingest, chat, visibility
 
 from app.api.endpoints.upload import router as upload_router
 
@@ -47,6 +49,7 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(ingest.router)
 app.include_router(chat.router)
+app.include_router(visibility.router)
 app.include_router(upload_router, prefix="/files", tags=["Files"])
 
 @app.on_event("startup")
