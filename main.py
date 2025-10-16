@@ -14,7 +14,7 @@ load_dotenv()
 
 # Import the organized modules
 from app.config import settings
-from app.api.endpoints import health, ingest, chat, visibility
+from app.api.endpoints import health, ingest, chat, visibility, transcripts
 
 # Configure logging
 logging.basicConfig(
@@ -44,6 +44,7 @@ app.include_router(health.router)
 app.include_router(ingest.router)
 app.include_router(chat.router)
 app.include_router(visibility.router)
+app.include_router(transcripts.router)
 
 @app.on_event("startup")
 async def startup_event():
