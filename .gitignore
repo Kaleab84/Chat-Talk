@@ -27,4 +27,18 @@ __pycache__/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# === Transcription outputs ===
+# Ignore Whisper or summarized transcription files
+/data/videos/transcripts/
+/data/videos/meta/*.whisper.json
+*.srt
+*.vtt
+*.txt
+*.json
+
+#Ignore large media files
+*.mp4
+*.wav
+*.m4a
 CFC Nutrient Ratio Templates Guide.docx
