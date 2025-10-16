@@ -3,19 +3,25 @@ CFC Animal Feed Software Chatbot API
 Main FastAPI application with organized structure
 """
 
-from dotenv import load_dotenv
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from pathlib import Path
+from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
+
 
 # Import the organized modules
 from app.config import settings
 from app.api.endpoints import health, ingest, chat, visibility, transcripts
 
+from app.api.endpoints.upload import router as upload_router
+
+#app = FastAPI()
+
+#app.include_router(upload_router, prefix="/files", tags=["Files"])
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -45,6 +51,7 @@ app.include_router(ingest.router)
 app.include_router(chat.router)
 app.include_router(visibility.router)
 app.include_router(transcripts.router)
+app.include_router(upload_router, prefix="/files", tags=["Files"])
 
 @app.on_event("startup")
 async def startup_event():
@@ -80,4 +87,3 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
-

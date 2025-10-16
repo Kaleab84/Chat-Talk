@@ -43,6 +43,34 @@ except (ImportError, ModuleNotFoundError):
     _HAS_WIN32 = False
 
 
+def _ensure_word_application():
+    """Return a running Word COM instance, rebuilding the gencache if necessary."""
+    if not _HAS_WIN32:
+        raise RuntimeError("win32com is not available on this system.")
+
+    try:
+        return win32.gencache.EnsureDispatch("Word.Application")  # type: ignore[name-defined]
+    except AttributeError as exc:
+        # Known pywin32 issue: corrupted generated cache lacking CLSIDToClassMap.
+        if "CLSIDToClassMap" not in str(exc):
+            raise
+        logger.warning("win32com cache appears corrupt; attempting to rebuild.")
+        try:
+            from win32com.client import gencache  # type: ignore
+
+            # Allow rebuild to overwrite cached modules.
+            if hasattr(gencache, "is_readonly"):
+                gencache.is_readonly = False  # type: ignore[attr-defined]
+            gencache.Rebuild()
+        except Exception as rebuild_exc:
+            raise RuntimeError(
+                "Failed to rebuild the Word COM type library cache. "
+                "Try deleting the %LOCALAPPDATA%\\Temp\\gen_py directory manually."
+            ) from rebuild_exc
+        # Second attempt after rebuild
+        return win32.gencache.EnsureDispatch("Word.Application")  # type: ignore[name-defined]
+
+
 # -------------------------
 # Utilities
 # -------------------------
@@ -156,7 +184,12 @@ class DocumentProcessor:
         """
         if os.name == "nt" and _HAS_WIN32:
             logger.info("Converting via Word COM: %s", doc_path)
-            return self._convert_with_word_com(doc_path)
+            try:
+                return self._convert_with_word_com(doc_path)
+            except Exception as exc:
+                logger.warning(
+                    "Word COM conversion failed (%s); attempting LibreOffice fallback.", exc
+                )
 
         logger.info("Converting via LibreOffice: %s", doc_path)
         return self._convert_with_libreoffice(doc_path)
@@ -165,7 +198,7 @@ class DocumentProcessor:
         tmp_dir = Path(tempfile.mkdtemp(suffix="__doc_conv"))
         out_path = tmp_dir / f"{doc_path.stem}.docx"
 
-        word = win32.gencache.EnsureDispatch("Word.Application")  # type: ignore[name-defined]
+        word = _ensure_word_application()
         word.Visible = False
         try:
             doc = word.Documents.Open(str(doc_path))
