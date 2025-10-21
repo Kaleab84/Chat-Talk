@@ -17,14 +17,38 @@ Welcome to the CFC help chatbot backend! This FastAPI service turns company know
    ```
 2. **Configure secrets**
    ```bash
+   # Windows (PowerShell)
+   Copy-Item -LiteralPath '.env.example' -Destination '.env'
+   # Windows (CMD)
+   copy .env.example .env
+   # macOS/Linux
    cp .env.example .env
-   # add your Pinecone API key (and Supabase/OpenAI keys when ready)
+   # Then edit .env and add your Pinecone API key (and Supabase/OpenAI keys when ready)
    ```
 3. **Run the API**
    ```bash
    uvicorn main:app --reload
    ```
    Interactive docs live at [http://localhost:8000/docs](http://localhost:8000/docs).
+   A simplified web UI lives at [http://localhost:8000/ui](http://localhost:8000/ui) for uploads and quick testing.
+
+## One‑Step Upload (Recommended)
+- Upload a file and trigger ingestion in one call:
+  ```bash
+  curl -X POST "http://localhost:8000/files/upload" \
+       -H "Content-Type: multipart/form-data" \
+       -F "file=@your-file.docx"
+  ```
+  The response includes ingestion results; processed sections and images are saved under `data/processed/content_repository/<doc-slug>/`.
+
+### Bulk Upload
+- Send multiple files in one request; each is saved and ingested:
+  ```bash
+  curl -X POST "http://localhost:8000/files/bulk" \
+       -H "Content-Type: multipart/form-data" \
+       -F "files=@doc1.docx" \
+       -F "files=@doc2.txt"
+  ```
 
 ## 🧠 How It Works
 ```

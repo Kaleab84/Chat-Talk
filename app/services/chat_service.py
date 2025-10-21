@@ -91,15 +91,21 @@ class ChatService:
             
             # Format context
             formatted_context = self.rag_pipeline.format_context(context_chunks)
-            
-            # For now, return formatted context (GPT integration will come later)
-            # TODO: Integrate with OpenAI GPT for actual answer generation
-            answer_stub = self._generate_simple_answer(question, context_chunks, formatted_context)
-            
+
+            # If OpenAI is configured, generate a grounded answer; otherwise use simple stub
+            if settings.OPENAI_API_KEY:
+                try:
+                    answer = self._generate_gpt_answer(question, formatted_context)
+                except Exception as gpt_exc:
+                    logger.warning(f"OpenAI generation failed, falling back to stub: {gpt_exc}")
+                    answer = self._generate_simple_answer(question, context_chunks, formatted_context)
+            else:
+                answer = self._generate_simple_answer(question, context_chunks, formatted_context)
+
             return {
                 "success": True,
                 "question": question,
-                "answer": answer_stub,
+                "answer": answer,
                 "context_used": context_chunks,
                 "confidence": self._calculate_confidence(context_chunks)
             }
@@ -130,6 +136,42 @@ class ChatService:
             answer += f"\n\nAdditional relevant information is available from {len(context_chunks) - 1} other sources."
         
         return answer
+
+    def _generate_gpt_answer(self, question: str, formatted_context: str) -> str:
+        """Use OpenAI Chat Completions to generate a grounded answer from context."""
+        # Lazy import to avoid hard dependency if key is unset
+        try:
+            from openai import OpenAI  # type: ignore
+        except Exception as exc:
+            raise RuntimeError(f"OpenAI SDK not available: {exc}")
+
+        client = OpenAI()
+
+        system_prompt = (
+            "You are a helpful assistant that answers strictly based on the provided context. "
+            "If the context does not contain the answer, say you do not have enough information. "
+            "Respond clearly and concisely."
+        )
+        user_prompt = (
+            f"Question:\n{question}\n\n"
+            f"Context (extracts from company docs):\n{formatted_context}\n\n"
+            "Answer:"
+        )
+
+        resp = client.chat.completions.create(
+            model=getattr(settings, "OPENAI_MODEL", "gpt-3.5-turbo"),
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.2,
+            max_tokens=500,
+        )
+
+        content = resp.choices[0].message.content if resp and resp.choices else None
+        if not content:
+            raise RuntimeError("Empty response from OpenAI")
+        return content.strip()
     
     def _calculate_confidence(self, context_chunks: List[Dict[str, Any]]) -> float:
         """Calculate confidence score based on context quality."""

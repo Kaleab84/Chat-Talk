@@ -12,3 +12,4 @@ pywin32
 pytest
 supabase
 python-multipart
+openai>=1.13.3

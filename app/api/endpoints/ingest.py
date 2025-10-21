@@ -33,7 +33,7 @@ else:
     logger.info("Using local ContentRepository for document storage.")
 
 
-@router.post("/document", response_model=IngestResponse)
+@router.post("/document", response_model=IngestResponse, include_in_schema=False)
 async def ingest_document(request: IngestRequest) -> IngestResponse:
     """Ingest a single document into storage and the vector index."""
     try:
@@ -74,7 +74,7 @@ async def ingest_document(request: IngestRequest) -> IngestResponse:
         raise HTTPException(status_code=500, detail=str(exc))
 
 
-@router.post("/bulk", response_model=BulkIngestResponse)
+@router.post("/bulk", response_model=BulkIngestResponse, include_in_schema=False)
 async def bulk_ingest(request: BulkIngestRequest) -> BulkIngestResponse:
     """Ingest all documents from the documents directory."""
     try:

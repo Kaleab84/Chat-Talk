@@ -12,28 +12,41 @@ Tip: keep the virtualenv around so future installs are instant. WE NEED THIS!
 
 ## 2️⃣ Configure Secrets
 ```bash
-cp .env.example .env
+copy .env.example .env
 ```
 Open `.env` and add:
 - `PINECONE_API_KEY` – required for search.
-- Optional: Supabase + OpenAI keys if you’re connecting cloud storage or GPT later.
-- You can ask me (Nift) or check discord for the Pinconce Key.
+- Optional: Supabase keys if you’re connecting cloud storage.
+- Optional but recommended: `OPENAI_API_KEY` to enable GPT‑generated answers in the Ask chat.
+- You can ask me (Nift) or check discord for the Pincone Key.
 
 ## 3️⃣ Start the API
 ```bash
 uvicorn main:app --reload
 ```
 Browse to [http://localhost:8000/docs](http://localhost:8000/docs) and try out the interactive endpoints.
+Or visit the prettier web UI at [http://localhost:8000/ui](http://localhost:8000/ui) for drag‑and‑drop uploads and quick search/ask.
 
 ## 4️⃣ Ingest Docs
-1. Drop `.doc`, `.docx`, or `.txt` files into `data/documents/`.
-2. Call:
-   ```bash
-   curl -X POST http://localhost:8000/ingest/document \
-     -H "Content-Type: application/json" \
-     -d '{"filename": "your-file.docx"}'
-   ```
-3. Peek at `data/processed/content_repository/<doc-slug>/` – you’ll see readable section JSON files plus any extracted images.
+Upload and ingest in one step (single file or via UI):
+- Use the upload endpoint; it automatically ingests after saving the file locally.
+  ```bash
+  curl -X POST "http://localhost:8000/files/upload" \
+       -H "Content-Type: multipart/form-data" \
+       -F "file=@your-file.docx"
+  ```
+ - Or open the web UI at `/ui` and drag & drop.
+
+Bulk upload and ingest:
+- Send multiple files in one request; each file is saved and ingested.
+  ```bash
+  curl -X POST "http://localhost:8000/files/bulk" \
+       -H "Content-Type: multipart/form-data" \
+       -F "files=@doc1.docx" \
+       -F "files=@doc2.txt"
+  ```
+
+After the request completes, check `data/processed/content_repository/<doc-slug>/` for readable section JSON files and any extracted images.
 
 ## 5️⃣ Search & Ask
 - `/search` returns the best chunks with section/image paths.
