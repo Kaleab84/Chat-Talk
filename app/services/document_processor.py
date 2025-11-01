@@ -1,5 +1,6 @@
 # app/services/document_processor.py
 from __future__ import annotations
+#TODO: Add an engpoint to upload a file to be ingested. Like a drag and drop featue or selct from folder
 
 import hashlib
 import logging

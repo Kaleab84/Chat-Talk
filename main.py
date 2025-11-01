@@ -5,6 +5,7 @@ Main FastAPI application with organized structure
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
@@ -53,6 +54,11 @@ app.include_router(visibility.router)
 app.include_router(transcripts.router)
 app.include_router(upload_router, prefix="/files", tags=["Files"])
 
+# Serve a simple web UI at /ui
+web_dir = BASE_DIR / "web"
+if web_dir.exists():
+    app.mount("/ui", StaticFiles(directory=str(web_dir), html=True), name="ui")
+
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup."""
@@ -72,6 +78,7 @@ async def startup_event():
     logger.info("Data directories initialized")
     logger.info(f"API running at http://{settings.API_HOST}:{settings.API_PORT}")
     logger.info(f"API documentation available at http://{settings.API_HOST}:{settings.API_PORT}/docs")
+    logger.info(f"Web UI available at http://{settings.API_HOST}:{settings.API_PORT}/ui")
 
 @app.on_event("shutdown")
 async def shutdown_event():

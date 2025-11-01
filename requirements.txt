@@ -12,3 +12,5 @@ pywin32
 python-multipart>=0.0.20
 pytest
 supabase
+python-multipart
+openai>=1.13.3
