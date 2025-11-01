@@ -16,7 +16,7 @@ load_dotenv(BASE_DIR / ".env")
 
 # Import the organized modules
 from app.config import settings
-from app.api.endpoints import health, ingest, chat, visibility
+from app.api.endpoints import health, ingest, chat, visibility, transcripts
 
 from app.api.endpoints.upload import router as upload_router
 
@@ -51,6 +51,7 @@ app.include_router(health.router)
 app.include_router(ingest.router)
 app.include_router(chat.router)
 app.include_router(visibility.router)
+app.include_router(transcripts.router)
 app.include_router(upload_router, prefix="/files", tags=["Files"])
 
 # Serve a simple web UI at /ui
