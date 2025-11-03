@@ -121,15 +121,63 @@ class ChatService:
         if not context_chunks:
             return "No relevant information found."
         
-        # Return the most relevant chunk with some formatting
-        best_match = context_chunks[0]
-        answer = f"Based on the documentation, here's what I found:\n\n"
-        answer += f"{best_match['text'][:500]}..."
-        
+        documents = [c for c in context_chunks if c.get("source_type") != "video"]
+        videos = [c for c in context_chunks if c.get("source_type") == "video"]
+
+        response_lines = []
+
+        if documents:
+            top_doc = documents[0]
+            snippet = (top_doc.get("text") or "")[:500].strip()
+            response_lines.append("Based on the documentation, here's what I found:\n")
+            response_lines.append(snippet + ("..." if len(snippet) == 500 else ""))
+        else:
+            top_chunk = context_chunks[0]
+            snippet = (top_chunk.get("text") or "")[:500].strip()
+            response_lines.append("Here's the most relevant information I found:\n")
+            response_lines.append(snippet + ("..." if len(snippet) == 500 else ""))
+
+        if videos:
+            response_lines.append("\nRelevant video segments:")
+            for video_chunk in videos[:3]:
+                slug = video_chunk.get("video_slug") or video_chunk.get("source") or "Video"
+                ts = video_chunk.get("start_timecode")
+                if not ts and video_chunk.get("start_seconds") is not None:
+                    ts = self._format_timecode(video_chunk["start_seconds"])
+                link = video_chunk.get("video_url")
+                start_seconds = video_chunk.get("start_seconds")
+                if link and start_seconds is not None:
+                    link = self._append_time_query(link, int(start_seconds))
+                snippet = (video_chunk.get("text") or "").strip()
+                preview = snippet[:180] + ("..." if len(snippet) > 180 else "")
+                line = f"- {slug}"
+                if ts:
+                    line += f" @ {ts}"
+                if preview:
+                    line += f": {preview}"
+                if link:
+                    line += f" ({link})"
+                response_lines.append(line)
+
         if len(context_chunks) > 1:
-            answer += f"\n\nAdditional relevant information is available from {len(context_chunks) - 1} other sources."
-        
-        return answer
+            response_lines.append(f"\nAdditional relevant material was found in {len(context_chunks) - 1} other snippets.")
+
+        return "\n".join(response_lines)
+
+    def _format_timecode(self, seconds: float) -> str:
+        seconds_int = int(max(seconds, 0))
+        hours = seconds_int // 3600
+        minutes = (seconds_int % 3600) // 60
+        secs = seconds_int % 60
+        if hours > 0:
+            return f"{hours:02d}:{minutes:02d}:{secs:02d}"
+        return f"{minutes:02d}:{secs:02d}"
+
+    def _append_time_query(self, url: str, start_seconds: int) -> str:
+        """Append a timestamp query parameter to the URL when possible."""
+        if "?" in url:
+            return f"{url}&t={start_seconds}"
+        return f"{url}?t={start_seconds}"
     
     def _calculate_confidence(self, context_chunks: List[Dict[str, Any]]) -> float:
         """Calculate confidence score based on context quality."""
@@ -173,6 +221,11 @@ class ChatService:
                     "section_path": result.get("section_path"),
                     "section_title": result.get("section_title"),
                     "image_paths": result.get("image_paths", []),
+                    "video_slug": result.get("video_slug"),
+                    "video_url": result.get("video_url"),
+                    "start_seconds": result.get("start_seconds"),
+                    "start_timecode": result.get("start_timecode"),
+                    "transcript_urls": result.get("transcript_urls"),
                 }
                 
                 if source_type == "video":

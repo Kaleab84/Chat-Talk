@@ -33,6 +33,13 @@ async def search_documents(request: SearchRequest):
                 section_path=item.get("section_path"),
                 section_title=item.get("section_title"),
                 image_paths=item.get("image_paths"),
+                video_slug=item.get("video_slug"),
+                video_url=item.get("video_url"),
+                start_seconds=item.get("start_seconds"),
+                end_seconds=item.get("end_seconds"),
+                start_timecode=item.get("start_timecode"),
+                end_timecode=item.get("end_timecode"),
+                transcript_urls=item.get("transcript_urls"),
             )
             for item in result["results"]
         ]
@@ -73,6 +80,13 @@ async def ask_question(request: AskRequest):
                 section_path=item.get("section_path"),
                 section_title=item.get("section_title"),
                 image_paths=item.get("image_paths"),
+                video_slug=item.get("video_slug"),
+                video_url=item.get("video_url"),
+                start_seconds=item.get("start_seconds"),
+                end_seconds=item.get("end_seconds"),
+                start_timecode=item.get("start_timecode"),
+                end_timecode=item.get("end_timecode"),
+                transcript_urls=item.get("transcript_urls"),
             )
             for item in result["context_used"]
         ]

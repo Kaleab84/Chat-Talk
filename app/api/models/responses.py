@@ -42,6 +42,13 @@ class SearchResult(BaseModel):
     section_path: Optional[str] = None
     section_title: Optional[str] = None
     image_paths: Optional[List[str]] = None
+    video_slug: Optional[str] = None
+    video_url: Optional[str] = None
+    start_seconds: Optional[float] = None
+    end_seconds: Optional[float] = None
+    start_timecode: Optional[str] = None
+    end_timecode: Optional[str] = None
+    transcript_urls: Optional[Dict[str, str]] = None
 
 class SearchResponse(BaseModel):
     """Response model for document search."""
@@ -71,6 +78,11 @@ class RecommendationItem(BaseModel):
     section_path: Optional[str] = None
     section_title: Optional[str] = None
     image_paths: Optional[List[str]] = None
+    video_slug: Optional[str] = None
+    video_url: Optional[str] = None
+    start_seconds: Optional[float] = None
+    start_timecode: Optional[str] = None
+    transcript_urls: Optional[Dict[str, str]] = None
 
 class Recommendations(BaseModel):
     """Collection of recommendations by type."""
