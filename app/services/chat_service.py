@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+﻿from typing import List, Dict, Any, Optional
 import logging
 import re
 import random
@@ -251,23 +251,20 @@ class ChatService:
         client = OpenAI()
 
         system_prompt = (
-            "You are a helpful assistant. For factual questions, ground answers strictly in the provided context. "
+            "You are a helpful assistant. Answer using only accurate information you have access to. "
+            "Do not mention â€˜context windowsâ€™, â€˜retrievalâ€™, or how you obtained information; answer directly. "
             "When information is missing, ask one brief clarifying question or state what is missing in one sentence. "
-            "Do not use conditional 'if … then …' phrasing; avoid starting sentences with 'If'. "
+            "Do not use conditional 'if â€¦ then â€¦' phrasing; avoid starting sentences with 'If'. "
             "For greetings or general chit-chat, respond naturally and guide the user toward a specific question. "
-            "Keep answers concise (1–3 sentences) and avoid repeating guidance across messages."
+            "Keep answers concise (1â€“3 sentences) and avoid repeating guidance across messages."
         )
-        user_prompt = (
-            f"Question:\n{question}\n\n"
-            f"Context (extracts from company docs):\n{formatted_context}\n\n"
-            "Answer:"
-        )
-
         resp = client.chat.completions.create(
             model=getattr(settings, "OPENAI_MODEL", "gpt-3.5-turbo"),
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
+                # Provide reference material without labels to avoid echoes
+                {"role": "system", "content": formatted_context},
+                {"role": "user", "content": question},
             ],
             temperature=0.4,
             max_tokens=500,
@@ -292,26 +289,21 @@ class ChatService:
         genai.configure(api_key=settings.GEMINI_API_KEY)
 
         system_prompt = (
-            "You are a helpful assistant. For factual questions, ground answers strictly in the provided context. "
+            "You are a helpful assistant. Answer using only accurate information you have access to. "
+            "Do not mention â€˜context windowsâ€™, â€˜retrievalâ€™, or how you obtained information; answer directly. "
             "When information is missing, ask one brief clarifying question or state what is missing in one sentence. "
-            "Do not use conditional 'if … then …' phrasing; avoid starting sentences with 'If'. "
+            "Do not use conditional 'if â€¦ then â€¦' phrasing; avoid starting sentences with 'If'. "
             "For greetings or general chit-chat, respond naturally and guide the user toward a specific question. "
-            "Keep answers concise (1–3 sentences) and avoid repeating guidance across messages."
+            "Keep answers concise (1â€“3 sentences) and avoid repeating guidance across messages."
         )
-        user_prompt = (
-            f"Question:\n{question}\n\n"
-            f"Context (extracts from company docs):\n{formatted_context}\n\n"
-            "Answer:"
-        )
-
         model_name = getattr(settings, "GEMINI_MODEL", "gemini-1.5-flash")
         model = genai.GenerativeModel(model_name)
 
-        # Combine system and user instructions into a single content request
+        # Provide reference text as a separate part without a label to reduce echoes
         # Add light variation to avoid identical phrasing across conversations
         temp = random.uniform(0.3, 0.7)
         resp = model.generate_content(
-            [system_prompt, user_prompt],
+            [system_prompt, formatted_context, f"Question:\n{question}\n\nAnswer:"],
             generation_config={
                 "temperature": temp,
                 "top_p": 0.9,
@@ -344,29 +336,25 @@ class ChatService:
         genai.configure(api_key=settings.GEMINI_API_KEY)
 
         system_prompt = (
-            "You are a helpful assistant. For factual questions, ground answers strictly in the provided context. "
+            "You are a helpful assistant. Answer using only accurate information you have access to. "
+            "Do not mention â€˜context windowsâ€™, â€˜retrievalâ€™, or how you obtained information; answer directly. "
             "When information is missing, ask one brief clarifying question or state what is missing in one sentence. "
-            "Do not use conditional 'if … then …' phrasing; avoid starting sentences with 'If'. "
-            "Consider the attached images as additional context from the user. "
-            "Keep answers concise (1–3 sentences) and avoid repeating guidance across messages."
+            "Do not use conditional 'if â€¦ then â€¦' phrasing; avoid starting sentences with 'If'. "
+            "Consider the attached images as part of the userâ€™s question. "
+            "Keep answers concise (1â€“3 sentences) and avoid repeating guidance across messages."
         )
-        user_prompt = (
-            f"Question:\n{question}\n\n"
-            f"Context (extracts from company docs):\n{formatted_context}\n\n"
-            "Answer:"
-        )
-
         model_name = getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash")
         model = genai.GenerativeModel(model_name)
 
-        # Build content parts: system -> images -> user
+        # Build content parts: system -> images -> reference text -> question
         parts: List[Any] = [system_prompt]
         for img in images or []:
             try:
                 parts.append({"mime_type": img.get("content_type", "image/png"), "data": img["data"]})
             except Exception:
                 continue
-        parts.append(user_prompt)
+        parts.append(formatted_context)
+        parts.append(f"Question:\n{question}\n\nAnswer:")
 
         temp = random.uniform(0.3, 0.7)
         resp = model.generate_content(
@@ -424,21 +412,16 @@ class ChatService:
             pass
 
         suggestions_pool = [
-            "Ask anything about the ingested documents.",
-            "Tell me what you’re looking for, and I’ll find it.",
-            "You can ask for definitions, steps, or where something is documented.",
-            "Try 'search: <keywords>' to see matching sections.",
+            "Ask anything about CFC software.",
+            "Tell me what you're trying to do, and I'll help.",
+            "You can ask for definitions, steps, or where a feature is documented.",
+            "Share an error message or attach a screenshot for quicker help.",
         ]
-
-        if doc_count > 0 and doc_names:
-            suggestions_pool.append(
-                f"I see {doc_count} document(s) ingested, e.g., {', '.join(doc_names)}."
-            )
 
         greetings = [
             "Hi! How can I help?",
             "Hello! What can I do for you?",
-            "Hey there — how can I help today?",
+            "Hey there - how can I help today?",
             "Hi there! What are you working on?",
             "Welcome! How can I assist?",
         ]
@@ -480,11 +463,11 @@ class ChatService:
         except Exception:
             pass
 
-        corpus_blurb = f" I've indexed {doc_count} document(s)." if doc_count else ""
+        corpus_blurb = ""
         templates = [
-            "I search your ingested documents and answer questions based on what they contain.{corpus} Try asking about a topic, a section title, or keywords you expect in your docs.",
-            "I can find and summarize content from your uploaded materials.{corpus} Ask me about procedures, definitions, or where a topic is documented.",
-            "I’m a docs assistant: I look up relevant sections and reply using that context.{corpus} You can also try 'search: <keywords>' to preview matches.",
+            "I answer questions about CFC software using trustworthy internal information.{corpus} Ask about a topic, a feature, or a specific task you're doing.",
+            "I can find and summarize details from your CFC documentation and materials.{corpus} Ask me about procedures, definitions, or where something is described.",
+            "Iâ€™m a product assistant: I look up relevant details and provide concise answers.{corpus} You can also share a screenshot or an error message for faster help.",
         ]
         random.shuffle(templates)
         reply = templates[0].format(corpus=corpus_blurb)
@@ -595,6 +578,7 @@ class ChatService:
                 unique_items.append(item)
         
         return unique_items[:5]  # Limit to top 5
+
 
 
 
