@@ -212,6 +212,41 @@ const askQuestion = document.getElementById('askQuestion');
 const askSend = document.getElementById('askSend');
 const askThread = document.getElementById('askThread');
 
+// Inject image attachment controls (avoid touching HTML with odd encodings)
+let askImages = document.getElementById('askImages');
+let askAttach = document.getElementById('askAttach');
+let askAttachments = document.getElementById('askAttachments');
+if (!askImages) {
+  askImages = document.createElement('input');
+  askImages.type = 'file';
+  askImages.accept = 'image/*';
+  askImages.multiple = true;
+  askImages.id = 'askImages';
+  askImages.hidden = true;
+  askForm.appendChild(askImages);
+}
+if (!askAttach) {
+  askAttach = document.createElement('button');
+  askAttach.type = 'button';
+  askAttach.className = 'btn';
+  askAttach.id = 'askAttach';
+  askAttach.title = 'Attach screenshots';
+  askAttach.textContent = 'Attach';
+  askForm.insertBefore(askAttach, askSend);
+}
+if (!askAttachments) {
+  askAttachments = document.createElement('div');
+  askAttachments.id = 'askAttachments';
+  askAttachments.className = 'meta';
+  askForm.parentElement.appendChild(askAttachments);
+}
+
+askAttach.addEventListener('click', () => askImages.click());
+askImages.addEventListener('change', () => {
+  const count = (askImages.files || []).length;
+  askAttachments.textContent = count ? `${count} image${count>1?'s':''} attached` : '';
+});
+
 const appendMsg = (text, who = 'bot', extraClass = '') => {
   const div = document.createElement('div');
   div.className = `msg ${who} ${extraClass}`.trim();
@@ -221,20 +256,71 @@ const appendMsg = (text, who = 'bot', extraClass = '') => {
   return div;
 };
 
+// Append a user message with inline image thumbnails
+const appendMsgWithImages = (text, files) => {
+  const container = document.createElement('div');
+  container.className = 'msg user';
+
+  if (text) {
+    const p = document.createElement('div');
+    p.textContent = text;
+    container.appendChild(p);
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'img-grid';
+  (files || []).forEach((file) => {
+    try {
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      const img = document.createElement('img');
+      img.alt = file.name || 'attachment';
+      img.src = url;
+      img.addEventListener('load', () => {
+        // Small delay to ensure image is in use, then revoke
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      });
+      a.appendChild(img);
+      grid.appendChild(a);
+    } catch {}
+  });
+  if (grid.children.length) container.appendChild(grid);
+
+  askThread.appendChild(container);
+  askThread.scrollTop = askThread.scrollHeight;
+  return container;
+};
+
 askForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const q = askQuestion.value.trim();
   if (!q) return;
   askQuestion.value = '';
-  appendMsg(q, 'user');
+  const files = Array.from(askImages.files || []);
+  if (files.length) {
+    appendMsgWithImages(q, files);
+  } else {
+    appendMsg(q, 'user');
+  }
   const typing = appendMsg('Assistant is typing', 'bot', 'typing dots');
   askSend.disabled = true;
   try {
-    const res = await fetch('/ask', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: q, top_k: 4 })
-    });
-    const data = await res.json();
+    let data;
+    if (files.length) {
+      const form = new FormData();
+      form.append('question', q);
+      form.append('top_k', '4');
+      files.forEach(f => form.append('images', f));
+      const res = await fetch('/ask-with-media', { method: 'POST', body: form });
+      data = await res.json();
+    } else {
+      const res = await fetch('/ask', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, top_k: 4 })
+      });
+      data = await res.json();
+    }
     typing.remove();
     if (data.success) {
       appendMsg(data.answer || 'No answer available', 'bot');
@@ -246,5 +332,8 @@ askForm.addEventListener('submit', async (e) => {
     appendMsg(String(err), 'bot');
   } finally {
     askSend.disabled = false;
+    // Reset attachments
+    askImages.value = '';
+    askAttachments.textContent = '';
   }
 });

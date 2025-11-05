@@ -78,3 +78,17 @@ DOC/DOCX/TXT --> /ingest --> document_processor
 - Replace the placeholder answer generator with GPT (OpenAI key already wired for the future).
 - Add a frontend or CLI that reads the JSON/image paths returned by the API.
 - Extend the processor to cover PDF or video transcript ingestion.
+
+## Attach Images to Chat Questions
+- New endpoint: `POST /ask-with-media` (multipart/form-data).
+  - Fields: `question` (text), `top_k` (int, optional), `images` (one or more files: png/jpg/jpeg/webp).
+  - Uses Gemini multimodal when `GEMINI_API_KEY` is set; images are considered alongside retrieved document context.
+  - Response shape matches `POST /ask`.
+
+Example (PowerShell):
+```
+curl -X POST "http://localhost:8000/ask-with-media" `
+     -H "Content-Type: multipart/form-data" `
+     -F "question=This screenshot shows an error—what does it mean?" `
+     -F "images=@C:\\path\\to\\screenshot.png;type=image/png"
+```

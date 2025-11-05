@@ -28,8 +28,11 @@
           <div id="askThread" class="thread" aria-live="polite" aria-relevant="additions"></div>
           <form id="askForm" class="chat-input">
             <input id="askQuestion" type="text" placeholder="Ask anything about your docs…" autocomplete="off" required />
+            <input id="askImages" type="file" accept="image/*" multiple hidden />
+            <button class="btn" id="askAttach" type="button" title="Attach screenshots">Attach</button>
             <button class="btn" id="askSend" type="submit">Send</button>
           </form>
+          <div id="askAttachments" class="meta"></div>
         </div>
       </section>
 
@@ -75,6 +78,6 @@
       <div>API Docs: <a href="/docs" target="_blank">/docs</a></div>
     </footer>
 
-    <script src="/ui/app.js"></script>
+    <script src="/ui/app.js?v=2"></script>
   </body>
   </html>

@@ -44,3 +44,7 @@ code { background:#0f1834; border:1px solid #22305d; border-radius:8px; padding:
 .typing { align-self:flex-start; color: var(--muted); font-style: italic; }
 .dots::after { content: '…'; animation: blink 1.2s infinite; }
 @keyframes blink { 0%, 100% { opacity:.2 } 50% { opacity: 1 } }
+
+/* Inline image previews in chat */
+.img-grid { display:flex; flex-wrap: wrap; gap:8px; margin-top:8px; }
+.img-grid img { max-width: 160px; max-height: 120px; display:block; border-radius:8px; border:1px solid #22305d; background:#0b1020; }

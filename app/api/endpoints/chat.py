@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 import logging
 from app.api.models.requests import SearchRequest, AskRequest, RecommendationRequest
 from app.api.models.responses import SearchResponse, AskResponse, RecommendationResponse, SearchResult
@@ -111,4 +111,70 @@ async def get_recommendations(request: RecommendationRequest):
         raise
     except Exception as e:
         logger.error(f"Error getting recommendations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/ask-with-media", response_model=AskResponse)
+async def ask_with_media(
+    question: str = Form(..., description="Question to ask"),
+    top_k: int = Form(4, description="Number of context chunks to use"),
+    images: list[UploadFile] = File(default_factory=list, description="Optional screenshots/images to include"),
+):
+    """Ask a question and include image attachments to help explain the problem.
+
+    Accepts multipart/form-data with fields:
+    - question: text
+    - top_k: integer
+    - images: one or more files (png, jpg, jpeg, webp)
+    """
+    try:
+        # Validate and load image bytes
+        allowed = {"image/png", "image/jpeg", "image/jpg", "image/webp"}
+        image_payload = []
+        for f in images or []:
+            if f.content_type not in allowed:
+                continue
+            data = await f.read()
+            if not data:
+                continue
+            image_payload.append({
+                "filename": f.filename,
+                "content_type": f.content_type,
+                "data": data,
+            })
+
+        result = chat_service.ask_question_with_images(question, image_payload, top_k)
+
+        if not result["success"]:
+            raise HTTPException(status_code=500, detail=result["error"])
+
+        # Convert context to response format
+        context_results = [
+            SearchResult(
+                rank=item["rank"],
+                score=item["score"],
+                text=item["text"],
+                source=item["source"],
+                source_type=item.get("source_type", "document"),
+                chunk_id=item["chunk_id"],
+                doc_id=item.get("doc_id"),
+                section_id=item.get("section_id"),
+                section_path=item.get("section_path"),
+                section_title=item.get("section_title"),
+                image_paths=item.get("image_paths"),
+            )
+            for item in result["context_used"]
+        ]
+
+        return AskResponse(
+            success=True,
+            question=question,
+            answer=result["answer"],
+            context_used=context_results,
+            confidence=result.get("confidence"),
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error answering question with media: {e}")
         raise HTTPException(status_code=500, detail=str(e))
