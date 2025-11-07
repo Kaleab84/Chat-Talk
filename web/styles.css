@@ -50,6 +50,8 @@ p { margin: 0 0 14px 0; color: var(--muted); }
 .ok { color: var(--accent); }
 .err { color: #ff7c7c; }
 .btn { background: linear-gradient(180deg, var(--brand), var(--accent)); border:1px solid rgba(0,0,0,.06); color: white; padding:8px 14px; border-radius:10px; cursor:pointer; box-shadow: 0 6px 18px rgba(46,155,89,.25); transition: transform .06s ease, box-shadow .12s ease, filter .12s ease; }
+.btn.icon { width: 44px; height: 40px; padding:0; display:inline-flex; align-items:center; justify-content:center; }
+.btn.icon svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2; }
 .btn:hover { filter: brightness(1.03); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(46,155,89,.28); }
 .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(59,94,169,.25), 0 6px 18px rgba(46,155,89,.25); }
 .btn:disabled { opacity:.6; cursor:not-allowed; }

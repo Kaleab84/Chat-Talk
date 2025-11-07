@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CFC — Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/ui/styles.css" />
+  </head>
+  <body>
+    <header class="container header">
+      <div class="brand">CFC Technologies</div>
+    </header>
+    <main class="container">
+      <section id="ask" class="panel active">
+        <h2>AI Support Assistant</h2>
+        <div class="chat">
+          <div id="askThread" class="thread" aria-live="polite" aria-relevant="additions"></div>
+          <form id="askForm" class="chat-input">
+            <input id="askQuestion" type="text" placeholder="Ask anything about CFC software..." autocomplete="off" required />
+            <input id="askImages" type="file" accept="image/*" multiple hidden />
+            <button class="btn icon" id="askAttach" type="button" title="Attach images" aria-label="Attach images">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M21 8.5l-9.19 9.19a5 5 0 01-7.07 0h0a5 5 0 010-7.07L13.5 1.75a3.5 3.5 0 114.95 4.95L8.3 16.86a2 2 0 01-2.83 0h0a2 2 0 010-2.83L15.2 4.31" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="btn icon" id="askSend" type="submit" title="Send" aria-label="Send">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 11.5l18-8-8 18-2.5-6.5L3 11.5z" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </form>
+          <div id="askAttachments" class="meta"></div>
+        </div>
+      </section>
+    </main>
+    <footer class="container footer">
+      <div><a href="/ui/" class="link">Back to Login</a></div>
+    </footer>
+    <script src="/ui/chat.js"></script>
+  </body>
+  </html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CFC — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/ui/styles.css" />
+  </head>
+  <body>
+    <header class="container header">
+      <div class="brand">CFC Technologies</div>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-target="#upload">Upload</button>
+        <button class="tab" data-target="#bulk">Bulk Upload</button>
+        <button class="tab" data-target="#search">Search</button>
+      </nav>
+    </header>
+
+    <main class="container">
+      <!-- Upload -->
+      <section id="upload" class="panel active">
+        <h2>Upload & Ingest</h2>
+        <p>Drop a file here or click to select. Upload automatically triggers ingestion.</p>
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <div class="dz-inner">
+            <div class="dz-icon">➕</div>
+            <div>Drag & drop file, or <span class="link">browse</span></div>
+          </div>
+          <input id="fileInput" type="file" hidden />
+        </div>
+        <div id="uploads" class="results"></div>
+      </section>
+
+      <!-- Bulk Upload -->
+      <section id="bulk" class="panel">
+        <h2>Bulk Upload & Ingest</h2>
+        <p>Select multiple files. Each will be uploaded and ingested.</p>
+        <div class="controls">
+          <input id="bulkInput" type="file" multiple />
+          <button id="bulkStart" class="btn">Start Upload</button>
+        </div>
+        <div id="bulkUploads" class="results"></div>
+      </section>
+
+      <!-- Search -->
+      <section id="search" class="panel">
+        <h2>Search</h2>
+        <form id="searchForm" class="inline">
+          <input id="searchQuery" type="text" placeholder="Search query..." required />
+          <button class="btn" type="submit">Search</button>
+        </form>
+        <div id="searchResults" class="results"></div>
+      </section>
+    </main>
+
+    <footer class="container footer">
+      <div><a href="/ui/" class="link">Back to Login</a></div>
+    </footer>
+
+    <script src="/ui/dashboard.js"></script>
+  </body>
+  </html>

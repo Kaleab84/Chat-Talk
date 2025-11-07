@@ -303,7 +303,7 @@ askForm.addEventListener('submit', async (e) => {
   } else {
     appendMsg(q, 'user');
   }
-  const typing = appendMsg('Assistant is typing', 'bot', 'typing dots');
+  const typing = appendMsg('Assistant is thinking', 'bot', 'typing dots');
   askSend.disabled = true;
   try {
     let data;
