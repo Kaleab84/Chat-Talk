@@ -1,4 +1,17 @@
-// Tabs
+// Greeting header
+(() => {
+  try {
+    const el = document.getElementById('greet');
+    if (!el) return;
+    const raw = (localStorage.getItem('displayName') || '').trim();
+    if (raw) {
+      const name = raw.charAt(0).toUpperCase() + raw.slice(1);
+      el.textContent = `Hi, ${name}!`;
+    }
+  } catch {}
+})();
+
+// (Tabs were removed; keep no-ops if any leftover markup exists)
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -90,20 +103,21 @@ const bulkUpload = async (files) => {
 
 bulkStart.addEventListener('click', () => { const files = Array.from(bulkInput.files || []); bulkUpload(files); });
 
-// Search
+// Search (not present on admin page — guard for safety)
 const searchForm = document.getElementById('searchForm');
 const searchQuery = document.getElementById('searchQuery');
 const searchResults = document.getElementById('searchResults');
-
-searchForm.addEventListener('submit', async (e) => {
-  e.preventDefault(); searchResults.innerHTML = '';
-  const item = createItem(`Search: ${searchQuery.value}`); setStatus(item, 'Querying…'); searchResults.prepend(item);
-  try {
-    const res = await fetch('/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: searchQuery.value, top_k: 5 }) });
-    const data = await res.json(); setStatus(item, data.success ? 'Done' : 'Error', !!data.success); setDetail(item, data.success ? `${data.total_results} results` : (data.detail || 'Error'), !data.success);
-    if (data.results?.length) {
-      data.results.slice(0, 5).forEach(r => { const el = document.createElement('div'); el.className = 'meta'; el.textContent = `• ${r.text?.slice(0, 120) || ''}${(r.text||'').length>120?'…':''}  (score: ${r.score?.toFixed?.(3) ?? r.score})`; item.appendChild(el); });
-    }
-  } catch (err) { setStatus(item, 'Error'); setDetail(item, String(err), true); }
-});
+if (searchForm && searchQuery && searchResults) {
+  searchForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); searchResults.innerHTML = '';
+    const item = createItem(`Search: ${searchQuery.value}`); setStatus(item, 'Querying…'); searchResults.prepend(item);
+    try {
+      const res = await fetch('/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: searchQuery.value, top_k: 5 }) });
+      const data = await res.json(); setStatus(item, data.success ? 'Done' : 'Error', !!data.success); setDetail(item, data.success ? `${data.total_results} results` : (data.detail || 'Error'), !data.success);
+      if (data.results?.length) {
+        data.results.slice(0, 5).forEach(r => { const el = document.createElement('div'); el.className = 'meta'; el.textContent = `• ${r.text?.slice(0, 120) || ''}${(r.text||'').length>120?'…':''}  (score: ${r.score?.toFixed?.(3) ?? r.score})`; item.appendChild(el); });
+      }
+    } catch (err) { setStatus(item, 'Error'); setDetail(item, String(err), true); }
+  });
+}
 

@@ -17,19 +17,18 @@
     <main class="container">
       <section class="panel active" id="login">
         <h2>Welcome</h2>
-        <p>Enter your username to continue.</p>
-        <form id="loginForm" class="inline" style="gap:12px; align-items:flex-start;">
-          <input id="username" type="text" placeholder="Username" autocomplete="off" required />
-          <button class="btn" type="submit" aria-label="Continue">Continue</button>
+        <p>Enter your first name and role to continue.</p>
+        <form id="loginForm" class="stack">
+          <input id="name" type="text" placeholder="Your name" autocomplete="off" required />
+          <input id="role" type="text" placeholder="Your role (admin | user | dev)" autocomplete="off" required />
+          <button class="btn" type="submit" aria-label="Login">Login</button>
         </form>
         <div id="loginError" class="meta" style="margin-top:10px; color:#c0564a;"></div>
-        <div class="meta" style="margin-top:16px;">Test users: <code>mark</code>, <code>user</code>, <code>devs</code></div>
       </section>
     </main>
 
-    <footer class="container footer">
-      <div>API Docs: <a href="/docs" target="_blank">/docs</a></div>
-    </footer>
+    <!-- Footer intentionally minimal on login (no API docs link) -->
+    <footer class="container footer"></footer>
 
     <script src="/ui/login.js"></script>
   </body>

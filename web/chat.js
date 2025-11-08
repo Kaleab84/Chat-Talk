@@ -1,4 +1,18 @@
 // Chat-only script
+// Greeting header
+(() => {
+  try {
+    const el = document.getElementById('greet');
+    if (!el) return;
+    const raw = (localStorage.getItem('displayName') || '').trim();
+    if (raw) {
+      const options = ['Hi', 'Hey', 'Hello'];
+      const prefix = options[Math.floor(Math.random() * options.length)];
+      const name = raw.charAt(0).toUpperCase() + raw.slice(1);
+      el.textContent = `${prefix}, ${name}!`;
+    }
+  } catch {}
+})();
 // Minimal helpers
 const appendMsg = (text, who = 'bot', extraClass = '') => {
   const askThread = document.getElementById('askThread');
@@ -23,21 +37,55 @@ const appendMsgWithImages = (text, files) => {
   grid.className = 'img-grid';
   (files || []).forEach((file) => {
     try {
-      const url = URL.createObjectURL(file);
-      const a = document.createElement('a');
-      a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      const previewUrl = URL.createObjectURL(file);
       const img = document.createElement('img');
       img.alt = file.name || 'attachment';
-      img.src = url;
-      img.addEventListener('load', () => setTimeout(() => URL.revokeObjectURL(url), 2000));
-      a.appendChild(img);
-      grid.appendChild(a);
+      img.src = previewUrl;
+      // Open in lightbox on click
+      img.addEventListener('click', (e) => {
+        e.preventDefault();
+        openImageLightbox(file);
+      });
+      grid.appendChild(img);
     } catch {}
   });
   if (grid.children.length) container.appendChild(grid);
   askThread.appendChild(container);
   askThread.scrollTop = askThread.scrollHeight;
   return container;
+};
+
+// Image lightbox
+let __imgModal, __imgModalImg, __currentModalUrl;
+const ensureImageModal = () => {
+  if (__imgModal) return __imgModal;
+  const modal = document.createElement('div');
+  modal.className = 'img-modal';
+  const innerImg = document.createElement('img');
+  innerImg.alt = 'attachment preview';
+  modal.appendChild(innerImg);
+  modal.addEventListener('click', () => closeImageLightbox());
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeImageLightbox(); });
+  document.body.appendChild(modal);
+  __imgModal = modal; __imgModalImg = innerImg; return modal;
+};
+
+const openImageLightbox = (file) => {
+  ensureImageModal();
+  // Revoke prior modal URL if any
+  try { if (__currentModalUrl) URL.revokeObjectURL(__currentModalUrl); } catch {}
+  const url = URL.createObjectURL(file);
+  __currentModalUrl = url;
+  __imgModalImg.src = url;
+  __imgModal.classList.add('active');
+};
+
+const closeImageLightbox = () => {
+  if (!__imgModal) return;
+  __imgModal.classList.remove('active');
+  // Small delay to allow transition (if any) before revoking
+  const url = __currentModalUrl; __currentModalUrl = null;
+  setTimeout(() => { try { if (url) URL.revokeObjectURL(url); } catch {} }, 100);
 };
 
 // Wire controls
