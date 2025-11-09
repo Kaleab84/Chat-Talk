@@ -353,11 +353,6 @@ def _index_transcript_chunks(
                 "txt_url": txt_url,
                 "srt_url": srt_url,
                 "vtt_url": vtt_url,
-                "transcript_urls": {
-                    "txt": txt_url,
-                    "srt": srt_url,
-                    "vtt": vtt_url,
-                },
             }
         })
 
