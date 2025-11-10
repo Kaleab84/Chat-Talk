@@ -1,10 +1,17 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from typing import List, Dict, Any
 from supabase import create_client
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-router = APIRouter()
+from app.config import settings
+from app.api.models.requests import IngestRequest
+from app.api.endpoints.ingest import ingest_document
+from app.auth.dependencies import require_user
+from app.rate_limit.limiter import limit
+
+router = APIRouter(dependencies=[Depends(require_user)])
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 load_dotenv(BASE_DIR / ".env")
@@ -13,7 +20,7 @@ url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_ANON_KEY")
 bucket = os.getenv("SUPABASE_BUCKET")
 
-@router.post("/upload")
+@router.post("/upload", dependencies=[Depends(limit("10/minute"))])
 async def upload_file(file: UploadFile = File(...)):
     if not url or not key or not bucket:
         raise HTTPException(
@@ -22,9 +29,108 @@ async def upload_file(file: UploadFile = File(...)):
         )
 
     try:
-        supabase = create_client(url, key)
-        contents = await file.read()
-        res = supabase.storage.from_(bucket).upload(file.filename, contents)
-        return {"message": "File uploaded successfully", "path": res.path}
-    except Exception as e:
-        return {"error": str(e)}
+        with local_path.open("wb") as f:
+            f.write(contents)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to save file locally: {exc}")
+
+    # Optionally upload to Supabase (do not fail the request if this part errors)
+    supabase_info = None
+    if SUPABASE_URL and SUPABASE_KEY and SUPABASE_BUCKET:
+        try:
+            sb = create_client(SUPABASE_URL, SUPABASE_KEY)
+            res = sb.storage.from_(SUPABASE_BUCKET).upload(file.filename, contents)
+            sup_path = getattr(res, "path", None) if res is not None else None
+            supabase_info = {"path": sup_path}
+        except Exception as sb_exc:
+            supabase_info = {"error": str(sb_exc)}
+
+    # Trigger ingestion using the existing endpoint logic
+    ingestion_data = None
+    try:
+        ingest_req = IngestRequest(filename=file.filename)
+        ingest_result = await ingest_document(ingest_req)
+        # Pydantic v1/v2 compatibility
+        to_dict = getattr(ingest_result, "model_dump", None) or getattr(ingest_result, "dict")
+        ingestion_data = to_dict()
+    except Exception as ing_exc:
+        ingestion_data = {"success": False, "error": str(ing_exc)}
+
+    return {
+        "message": "File uploaded and ingestion triggered",
+        "local_path": str(local_path),
+        "supabase": supabase_info,
+        "ingestion": ingestion_data,
+    }
+
+
+@router.post("/bulk", dependencies=[Depends(limit("10/minute"))])
+async def bulk_upload(files: List[UploadFile] = File(...)) -> Dict[str, Any]:
+    """Upload multiple files and trigger ingestion for each.
+
+    Saves each file to the local documents directory, optionally mirrors to Supabase,
+    and calls the ingestion routine per file. Returns per-file results plus summary.
+    """
+    if not files:
+        raise HTTPException(status_code=400, detail="No files provided")
+
+    documents_dir = settings.DOCUMENTS_DIR
+    documents_dir.mkdir(parents=True, exist_ok=True)
+
+    results: List[Dict[str, Any]] = []
+    success_count = 0
+    failure_count = 0
+
+    sb = None
+    if SUPABASE_URL and SUPABASE_KEY and SUPABASE_BUCKET:
+        try:
+            sb = create_client(SUPABASE_URL, SUPABASE_KEY)
+        except Exception:
+            sb = None
+
+    for file in files:
+        item: Dict[str, Any] = {"filename": getattr(file, "filename", None)}
+        try:
+            if not file or not file.filename:
+                raise ValueError("Missing filename")
+
+            contents = await file.read()
+
+            # Save locally
+            local_path = documents_dir / file.filename
+            with local_path.open("wb") as f:
+                f.write(contents)
+            item["local_path"] = str(local_path)
+
+            # Optional Supabase mirror
+            if sb is not None:
+                try:
+                    res = sb.storage.from_(SUPABASE_BUCKET).upload(file.filename, contents)
+                    item["supabase"] = {"path": getattr(res, "path", None) if res is not None else None}
+                except Exception as sb_exc:
+                    item["supabase"] = {"error": str(sb_exc)}
+
+            # Ingest
+            try:
+                ingest_req = IngestRequest(filename=file.filename)
+                ingest_result = await ingest_document(ingest_req)
+                to_dict = getattr(ingest_result, "model_dump", None) or getattr(ingest_result, "dict")
+                item["ingestion"] = to_dict()
+                success_count += 1
+            except Exception as ing_exc:
+                item["ingestion"] = {"success": False, "error": str(ing_exc)}
+                failure_count += 1
+
+        except Exception as exc:
+            item["error"] = str(exc)
+            failure_count += 1
+
+        results.append(item)
+
+    return {
+        "message": "Bulk upload completed",
+        "successful": success_count,
+        "failed": failure_count,
+        "total": len(files),
+        "results": results,
+    }

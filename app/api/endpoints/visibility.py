@@ -1,10 +1,11 @@
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.api.models.responses import VectorStoreStatsResponse, NamespaceStats
 from app.core.vector_store import VectorStore
+from app.auth.dependencies import require_user
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/visibility", tags=["visibility"])
+router = APIRouter(prefix="/visibility", tags=["visibility"], dependencies=[Depends(require_user)])
 
 # Initialize vector store once per process
 vector_store = VectorStore()

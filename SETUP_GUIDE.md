@@ -10,6 +10,12 @@ pip install -r requirements.txt
 ```
 Tip: keep the virtualenv around so future installs are instant. WE NEED THIS!
 
+Also if you get: "cannot be loaded because running scripts is disabled on this system"
+```bash
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force #windows
+```
+
+
 ## 2️⃣ Configure Secrets
 ```bash
 cp .env.example .env

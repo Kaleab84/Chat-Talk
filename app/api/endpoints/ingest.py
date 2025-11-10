@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.api.models.requests import BulkIngestRequest, IngestRequest
 from app.api.models.responses import BulkIngestResponse, IngestResponse
@@ -13,11 +13,13 @@ from app.core.vector_store import VectorStore
 from app.services.document_processor import DocumentProcessor
 from app.services.content_repository import ContentRepository
 from app.services.supabase_content_repository import SupabaseContentRepository
+from app.auth.dependencies import require_user
+from app.rate_limit.limiter import limit
 
 
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/ingest", tags=["ingestion"])
+router = APIRouter(prefix="/ingest", tags=["ingestion"], dependencies=[Depends(require_user)])
 
 # Initialize services
 _document_processor = DocumentProcessor()
@@ -33,7 +35,7 @@ else:
     logger.info("Using local ContentRepository for document storage.")
 
 
-@router.post("/document", response_model=IngestResponse)
+@router.post("/document", response_model=IngestResponse, include_in_schema=False, dependencies=[Depends(limit("10/minute"))])
 async def ingest_document(request: IngestRequest) -> IngestResponse:
     """Ingest a single document into storage and the vector index."""
     try:
@@ -74,7 +76,7 @@ async def ingest_document(request: IngestRequest) -> IngestResponse:
         raise HTTPException(status_code=500, detail=str(exc))
 
 
-@router.post("/bulk", response_model=BulkIngestResponse)
+@router.post("/bulk", response_model=BulkIngestResponse, include_in_schema=False, dependencies=[Depends(limit("10/minute"))])
 async def bulk_ingest(request: BulkIngestRequest) -> BulkIngestResponse:
     """Ingest all documents from the documents directory."""
     try:

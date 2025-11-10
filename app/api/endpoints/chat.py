@@ -1,16 +1,18 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 import logging
 from app.api.models.requests import SearchRequest, AskRequest, RecommendationRequest
 from app.api.models.responses import SearchResponse, AskResponse, RecommendationResponse, SearchResult
 from app.services.chat_service import ChatService
+from app.auth.dependencies import require_user
+from app.rate_limit.limiter import limit
 
 logger = logging.getLogger(__name__)
-router = APIRouter(tags=["chat"])
+router = APIRouter(tags=["chat"], dependencies=[Depends(require_user)])
 
 # Initialize chat service
 chat_service = ChatService()
 
-@router.post("/search", response_model=SearchResponse)
+@router.post("/search", response_model=SearchResponse, dependencies=[Depends(limit("30/minute"))])
 async def search_documents(request: SearchRequest):
     """Search for relevant document chunks."""
     try:
@@ -50,7 +52,7 @@ async def search_documents(request: SearchRequest):
         logger.error(f"Error searching documents: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/ask", response_model=AskResponse)
+@router.post("/ask", response_model=AskResponse, dependencies=[Depends(limit("20/minute"))])
 async def ask_question(request: AskRequest):
     """Ask a question and get an AI-powered answer."""
     try:
