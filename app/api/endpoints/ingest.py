@@ -14,9 +14,10 @@ from app.services.document_processor import DocumentProcessor
 from app.services.content_repository import ContentRepository
 from app.services.supabase_content_repository import SupabaseContentRepository
 
-
-
+# Ingest endpoint
+# Handles document ingestion and storage
 logger = logging.getLogger(__name__)
+# Handles document ingestion, processing, and vector storage.
 router = APIRouter(prefix="/ingest", tags=["ingestion"])
 
 # Initialize services
@@ -24,7 +25,7 @@ _document_processor = DocumentProcessor()
 _vector_store = VectorStore()
 _embedding_model = EmbeddingModel()
 _content_repository = ContentRepository()
-
+ # Initialize content repository
 if settings.SUPABASE_URL and settings.SUPABASE_BUCKET:
     _content_repository = SupabaseContentRepository()
     logger.info("Using SupabaseContentRepository for document storage.")
@@ -32,23 +33,23 @@ else:
     _content_repository = ContentRepository()
     logger.info("Using local ContentRepository for document storage.")
 
-
+ # Ingest a single document
 @router.post("/document", response_model=IngestResponse)
 async def ingest_document(request: IngestRequest) -> IngestResponse:
     """Ingest a single document into storage and the vector index."""
     try:
         file_path = _locate_document(request.filename)
         processed = _document_processor.process_document(file_path)
-
+        # Check if document processing was successful
         if not processed.get("success"):
             raise HTTPException(status_code=400, detail=processed.get("error", "Unknown processing error"))
 
         updated = _persist_document_content(processed)
         vectors, chunk_count = _prepare_vectors(updated["chunks"])
-
+        # Check if vectors were created
         if vectors:
             _vector_store.upsert_vectors(vectors)
-
+        # Log successful ingestion
         logger.info(
             "Successfully ingested %s: %s sections, %s chunks, %s images",
             request.filename,
@@ -56,7 +57,7 @@ async def ingest_document(request: IngestRequest) -> IngestResponse:
             chunk_count,
             updated["image_count"],
         )
-
+        # Return ingestion response
         return IngestResponse(
             success=True,
             message=f"Successfully ingested {request.filename}",
@@ -81,7 +82,7 @@ async def bulk_ingest(request: BulkIngestRequest) -> BulkIngestResponse:
         directory = settings.DOCUMENTS_DIR / request.subdirectory if request.subdirectory else settings.DOCUMENTS_DIR
         if not directory.exists():
             raise HTTPException(status_code=404, detail=f"Directory not found: {directory}")
-
+        # Process all documents in the directory
         results = _document_processor.process_directory(directory)
         if not results:
             return BulkIngestResponse(
@@ -92,13 +93,14 @@ async def bulk_ingest(request: BulkIngestRequest) -> BulkIngestResponse:
                 total_chunks=0,
             )
 
+        # Initialize counters
         total_chunks = 0
         total_sections = 0
         total_images = 0
         successful_files = 0
         failed_files = 0
         errors: List[Dict[str, str]] = []
-
+        # Process each document
         for result in results:
             if result.get("success"):
                 updated = _persist_document_content(result)
@@ -119,7 +121,7 @@ async def bulk_ingest(request: BulkIngestRequest) -> BulkIngestResponse:
                     "error": result.get("error", "Unknown error"),
                 })
                 logger.error("Failed to process %s: %s", result.get("source"), result.get("error"))
-
+ 
         return BulkIngestResponse(
             success=True,
             message=f"Bulk ingestion completed: {successful_files} successful, {failed_files} failed",
@@ -178,7 +180,7 @@ def _persist_document_content(processed: Dict[str, Any]) -> Dict[str, Any]:
         stored_section = _content_repository.store_section(doc_id, section)
         section_paths[section["section_id"]] = stored_section.storage_path
         section["storage_path"] = stored_section.storage_path
-
+    # Update chunks with section paths and image paths
     updated_chunks: List[Dict] = []
     for chunk in processed.get("chunks", []):
         chunk_copy = {**chunk}
@@ -195,7 +197,7 @@ def _persist_document_content(processed: Dict[str, Any]) -> Dict[str, Any]:
     processed["chunk_count"] = len(updated_chunks)
     return processed
 
-
+ # Prepare vectors for the vector store
 def _prepare_vectors(chunks: List[Dict]) -> Tuple[List[Tuple[str, List[float], Dict]], int]:
     if not chunks:
         return [], 0

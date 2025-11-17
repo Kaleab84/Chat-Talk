@@ -1,114 +1,106 @@
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+import requests
 import logging
-from app.api.models.requests import SearchRequest, AskRequest, RecommendationRequest
-from app.api.models.responses import SearchResponse, AskResponse, RecommendationResponse, SearchResult
 from app.services.chat_service import ChatService
 
 logger = logging.getLogger(__name__)
+# Handles chat questions by retrieving RAG context and calling Gemini.
 router = APIRouter(tags=["chat"])
 
-# Initialize chat service
 chat_service = ChatService()
 
-@router.post("/search", response_model=SearchResponse)
-async def search_documents(request: SearchRequest):
-    """Search for relevant document chunks."""
-    try:
-        result = chat_service.search_documents(request.query, request.top_k)
-        
-        if not result["success"]:
-            raise HTTPException(status_code=500, detail=result["error"])
-        
-        # Convert to response format
-        search_results = [
-            SearchResult(
-                rank=item["rank"],
-                score=item["score"],
-                text=item["text"],
-                source=item["source"],
-                source_type=item.get("source_type", "document"),
-                chunk_id=item["chunk_id"],
-                doc_id=item.get("doc_id"),
-                section_id=item.get("section_id"),
-                section_path=item.get("section_path"),
-                section_title=item.get("section_title"),
-                image_paths=item.get("image_paths"),
-            )
-            for item in result["results"]
-        ]
-        
-        return SearchResponse(
-            success=True,
-            query=request.query,
-            results=search_results,
-            total_results=len(search_results)
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error searching documents: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+# Gemini model details
+GEMINI_API_KEY = "AIzaSyCFVJzYUPJUl-o3vy-n3Yiq2OpeChtCNZY"
+GEMINI_MODEL = "models/gemini-2.5-flash"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
 
-@router.post("/ask", response_model=AskResponse)
-async def ask_question(request: AskRequest):
-    """Ask a question and get an AI-powered answer."""
-    try:
-        result = chat_service.ask_question(request.question, request.top_k)
-        
-        if not result["success"]:
-            raise HTTPException(status_code=500, detail=result["error"])
-        
-        # Convert context to response format
-        context_results = [
-            SearchResult(
-                rank=item["rank"],
-                score=item["score"],
-                text=item["text"],
-                source=item["source"],
-                source_type=item.get("source_type", "document"),
-                chunk_id=item["chunk_id"],
-                doc_id=item.get("doc_id"),
-                section_id=item.get("section_id"),
-                section_path=item.get("section_path"),
-                section_title=item.get("section_title"),
-                image_paths=item.get("image_paths"),
-            )
-            for item in result["context_used"]
-        ]
-        
-        return AskResponse(
-            success=True,
-            question=request.question,
-            answer=result["answer"],
-            context_used=context_results,
-            confidence=result.get("confidence")
-        )
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error answering question: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/recommendations", response_model=RecommendationResponse)
-async def get_recommendations(request: RecommendationRequest):
-    """Get content recommendations based on a query."""
+SUPABASE_PUBLIC_URL = "https://uqdnuaxbhafstditsmfd.supabase.co/storage/v1/object/public/cfc-docs/"
+
+
+class ChatRequest(BaseModel):
+    message: str
+    top_k: int = 3
+
+
+
+class ChatResponse(BaseModel):
+    success: bool
+    message: str
+    paragraph: str
+    bullets: list[str]
+    images: list[str] = [] 
+
+
+# Chat endpoint
+@router.post("/chat", response_model=ChatResponse)
+
+async def chat_with_bot(request: ChatRequest):
     try:
-        result = chat_service.get_recommendations(request.query, request.content_type)
-        
-        if not result["success"]:
-            raise HTTPException(status_code=500, detail=result["error"])
-        
-        return RecommendationResponse(
+        # Retrieve context from vector store    
+        results = chat_service.search_documents(request.message, request.top_k).get("results", [])
+
+        # Initialize lists for context text and image URLs
+        context_texts = []
+        image_urls = []
+
+        # Iterate through search results
+        for r in results:
+            # Add text from current result to context text list
+            context_texts.append(r.get("text", ""))
+
+            # If this chunk has images convert paths to public URLs
+            for img_path in r.get("image_paths", []):
+                image_urls.append(SUPABASE_PUBLIC_URL + img_path)
+
+        combined_context = "\n".join(context_texts) if context_texts else "No relevant context found."
+
+        # Create prompt for Gemini model
+        prompt = f"""
+        You are an assistant supporting users of animal feed management software.
+        Base your answer ONLY on the provided context.
+
+        Context:
+        {combined_context}
+
+        Relevant Images (if useful for explanation):
+        {chr(10).join(image_urls) if image_urls else "No images available."}
+
+        # User question
+        User Question:
+        {request.message}
+
+        Respond in this format:
+        1) One short clear explanatory paragraph.
+        2) Then list 3 key takeaways as bullet points.
+        If images matter, say: "See reference image below."
+        """
+
+        payload = {"contents": [{"parts": [{"text": prompt}]}]}
+         # Call Gemini API to generate response
+        response = requests.post(GEMINI_URL, json=payload)
+        # Check if response is successful
+        if response.status_code != 200:
+            raise HTTPException(status_code=500, detail=f"Gemini API Error → {response.text}")
+
+        data = response.json()
+        full_text = data["candidates"][0]["content"]["parts"][0]["text"]
+
+        # --- Step 3: Format Gemini output ---
+        lines = full_text.split("\n")
+        paragraph = lines[0].strip()
+        bullets = [l.strip("-• ").strip() for l in lines[1:] if l.strip()][0:3]
+
+        # Return text + images
+        return ChatResponse(
             success=True,
-            query=request.query,
-            recommendations=result["recommendations"],
-            total_items=result["total_items"]
+            message=request.message,
+            paragraph=paragraph,
+            bullets=bullets,
+            images=image_urls  # Frontend can now display them
         )
-        
-    except HTTPException:
-        raise
+
     except Exception as e:
-        logger.error(f"Error getting recommendations: {e}")
+        logger.error(f"Chat endpoint error: {e}")
         raise HTTPException(status_code=500, detail=str(e))

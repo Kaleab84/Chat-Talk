@@ -42,3 +42,10 @@ Thumbs.db
 *.wav
 *.m4a
 CFC Nutrient Ratio Templates Guide.docx
+
+# Ignore all ingested documents
+/data/documents/doc/*
+*.doc
+*.docx
+*.pdf
+*.rtf
