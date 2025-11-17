@@ -1,4 +1,10 @@
 from __future__ import annotations
+"""
+FastAPI router powering the video ingestion flow: accepts uploads, runs Whisper
+transcription, stores artifacts in Supabase, generates a markdown summary, and
+indexes transcript chunks into Pinecone. Related helpers live in
+app/services/supabase_content_repository.py and app/transcription/summarize_transcript.py.
+"""
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import JSONResponse
 from pathlib import Path
@@ -24,6 +30,7 @@ router = APIRouter(prefix="/api/videos", tags=["videos"])
 
 # --------- small helpers (timestamp formatting + renderers) ---------
 def _hhmmss(seconds: float) -> str:
+    """Format seconds as an SRT-friendly timestamp."""
     td = timedelta(seconds=float(seconds))
     total = int(td.total_seconds())
     ms = int((float(seconds) - int(seconds)) * 1000)
@@ -33,6 +40,7 @@ def _hhmmss(seconds: float) -> str:
     return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"  # SRT uses comma
 
 def _vtt_ts(seconds: float) -> str:
+    """Format seconds for WebVTT output."""
     td = timedelta(seconds=float(seconds))
     total = int(td.total_seconds())
     ms = int((float(seconds) - int(seconds)) * 1000)
@@ -42,10 +50,12 @@ def _vtt_ts(seconds: float) -> str:
     return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"  # VTT uses dot
 
 def _render_txt(segments: List[Dict[str, Any]]) -> str:
+    """Plain-text transcript with inline timestamps."""
     lines = [f"[{_vtt_ts(s['start'])} --> {_vtt_ts(s['end'])}]  {s['text'].strip()}" for s in segments]
     return "\n".join(lines) + "\n"
 
 def _render_srt(segments: List[Dict[str, Any]]) -> str:
+    """SubRip (.srt) transcript."""
     out = []
     for i, s in enumerate(segments, 1):
         out.append(str(i))
@@ -55,6 +65,7 @@ def _render_srt(segments: List[Dict[str, Any]]) -> str:
     return "\n".join(out)
 
 def _render_vtt(segments: List[Dict[str, Any]]) -> str:
+    """WebVTT transcript."""
     out = ["WEBVTT", ""]
     for s in segments:
         out.append(f"{_vtt_ts(s['start'])} --> {_vtt_ts(s['end'])}")
@@ -63,6 +74,7 @@ def _render_vtt(segments: List[Dict[str, Any]]) -> str:
     return "\n".join(out)
 
 def _simple_summary(segments: List[Dict[str, Any]]) -> str:
+    """Low-effort markdown summary used until we wire in an LLM."""
     full = " ".join(s["text"].strip() for s in segments)
     words = full.split()
     if not words:
@@ -77,6 +89,7 @@ def _simple_summary(segments: List[Dict[str, Any]]) -> str:
 
 # --------- Supabase helpers ---------
 def _supabase():
+    """Instantiate a Supabase client using service role or anon key."""
     url = (os.getenv("SUPABASE_URL") or "").strip()
     # Prefer service role for server-side writes; fall back to anon if missing
     key = (os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY") or "").strip()
@@ -85,10 +98,12 @@ def _supabase():
     return create_client(url, key)
 
 def _bucket_name() -> str:
+    """Return the bucket name used for all video-related assets."""
     bucket = os.getenv("SUPABASE_BUCKET", "cfc-videos")
     return bucket.strip() if bucket else "cfc-videos"
 
 def _upload_bytes(bucket: str, storage_path: str, data: bytes, content_type: str | None = None) -> str:
+    """Upload raw bytes to Supabase Storage and return the public URL."""
     sb = _supabase()
     opts = {"upsert": "true"}
     if content_type:
@@ -98,6 +113,7 @@ def _upload_bytes(bucket: str, storage_path: str, data: bytes, content_type: str
 
 # --------- Whisper transcription ---------
 def _transcribe_to_segments(tmp_video_path: str, model_name: str = "small", language: str | None = None):
+    """Run Whisper locally and return a normalized list of segments."""
     model = whisper.load_model(model_name)
     result = model.transcribe(
         tmp_video_path,
@@ -249,12 +265,14 @@ def _build_chunks_from_segments(
     return chunks
 
 def _pinecone():
+    """Bootstrap the Pinecone client."""
     api_key = os.getenv("PINECONE_API_KEY")
     if not api_key:
         raise RuntimeError("Missing PINECONE_API_KEY in .env")
     return Pinecone(api_key=api_key)
 
 def _pinecone_index():
+    """Return the configured Pinecone index handle."""
     pc = _pinecone()
     index_name = os.getenv("PINECONE_INDEX", "cfc-videos")
     return pc.Index(index_name)
@@ -262,6 +280,7 @@ def _pinecone_index():
 # ---------- Embeddings & Pinecone ----------
 
 def _embedder():
+    """Load the SentenceTransformer model used for chunk embeddings."""
     model_name = os.getenv("EMBED_MODEL", "all-MiniLM-L6-v2")
     return SentenceTransformer(model_name)
 
@@ -290,6 +309,7 @@ def _build_chunks_from_segments(
     max_chars: int = 800,
     overlap_chars: int = 120,
 ) -> List[Dict[str, Any]]:
+    """Group transcript segments into overlapping windows suitable for embedding."""
     chunks: List[Dict[str, Any]] = []
     buf, cur_start, cur_end, cur_len = [], None, None, 0
 
