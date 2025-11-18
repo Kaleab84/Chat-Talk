@@ -1,28 +1,18 @@
-from typing import Optional
+from typing import Union
+from uuid import UUID
+
 from pydantic import BaseModel, EmailStr
 
 
-class RequestLinkPayload(BaseModel):
+class RequestMagicLinkRequest(BaseModel):
     email: EmailStr
-    redirect_to: Optional[str] = None
 
 
-class ExchangePayload(BaseModel):
+class ExchangeTokenRequest(BaseModel):
     access_token: str
 
 
-class AuthUser(BaseModel):
-    id: str
+class UserOut(BaseModel):
+    id: Union[str, UUID]
     email: EmailStr
-    role: str = "user"
-
-
-class AuthMeResponse(BaseModel):
-    authenticated: bool
-    user: Optional[AuthUser] = None
-
-
-class MessageResponse(BaseModel):
-    ok: bool = True
-    message: str = ""
-
+    role: str

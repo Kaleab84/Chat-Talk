@@ -1,107 +1,120 @@
 from __future__ import annotations
 
-import os
-import uuid
-import datetime as dt
-from typing import Optional
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
+from app.auth.dependencies import get_current_user, require_user
+from app.auth.schemas import ExchangeTokenRequest, RequestMagicLinkRequest, UserOut
+from app.auth.session import create_session as generate_session
+from app.auth.session import sign_session_cookie
+from app.config import settings
+from app.services import supabase_service
 
-from app.auth.schemas import (
-    RequestLinkPayload,
-    ExchangePayload,
-    AuthMeResponse,
-    AuthUser,
-    MessageResponse,
-)
-from app.auth.providers import supabase as sb_auth
-from app.auth.session import SessionCookie, build_cookie_header, build_clear_cookie_header
-from app.auth.dependencies import require_user
-from app.services.supabase_service import SupabaseService
+router = APIRouter()
 
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+@router.post("/request-link", status_code=status.HTTP_202_ACCEPTED)
+async def request_magic_link(payload: RequestMagicLinkRequest):
+    allowed = supabase_service.get_allowed_user(payload.email)
+    if not allowed or allowed.get("status") != "active":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email is not allowed to access this app.")
+
+    supabase_url, supabase_key = _get_supabase_credentials()
+    body = {
+        "email": payload.email,
+        "create_user": False,
+        "redirect_to": f"{settings.FRONTEND_BASE_URL.rstrip('/')}/auth/callback",
+    }
+    headers = {
+        "apikey": supabase_key,
+        "Content-Type": "application/json",
+    }
+    async with httpx.AsyncClient(timeout=10) as client:
+        resp = await client.post(f"{supabase_url}/auth/v1/magiclink", headers=headers, json=body)
+    if resp.status_code >= 400:
+        detail = resp.json().get("error_description") if resp.headers.get("content-type", "").startswith("application/json") else resp.text
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Failed to request magic link: {detail}")
+    return {"message": "Magic link sent."}
 
 
-FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000")
-BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
-
-
-@router.post("/request-link", response_model=MessageResponse)
-def request_link(payload: RequestLinkPayload):
-    email = payload.email
-    redirect_to = payload.redirect_to or f"{FRONTEND_BASE_URL.rstrip('/')}/auth/callback"
-
-    db = SupabaseService()
-    allowed = db.is_email_allowed(email)
-    if not allowed:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email is not allowlisted")
-
-    try:
-        sb_auth.request_magic_link(email=email, redirect_to=redirect_to)
-    except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Failed to send magic link: {exc}")
-
-    return MessageResponse(ok=True, message="Magic link sent if email is registered.")
-
-
-@router.post("/exchange", response_model=AuthUser)
-def exchange_token(response: Response, payload: ExchangePayload, request: Request):
-    access_token = payload.access_token
-    db = SupabaseService()
-
-    try:
-        user_info = sb_auth.verify_access_token(access_token)
-    except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Invalid token: {exc}")
-
-    email = user_info.get("email")
+@router.post("/exchange", response_model=UserOut)
+async def exchange_token(payload: ExchangeTokenRequest, request: Request, response: Response):
+    supabase_url, supabase_key = _get_supabase_credentials()
+    headers = {
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {payload.access_token}",
+    }
+    async with httpx.AsyncClient(timeout=10) as client:
+        resp = await client.get(f"{supabase_url}/auth/v1/user", headers=headers)
+    if resp.status_code >= 400:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired Supabase token.")
+    user_data = resp.json()
+    email = user_data.get("email")
     if not email:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token lacks email")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Supabase user payload missing email.")
 
-    if not db.is_email_allowed(email):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email is not allowlisted")
+    allowed = supabase_service.get_allowed_user(email)
+    if not allowed or allowed.get("status") != "active":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Email is not authorized.")
 
-    # Upsert local user mirror
-    user = db.upsert_user(user_id=user_info.get("id"), email=email)
+    role = allowed.get("role") or user_data.get("role") or "user"
+    user_row = supabase_service.upsert_user(user_data.get("id"), email, role)
+    if not user_row:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to persist user.")
 
-    # Create a new session (rotate)
-    now = dt.datetime.now(dt.timezone.utc)
-    ttl_days = int(os.getenv("SESSION_TTL_DAYS", "7"))
-    expires_at = now + dt.timedelta(days=ttl_days)
-    session_id = str(uuid.uuid4())
-    db.create_session(
-        session_id=session_id,
-        user_id=user["id"],
+    session_id, expires_at = generate_session(str(user_row.get("id")), settings.SESSION_TTL_DAYS)
+    supabase_service.create_session(
+        user_id=str(user_row.get("id")),
         expires_at=expires_at,
-        ip=request.client.host if request.client else None,
+        ip=_get_client_ip(request),
         user_agent=request.headers.get("user-agent"),
+        session_id=session_id,
     )
+    cookie_value = sign_session_cookie(session_id)
+    max_age = settings.SESSION_TTL_DAYS * 24 * 60 * 60
+    response.set_cookie(
+        key=settings.SESSION_COOKIE_NAME,
+        value=cookie_value,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        max_age=max_age,
+        expires=expires_at,
+        path="/",
+    )
+    return UserOut(id=str(user_row.get("id")), email=email, role=role)
 
-    cookie_value = SessionCookie.create(session_id=session_id)
-    header_name, header_val = build_cookie_header(cookie_value)
-    response.headers.append(header_name, header_val)
 
-    return AuthUser(id=user["id"], email=user["email"], role=user.get("role", "user"))
-
-
-@router.get("/me", response_model=AuthMeResponse)
-def me(user=Depends(require_user)):
-    return AuthMeResponse(authenticated=True, user=AuthUser(**user))
+@router.get("/me", response_model=UserOut)
+async def auth_me(user=Depends(require_user)):
+    return UserOut(id=str(user.id), email=user.email, role=user.role)
 
 
-@router.post("/logout", response_model=MessageResponse)
-def logout(response: Response, user=Depends(require_user), request: Request = None):
-    # Revoke current session if present
-    db = SupabaseService()
-    cookie_val = request.cookies.get(os.getenv("SESSION_COOKIE_NAME", "CFC_SESSION")) if request else None
-    if cookie_val:
-        parsed = SessionCookie.parse_and_verify(cookie_val)
-        if parsed:
-            try:
-                db.revoke_session(parsed.session_id)
-            except Exception:
-                pass
-    header_name, header_val = build_clear_cookie_header()
-    response.headers.append(header_name, header_val)
-    return MessageResponse(ok=True, message="Logged out")
+@router.post("/logout")
+async def logout(request: Request, response: Response, user=Depends(get_current_user)):
+    _ = user
+    session_id = getattr(request.state, "session_id", None)
+    if session_id:
+        supabase_service.revoke_session(session_id)
+    response.set_cookie(
+        key=settings.SESSION_COOKIE_NAME,
+        value="",
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=0,
+        expires=0,
+    )
+    return {"message": "Logged out"}
+
+
+def _get_supabase_credentials() -> tuple[str, str]:
+    if not settings.SUPABASE_URL or not settings.SUPABASE_ANON_KEY:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Supabase is not configured.")
+    return settings.SUPABASE_URL.rstrip("/"), settings.SUPABASE_ANON_KEY
+
+
+def _get_client_ip(request: Request) -> str:
+    client = request.client
+    return client.host if client else "unknown"

@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
 pydantic
+email-validator
 pinecone
 sentence-transformers
 python-docx
@@ -12,3 +13,5 @@ pywin32
 pytest
 supabase
 python-multipart
+openai>=1.13.3
+httpx

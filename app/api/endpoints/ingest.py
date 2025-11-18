@@ -1,13 +1,31 @@
+
+
 from __future__ import annotations
+"""
+Ingest API endpoints for processing, storing, and indexing documents.
+
+Endpoints:
+- POST /ingest/document: ingest a single file by filename.
+- POST /ingest/bulk: ingest supported files from the documents directory.
+
+Behavior:
+- Parse files via DocumentProcessor into sections, images, and chunks.
+- Persist images and sections via ContentRepository (or Supabase if configured).
+- Update chunk metadata, create embeddings, and upsert to VectorStore.
+- Return summary counts and error details.
+
+Router requires an authenticated user (require_user).
+"""
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.models.requests import BulkIngestRequest, IngestRequest
 from app.api.models.responses import BulkIngestResponse, IngestResponse
 from app.config import settings
+from app.auth.dependencies import require_user
 from app.core.embeddings import EmbeddingModel
 from app.core.vector_store import VectorStore
 from app.services.document_processor import DocumentProcessor

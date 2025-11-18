@@ -1,9 +1,11 @@
 # app/api/endpoints/transcripts.py
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pathlib import Path
 import os, json
 from fastapi import UploadFile, File, Form
+from app.auth.dependencies import require_user
+
 from app.auth.dependencies import require_user
 
 router = APIRouter(prefix="/api", tags=["transcripts"], dependencies=[Depends(require_user)])

@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.api.models.responses import VectorStoreStatsResponse, NamespaceStats
 from app.core.vector_store import VectorStore
 from app.auth.dependencies import require_user

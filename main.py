@@ -17,9 +17,10 @@ load_dotenv(BASE_DIR / ".env")
 
 # Import the organized modules
 from app.config import settings
-from app.api.endpoints import health, ingest, chat, visibility
-
+from app.api.endpoints import health, ingest, chat, visibility, transcripts
 from app.api.endpoints.upload import router as upload_router
+from app.auth.middleware import AuthMiddleware
+from app.auth.router import router as auth_router
 
 #app = FastAPI()
 
@@ -54,6 +55,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
 )
+app.add_middleware(AuthMiddleware)
 
 # Security headers on all responses
 @app.middleware("http")

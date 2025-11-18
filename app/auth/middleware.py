@@ -1,77 +1,68 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
-from app.auth.session import COOKIE_NAME, SessionCookie
-from app.services.supabase_service import SupabaseService
-
-
-PUBLIC_PATH_PREFIXES = (
-    "/auth/",  # auth routes
-    "/docs", 
-    "/openapi.json",
-    "/",  # allow root (adjust if you need)
-)
+from app.auth.session import verify_session_cookie
+from app.config import settings
+from app.services import supabase_service
 
 
-def _is_public_path(path: str) -> bool:
-    if path == "/":
-        return True
-    return any(path.startswith(p) for p in PUBLIC_PATH_PREFIXES)
+@dataclass
+class AuthenticatedUser:
+    id: str
+    email: str
+    role: str
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
-    def __init__(self, app):
-        super().__init__(app)
-        self.db = SupabaseService()
+    """Attach request.state.user when a valid session cookie is present."""
 
     async def dispatch(self, request: Request, call_next):
-        # Default: unauthenticated
         request.state.user = None
+        request.state.session_id = None
 
-        path = request.url.path
-        if _is_public_path(path):
-            return await call_next(request)
+        cookie_value = request.cookies.get(settings.SESSION_COOKIE_NAME)
+        session_id = verify_session_cookie(cookie_value)
 
-        cookie_val: Optional[str] = request.cookies.get(COOKIE_NAME)
-        if not cookie_val:
-            return await call_next(request)
-
-        parsed = SessionCookie.parse_and_verify(cookie_val)
-        if not parsed:
-            return await call_next(request)
-
-        # Load session from DB and validate
-        session = self.db.get_session_by_id(parsed.session_id)
-        if not session or session.get("revoked"):
-            return await call_next(request)
-
-        # Expiration check (server-side)
-        expires_at = session.get("expires_at")
-        # If expires_at exists and is in the past, treat as invalid
-        try:
-            import datetime as _dt
-            if expires_at and _dt.datetime.fromisoformat(str(expires_at).replace("Z", "+00:00")) < _dt.datetime.now(_dt.timezone.utc):
-                return await call_next(request)
-        except Exception:
-            pass
-
-        user = self.db.get_user_by_id(session.get("user_id")) if session else None
-        if user:
-            request.state.user = {
-                "id": user.get("id"),
-                "email": user.get("email"),
-                "role": user.get("role", "user"),
-            }
-
-            # async best-effort update last_seen
-            try:
-                self.db.touch_session(parsed.session_id)
-            except Exception:
-                pass
+        if session_id:
+            session_row = supabase_service.get_session(session_id)
+            if self._is_session_active(session_row):
+                user = supabase_service.get_user_by_id(session_row["user_id"])
+                if user:
+                    request.state.user = AuthenticatedUser(
+                        id=str(user.get("id")),
+                        email=user.get("email"),
+                        role=user.get("role", "user"),
+                    )
+                    request.state.session_id = session_id
 
         response = await call_next(request)
         return response
+
+    def _is_session_active(self, session_row: Optional[dict]) -> bool:
+        if not session_row:
+            return False
+        if session_row.get("revoked_at"):
+            return False
+        expires_at = _parse_datetime(session_row.get("expires_at"))
+        if not expires_at:
+            return False
+        return expires_at > datetime.now(timezone.utc)
+
+
+def _parse_datetime(value: Optional[str]) -> Optional[datetime]:
+    if not value:
+        return None
+    if isinstance(value, datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    try:
+        normalized = value.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(normalized)
+        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+    except Exception:
+        return None

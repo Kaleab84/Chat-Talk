@@ -1,86 +1,46 @@
-import base64
+from __future__ import annotations
+
 import hashlib
 import hmac
-import os
-import time
-from dataclasses import dataclass
+import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Tuple
 
 from app.config import settings
 
 
-def _b64url(data: bytes) -> str:
-    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("utf-8")
+def create_session(user_id: str, ttl_days: int) -> Tuple[str, datetime]:
+    """Generate a new opaque session identifier and expiry timestamp."""
+    _ = user_id  # reserved for future linkage logic
+    session_id = secrets.token_hex(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=ttl_days)
+    return session_id, expires_at
 
 
-def _b64url_decode(data: str) -> bytes:
-    padding = '=' * (-len(data) % 4)
-    return base64.urlsafe_b64decode(data + padding)
+def _get_secret() -> bytes:
+    if not settings.SESSION_SECRET:
+        raise RuntimeError("SESSION_SECRET is required for signing session cookies.")
+    return settings.SESSION_SECRET.encode("utf-8")
 
 
-def _hmac_sha256(key: bytes, msg: bytes) -> bytes:
-    return hmac.new(key, msg, hashlib.sha256).digest()
+def sign_session_cookie(session_id: str) -> str:
+    """Produce a cookie payload `session_id:issued_at:signature` with HMAC SHA256."""
+    issued_at = int(datetime.now(timezone.utc).timestamp())
+    payload = f"{session_id}:{issued_at}"
+    signature = hmac.new(_get_secret(), payload.encode("utf-8"), hashlib.sha256).hexdigest()
+    return f"{payload}:{signature}"
 
 
-def _now() -> int:
-    return int(time.time())
-
-
-def _env(name: str, default: Optional[str] = None) -> Optional[str]:
-    return os.getenv(name, default)
-
-
-COOKIE_NAME = _env("SESSION_COOKIE_NAME", "CFC_SESSION")
-TTL_DAYS = int(_env("SESSION_TTL_DAYS", "7"))
-SESSION_TTL_SECONDS = TTL_DAYS * 24 * 60 * 60
-SESSION_SECRET = (_env("SESSION_SECRET") or "dev-secret-change-me").encode("utf-8")
-
-
-@dataclass
-class SessionCookie:
-    session_id: str
-    exp: int
-
-    @classmethod
-    def create(cls, session_id: str, ttl_seconds: int = SESSION_TTL_SECONDS) -> str:
-        exp = _now() + ttl_seconds
-        payload = f"{session_id}.{exp}".encode("utf-8")
-        sig = _b64url(_hmac_sha256(SESSION_SECRET, payload))
-        token = f"{session_id}.{exp}.{sig}"
-        return token
-
-    @classmethod
-    def parse_and_verify(cls, token: str) -> Optional["SessionCookie"]:
-        try:
-            parts = token.split(".")
-            if len(parts) != 3:
-                return None
-            session_id, exp_s, sig = parts
-            payload = f"{session_id}.{exp_s}".encode("utf-8")
-            expected_sig = _b64url(_hmac_sha256(SESSION_SECRET, payload))
-            if not hmac.compare_digest(expected_sig, sig):
-                return None
-            exp = int(exp_s)
-            if _now() > exp:
-                return None
-            return cls(session_id=session_id, exp=exp)
-        except Exception:
-            return None
-
-
-def build_cookie_header(value: str, *, domain: Optional[str] = None, path: str = "/") -> Tuple[str, str]:
-    parts = [f"{COOKIE_NAME}={value}", f"Path={path}", "HttpOnly", "Secure", "SameSite=None"]
-    # In local dev, domain may be omitted to default to host-only cookies
-    if domain:
-        parts.append(f"Domain={domain}")
-    # Max-Age preferred to Expires; browser will handle deletion on logout
-    parts.append(f"Max-Age={SESSION_TTL_SECONDS}")
-    return ("set-cookie", "; ".join(parts))
-
-
-def build_clear_cookie_header(*, domain: Optional[str] = None, path: str = "/") -> Tuple[str, str]:
-    parts = [f"{COOKIE_NAME}=", f"Path={path}", "HttpOnly", "Secure", "SameSite=None", "Max-Age=0"]
-    if domain:
-        parts.append(f"Domain={domain}")
-    return ("set-cookie", "; ".join(parts))
-
+def verify_session_cookie(cookie_value: Optional[str]) -> Optional[str]:
+    """Return the session_id when signature is valid; otherwise None."""
+    if not cookie_value:
+        return None
+    parts = cookie_value.split(":")
+    if len(parts) != 3:
+        return None
+    session_id, issued_at, signature = parts
+    payload = f"{session_id}:{issued_at}"
+    expected = hmac.new(_get_secret(), payload.encode("utf-8"), hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, signature):
+        return None
+    return session_id

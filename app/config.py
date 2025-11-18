@@ -35,14 +35,36 @@ class Settings:
     SUPABASE_URL: Optional[str] = os.getenv("SUPABASE_URL")
     SUPABASE_ANON_KEY: Optional[str] = os.getenv("SUPABASE_ANON_KEY")
     SUPABASE_BUCKET: Optional[str] = os.getenv("SUPABASE_BUCKET")
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
     LOCAL_CONTENT_ROOT = PROCESSED_DIR / "content_repository"
     # OpenAI Settings (for future GPT integration)
     OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
     OPENAI_MODEL = "gpt-3.5-turbo"
-    
+
     # Search Settings
     DEFAULT_TOP_K = 5
     MAX_CONTEXT_LENGTH = 4000
+
+    # Session / Auth Settings
+    SESSION_SECRET: str = os.getenv("SESSION_SECRET", "")
+    if not SESSION_SECRET:
+        raise ValueError("SESSION_SECRET environment variable is required for session signing.")
+    SESSION_COOKIE_NAME: str = os.getenv("SESSION_COOKIE_NAME", "CFC_SESSION")
+    try:
+        SESSION_TTL_DAYS: int = int(os.getenv("SESSION_TTL_DAYS", "7"))
+    except ValueError:
+        SESSION_TTL_DAYS = 7
+
+    # CORS / Environment
+    _default_origins = "http://localhost:3000,http://localhost:8000"
+    CORS_ORIGINS = [
+        origin.strip()
+        for origin in os.getenv("CORS_ORIGINS", _default_origins).split(",")
+        if origin.strip()
+    ]
+    ENV = os.getenv("ENV", "development")
+    FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000")
+    BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://localhost:8000")
 
 settings = Settings()
 

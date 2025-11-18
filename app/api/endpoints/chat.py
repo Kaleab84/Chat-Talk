@@ -1,7 +1,39 @@
-from fastapi import APIRouter, HTTPException, Depends
+
+"""
+API endpoints for chat-related features (search, ask, recommendations).
+This module exposes three authenticated HTTP POST endpoints that let clients:
+- search for relevant document chunks (/search),
+- ask a question and receive an AI-generated answer with supporting context (/ask),
+- get content recommendations based on a query (/recommendations).
+Key points (in plain language):
+- All routes require an authenticated user (require_user dependency).
+- The endpoints use a ChatService instance to perform the actual work (search, answer, recommend).
+- Each endpoint accepts a request model (SearchRequest, AskRequest, RecommendationRequest)
+    and returns a structured response model (SearchResponse, AskResponse, RecommendationResponse).
+- Successful responses include a success flag and data (results, answer, or recommendations).
+- On failure, the endpoints raise HTTP 500 with an error message; exceptions are logged.
+Endpoints summary:
+- POST /search
+    Accepts: a text query and top_k (how many top matches to return).
+    Returns: a list of ranked document chunks (score, snippet text, source info, ids).
+    Purpose: find document excerpts most relevant to the user's query.
+- POST /ask
+    Accepts: a question and top_k (how many context chunks to consider).
+    Returns: an AI-generated answer, plus the context chunks used to form that answer and an optional confidence score.
+    Purpose: answer user questions using retrieved document context.
+- POST /recommendations
+    Accepts: a query and a content type filter (optional).
+    Returns: a list of recommended items and a total count.
+    Purpose: suggest related content based on the user's query.
+Implementation notes:
+- Uses structured response models for consistent API output.
+- Logs unexpected exceptions for debugging while returning a generic HTTP 500 to clients.
+"""
+from fastapi import APIRouter, Depends, HTTPException
 import logging
 from app.api.models.requests import SearchRequest, AskRequest, RecommendationRequest
 from app.api.models.responses import SearchResponse, AskResponse, RecommendationResponse, SearchResult
+from app.auth.dependencies import require_user
 from app.services.chat_service import ChatService
 from app.auth.dependencies import require_user
 from app.rate_limit.limiter import limit
