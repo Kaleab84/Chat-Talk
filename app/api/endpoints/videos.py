@@ -1,6 +1,6 @@
 from __future__ import annotations
 """
-FastAPI router powering the video ingestion flow: accepts uploads, runs Whisper
+Video ingestion flow: accepts uploads, runs Whisper
 transcription, stores artifacts in Supabase, generates a markdown summary, and
 indexes transcript chunks into Pinecone. Related helpers live in
 app/services/supabase_content_repository.py and app/transcription/summarize_transcript.py.
@@ -113,7 +113,6 @@ def _upload_bytes(bucket: str, storage_path: str, data: bytes, content_type: str
 
 # --------- Whisper transcription ---------
 def _transcribe_to_segments(tmp_video_path: str, model_name: str = "small", language: str | None = None):
-    """Run Whisper locally and return a normalized list of segments."""
     model = whisper.load_model(model_name)
     result = model.transcribe(
         tmp_video_path,
