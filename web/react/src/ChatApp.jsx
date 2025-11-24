@@ -60,13 +60,14 @@ export default function ChatApp() {
 
   const sendQuestion = async () => {
     const trimmed = question.trim();
-    if (!trimmed && !pendingAttachments.length) return;
+    const attachmentsSnapshot = pendingAttachments;
+    if (!trimmed && !attachmentsSnapshot.length) return;
 
     const userMessage = {
       id: createId(),
       role: 'user',
       text: trimmed,
-      attachments: pendingAttachments.map((att) => ({ id: att.id, name: att.name, previewUrl: att.previewUrl })),
+      attachments: attachmentsSnapshot.map((att) => ({ id: att.id, name: att.name, previewUrl: att.previewUrl })),
       timestamp: createTimestamp(),
     };
     const typingId = createId();
@@ -82,14 +83,15 @@ export default function ChatApp() {
     ]);
     setQuestion('');
     setIsSending(true);
+    setPendingAttachments([]);
 
     try {
       let data;
-      if (pendingAttachments.length) {
+      if (attachmentsSnapshot.length) {
         const formData = new FormData();
         formData.append('question', trimmed);
         formData.append('top_k', '4');
-        pendingAttachments.forEach((att) => formData.append('images', att.file));
+        attachmentsSnapshot.forEach((att) => formData.append('images', att.file));
         const res = await fetch('/ask-with-media', { method: 'POST', body: formData });
         data = await res.json();
       } else {
@@ -149,14 +151,14 @@ export default function ChatApp() {
   return (
     <div className='react-app'>
       <header className='container header react-header'>
-        <div className='brand'>CFC Technologies</div>
+        <div className='brand'>CFC Software Support</div>
         <div className='greet'>{greeting ? `Hi, ${greeting}!` : 'Welcome back'}</div>
       </header>
 
       <main className='container chat-container'>
         <section className='panel active chat-panel'>
           <div className='panel-body chat-panel-body'>
-            <h2>AI Support Assistant</h2>
+            <h2>Chat with AI Assistant</h2>
             <MessageList messages={messages} onImageClick={openImageModal} />
             <AttachmentPreview attachments={pendingAttachments} onRemove={removeAttachment} />
             <form className='chat-input react-chat-input' onSubmit={handleSubmit}>

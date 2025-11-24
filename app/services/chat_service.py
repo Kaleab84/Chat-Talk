@@ -22,6 +22,7 @@ class ChatService:
         # Track last canned replies to avoid repeating verbatim
         self._last_small_talk_reply: Optional[str] = None
         self._last_capability_reply: Optional[str] = None
+        self._sent_small_talk_greeting: bool = False
     
     def search_documents(self, query: str, top_k: int = None) -> Dict[str, Any]:
         """Search for relevant document chunks."""
@@ -74,13 +75,17 @@ class ChatService:
             
             # Lightly handle greetings/small talk without requiring context
             if self._is_small_talk(question):
-                return {
-                    "success": True,
-                    "question": question,
-                    "answer": self._small_talk_reply(),
-                    "context_used": [],
-                    "confidence": 0.0,
-                }
+                if not self._sent_small_talk_greeting:
+                    reply = self._small_talk_reply()
+                    self._sent_small_talk_greeting = True
+                    return {
+                        "success": True,
+                        "question": question,
+                        "answer": reply,
+                        "context_used": [],
+                        "confidence": 0.0,
+                    }
+                # Already greeted once; proceed with normal answer generation
             
             # Handle capability/meta prompts without strict context
             if self._is_capability_prompt(question):
@@ -411,13 +416,6 @@ class ChatService:
         except Exception:
             pass
 
-        suggestions_pool = [
-            "Ask anything about CFC software.",
-            "Tell me what you're trying to do, and I'll help.",
-            "You can ask for definitions, steps, or where a feature is documented.",
-            "Share an error message or attach a screenshot for quicker help.",
-        ]
-
         greetings = [
             "Hi! How can I help?",
             "Hello! What can I do for you?",
@@ -426,18 +424,15 @@ class ChatService:
             "Welcome! How can I assist?",
         ]
 
-        options = [f"{g} {s}" for g in greetings for s in suggestions_pool]
-        random.shuffle(options)
-
-        # Pick a reply that differs from the last one if possible
-        reply = options[0]
+        random.shuffle(greetings)
+        reply_choice = greetings[0]
         if self._last_small_talk_reply:
-            for opt in options:
+            for opt in greetings:
                 if opt != self._last_small_talk_reply:
-                    reply = opt
+                    reply_choice = opt
                     break
-        self._last_small_talk_reply = reply
-        return reply
+        self._last_small_talk_reply = reply_choice
+        return reply_choice
 
     def _is_capability_prompt(self, text: str) -> bool:
         t = (text or "").strip().lower()

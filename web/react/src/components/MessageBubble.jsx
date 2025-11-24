@@ -1,4 +1,4 @@
-﻿import AttachmentGrid from './AttachmentGrid.jsx';
+import AttachmentGrid from './AttachmentGrid.jsx';
 
 export default function MessageBubble({ message, onImageClick }) {
   const role = message.role === 'user' ? 'user' : 'bot';
@@ -8,7 +8,7 @@ export default function MessageBubble({ message, onImageClick }) {
 
   const textContent = message.isTyping ? (
     <span className='typing-text'>
-      Assistant is thinking<span className='dots'>…</span>
+      Assistant is thinking<span className='dots'></span>
     </span>
   ) : (
     message.text
