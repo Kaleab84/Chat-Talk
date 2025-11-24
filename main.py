@@ -56,7 +56,10 @@ app.include_router(upload_router, prefix="/files", tags=["Files"])
 
 # Serve a simple web UI at /ui
 web_dir = BASE_DIR / "web"
-if web_dir.exists():
+react_dist_dir = web_dir / "react-dist"
+if react_dist_dir.exists():
+    app.mount("/ui", StaticFiles(directory=str(react_dist_dir), html=True), name="ui")
+elif web_dir.exists():
     app.mount("/ui", StaticFiles(directory=str(web_dir), html=True), name="ui")
 
 @app.on_event("startup")
