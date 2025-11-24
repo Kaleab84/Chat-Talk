@@ -37,7 +37,7 @@ class ChatService:
                     "query": query,
                     "results": [],
                     "total_results": 0,
-                    "error": "No documents have been ingested yet. Please use the /ingest endpoint to upload and process documents."
+                    "error": "I'm sorry. I don't seem to have the right knowledge to help with that right now."
                 }
             
             context_chunks = self.rag_pipeline.retrieve_context(query, top_k)
@@ -48,7 +48,7 @@ class ChatService:
                     "query": query,
                     "results": [],
                     "total_results": 0,
-                    "message": "No relevant documents found for your query. Try different keywords or check if documents covering this topic have been uploaded."
+                    "message": "I don't seem to have much knowledge regarding that topic. Maybe try a different phrase or topic, and I'll help where I can."
                 }
             
             return {
@@ -102,7 +102,7 @@ class ChatService:
                 return {
                     "success": False,
                     "question": question,
-                    "answer": "No documents have been ingested yet. Please use the /ingest endpoint to upload and process documents before asking questions.",
+                    "answer": "I'd love to help, but I don't have enough knowledge yet.",
                     "context_used": [],
                     "confidence": 0.0,
                     "error": "empty_vector_store"
@@ -115,7 +115,7 @@ class ChatService:
                 return {
                     "success": True,
                     "question": question,
-                    "answer": "I couldn't find relevant information to answer your question. This might be because the question is outside the scope of the ingested documents. Please try rephrasing or asking about topics covered in the uploaded documents.",
+                    "answer": "I don't seem to know anything about that yet. If you could rephrase the question or point me toward a specific topic, I'll happily help where I can.",
                     "context_used": [],
                     "confidence": 0.0
                 }
@@ -417,11 +417,11 @@ class ChatService:
             pass
 
         greetings = [
-            "Hi! How can I help?",
-            "Hello! What can I do for you?",
-            "Hey there - how can I help today?",
-            "Hi there! What are you working on?",
-            "Welcome! How can I assist?",
+            "Hi, there! How can I help you today?",
+            "Hey, there! What can I do for you?",
+            "Hey! Thanks for reaching out. What can I help with?",
+            "Hi! What can I help you with?",
+            "Hey! I'm here to help. Just let me know what you're working on.",
         ]
 
         random.shuffle(greetings)
@@ -459,10 +459,12 @@ class ChatService:
             pass
 
         corpus_blurb = ""
+        if doc_count:
+            corpus_blurb = f" I currently have {doc_count} document collections I can reference."
         templates = [
-            "I answer questions about CFC software using trustworthy internal information.{corpus} Ask about a topic, a feature, or a specific task you're doing.",
-            "I can find and summarize details from your CFC documentation and materials.{corpus} Ask me about procedures, definitions, or where something is described.",
-            "Iâ€™m a product assistant: I look up relevant details and provide concise answers.{corpus} You can also share a screenshot or an error message for faster help.",
+            "I'm here to answer questions about CFC software using trustworthy internal information.{corpus} Tell me what you're working on and I'll share the most helpful details I can find.",
+            "I can explore your CFC documentation and highlight the parts that matter.{corpus} Ask about a process, a definition, or where to find something and I'll walk you through it.",
+            "Think of me as your friendly product assistant: I search the knowledge base and provide concise explanations.{corpus} Feel free to mention any screenshots or error messages if that helps.",
         ]
         random.shuffle(templates)
         reply = templates[0].format(corpus=corpus_blurb)

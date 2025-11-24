@@ -5,13 +5,14 @@ export default function MessageBubble({ message, onImageClick }) {
   const className = ['msg', role];
   if (message.isTyping) className.push('typing');
   if (message.isError) className.push('err');
+  if (message.isStreaming) className.push('streaming');
 
   const textContent = message.isTyping ? (
     <span className='typing-text'>
       Assistant is thinking<span className='dots'></span>
     </span>
   ) : (
-    message.text
+    message.text || ''
   );
 
   return (

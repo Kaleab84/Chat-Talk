@@ -20,9 +20,17 @@ export default function ChatApp() {
   const [isSending, setIsSending] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const fileInputRef = useRef(null);
+  const streamingTimersRef = useRef(new Map());
 
   useEffect(() => {
     setGreeting(getGreeting());
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      streamingTimersRef.current.forEach((timerId) => clearTimeout(timerId));
+      streamingTimersRef.current.clear();
+    };
   }, []);
 
   const addAttachments = useCallback((files) => {
@@ -57,6 +65,87 @@ export default function ChatApp() {
   const clearAttachments = () => {
     setPendingAttachments([]);
   };
+
+  const stopStreamingForMessage = useCallback((messageId) => {
+    const timerId = streamingTimersRef.current.get(messageId);
+    if (timerId) {
+      clearTimeout(timerId);
+      streamingTimersRef.current.delete(messageId);
+    }
+  }, []);
+
+  const streamAssistantText = useCallback(
+    (messageId, content, extraMeta = {}) => {
+      const safeContent =
+        typeof content === 'string' ? content : content != null ? String(content) : '';
+      const chars = Array.from(safeContent);
+      const streamingTimestamp = extraMeta.timestamp ?? createTimestamp();
+
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId
+            ? {
+                ...msg,
+                ...extraMeta,
+                text: '',
+                isTyping: false,
+                isStreaming: true,
+                timestamp: streamingTimestamp,
+              }
+            : msg
+        )
+      );
+
+      if (!chars.length) {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId ? { ...msg, text: '', isStreaming: false } : msg
+          )
+        );
+        return;
+      }
+
+      const chunkSize = (() => {
+        if (chars.length < 80) return 1;
+        if (chars.length < 200) return 2;
+        if (chars.length < 400) return 3;
+        if (chars.length < 800) return 5;
+        return 8;
+      })();
+      const baseDelay = chars.length > 400 ? 10 : 19;
+      let index = 0;
+
+      const emitNextChunk = () => {
+        const nextIndex = Math.min(chars.length, index + chunkSize);
+        const chunk = chars.slice(index, nextIndex).join('');
+        index = nextIndex;
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId ? { ...msg, text: `${msg.text || ''}${chunk}` } : msg
+          )
+        );
+
+        if (index >= chars.length) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === messageId ? { ...msg, isStreaming: false } : msg
+            )
+          );
+          stopStreamingForMessage(messageId);
+          return;
+        }
+
+        const delay = baseDelay + Math.random() * baseDelay;
+        const timerId = setTimeout(emitNextChunk, delay);
+        streamingTimersRef.current.set(messageId, timerId);
+      };
+
+      stopStreamingForMessage(messageId);
+      const timerId = setTimeout(emitNextChunk, 40);
+      streamingTimersRef.current.set(messageId, timerId);
+    },
+    [stopStreamingForMessage]
+  );
 
   const sendQuestion = async () => {
     const trimmed = question.trim();
@@ -104,27 +193,31 @@ export default function ChatApp() {
       }
 
       const answer = data?.success ? data.answer || 'No answer provided yet.' : data?.detail || 'Request failed.';
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === typingId
-            ? {
-                id: typingId,
-                role: 'assistant',
-                text: answer,
-                isTyping: false,
-                isError: !data?.success,
-                timestamp: createTimestamp(),
-              }
-            : msg
-        )
-      );
+      if (data?.success) {
+        streamAssistantText(typingId, answer, { isError: false });
+      } else {
+        stopStreamingForMessage(typingId);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === typingId
+              ? {
+                  ...msg,
+                  text: answer,
+                  isTyping: false,
+                  isError: true,
+                  timestamp: createTimestamp(),
+                }
+              : msg
+          )
+        );
+      }
     } catch (error) {
+      stopStreamingForMessage(typingId);
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === typingId
             ? {
-                id: typingId,
-                role: 'assistant',
+                ...msg,
                 text: String(error),
                 isTyping: false,
                 isError: true,
