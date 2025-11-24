@@ -107,12 +107,10 @@ export default function ChatApp() {
 
       const chunkSize = (() => {
         if (chars.length < 80) return 1;
-        if (chars.length < 200) return 2;
-        if (chars.length < 400) return 3;
-        if (chars.length < 800) return 5;
-        return 8;
+        if (chars.length < 400) return 2;
+        return 3;
       })();
-      const baseDelay = chars.length > 400 ? 10 : 19;
+      const baseDelay = chars.length > 400 ? 15 : 19;
       let index = 0;
 
       const emitNextChunk = () => {

@@ -352,25 +352,24 @@ class ChatService:
 
         if not context_chunks:
             return (
-                "I couldn't find any direct references in the documents yet, "
-                "but I can take another pass if you share a bit more detail."
+                "I'm not sure about that yet. Could you share a bit more detail so I can point you in the right direction?"
             )
 
         # Return the most relevant chunk with some friendly framing
 
         best_match = context_chunks[0]
 
-        answer = "Here's the clearest detail I could pull from the docs:\n\n"
+        snippet = (best_match.get("text") or "")[:500]
 
-        answer += f"{best_match['text'][:500]}..."
+        answer = "Here's what should help right now:\n\n"
+
+        answer += f"{snippet}..."
 
         if len(context_chunks) > 1:
 
-            remaining = len(context_chunks) - 1
-
-            plural = "references" if remaining > 1 else "additional reference"
-
-            answer += f"\n\nI also spotted {remaining} more {plural}. Let me know if you'd like a closer look."
+            answer += (
+                "\n\nThere are a few other angles I can share whenever you're ready to dive deeper."
+            )
 
         return answer
 
@@ -380,10 +379,12 @@ class ChatService:
         sentences = [
             "You are a warm, collaborative assistant for CFC teammates.",
             "Occasionally thank the user when it fits and isn't repetitive, keep a friendly encouraging tone, and be appreciative of their time.",
-            "Respond only with accurate information from the provided reference material; do not mention context windows, retrieval, or how you obtained details.",
-            "When details are missing, politely ask for a quick clarification or state what is missing in one sentence.",
+            "Treat all retrieved material as your own working knowledge and never mention context windows, retrieval steps, documents, or references.",
+            "State answers with confidence, never cite the number of sources, and do not explain how information was gathered.",
+            "When details are missing, politely ask for a quick clarification or say you don't know yet in one concise sentence.",
             "Avoid conditional 'if ... then ...' phrasing and do not begin sentences with 'If'.",
             "Keep answers concise (1-3 sentences), avoid repeating yourself, and gently guide casual chit-chat toward a clear next step.",
+            "Do not say hi or hello in reponses.",
         ]
 
         if include_image_hint:
@@ -666,13 +667,14 @@ class ChatService:
         if doc_count:
 
             corpus_blurb = (
-                f" I currently have {doc_count} document collections I can reference."
+                f" I keep about {doc_count} curated collections handy behind the scenes."
             )
 
         templates = [
-            "I'm here to answer questions about CFC software using trustworthy internal information.{corpus} Tell me what you're working on and I'll share the most helpful details I can find.",
-            "I can explore your CFC documentation and highlight the parts that matter.{corpus} Ask about a process, a definition, or where to find something and I'll walk you through it.",
+            "I'm here to help with CFC software using trustworthy internal details.{corpus} Tell me what you're working on and I'll share the most helpful points I have.",
+            "I can walk you through CFC workflows and highlight the parts that matter.{corpus} Ask about a process, a definition, or where to find something and I'll point you to the next step.",
             "Think of me as your friendly product assistant: I search the knowledge base and provide concise explanations.{corpus} Feel free to mention any screenshots or error messages if that helps.",
+            "Need a feature breakdown or troubleshooting steps? Just ask and I'll map out the essentials.{corpus} Screenshots or error messages help me tailor the guidance faster.",
         ]
 
         random.shuffle(templates)
