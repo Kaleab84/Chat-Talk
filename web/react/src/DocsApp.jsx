@@ -11,7 +11,7 @@ export default function DocsApp() {
   return (
     <div className='react-app'>
       <header className='container header react-header'>
-        <div className='brand'>CFC Technologies</div>
+        <div className='brand'>CFC Software Support</div>
         <div className='greet'>{greeting ? `Hi, ${greeting}!` : 'Welcome back'}</div>
       </header>
 
