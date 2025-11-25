@@ -57,3 +57,9 @@ After the request completes, check `data/processed/content_repository/<doc-slug>
 - Conversion errors? Make sure Office/LibreOffice is installed for `.doc` conversions.
 - Pinecone issues? Double-check the API key and region in `.env`.
 - Looking ahead? Swap `content_repository.py` for Supabase when you’re ready for cloud storage.
+
+## Attach Images to Chat Questions
+- Use POST /ask-with-media (multipart/form-data).
+- Fields: question (text), 	op_k (int, optional), images (png/jpg/jpeg/webp).
+- Requires GEMINI_API_KEY for multimodal image support.
+

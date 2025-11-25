@@ -40,6 +40,10 @@ class Settings:
     OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
     OPENAI_MODEL = "gpt-3.5-turbo"
     
+    # Gemini Settings (alternative to OpenAI)
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
+    GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    
     # Search Settings
     DEFAULT_TOP_K = 5
     MAX_CONTEXT_LENGTH = 4000

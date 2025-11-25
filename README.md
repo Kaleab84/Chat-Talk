@@ -78,3 +78,38 @@ DOC/DOCX/TXT --> /ingest --> document_processor
 - Replace the placeholder answer generator with GPT (OpenAI key already wired for the future).
 - Add a frontend or CLI that reads the JSON/image paths returned by the API.
 - Extend the processor to cover PDF or video transcript ingestion.
+
+## Attach Images to Chat Questions
+- New endpoint: `POST /ask-with-media` (multipart/form-data).
+  - Fields: `question` (text), `top_k` (int, optional), `images` (one or more files: png/jpg/jpeg/webp).
+  - Uses Gemini multimodal when `GEMINI_API_KEY` is set; images are considered alongside retrieved document context.
+  - Response shape matches `POST /ask`.
+
+Example (PowerShell):
+```
+curl -X POST "http://localhost:8000/ask-with-media" `
+     -H "Content-Type: multipart/form-data" `
+     -F "question=This screenshot shows an error—what does it mean?" `
+     -F "images=@C:\\path\\to\\screenshot.png;type=image/png"
+```
+## React Dashboard (Preview)
+- A React/Vite version of the dashboard now lives in `web/react`, so you can iterate without touching the legacy HTML yet.
+- **Develop quickly:**
+  ```bash
+  cd web/react
+  npm install
+  npm run dev
+  ```
+  The dev server proxies API calls to `http://localhost:8000`, so uploads still go through FastAPI.
+- **Build static assets:**
+  ```bash
+  npm run build
+  ```
+-  This writes production files to `web/react-dist/`. When the backend is running you can open:
+   - Login (default): http://localhost:8000/ui/  (or `/ui/index.html`)
+   - Admin dashboard: http://localhost:8000/ui/admin.html
+   - Dev/docs: http://localhost:8000/ui/dev.html
+   - Chat: http://localhost:8000/ui/chat.html
+   - Direct login link: http://localhost:8000/ui/login.html
+- The React app reuses the single-file dropzone plus 3-at-a-time bulk upload pipeline, a docs iframe, and now a fully featured chat surface (attachments + typing indicators), letting you validate each experience beside the legacy pages before retiring them.
+- FastAPI now serves the React build directly from `/ui`, so the older HTML pages are no longer needed. Use the login at `/ui/` (or `/ui/login.html`) to access every React screen, and open `/ui/admin.html` for the admin dashboard once signed in.
