@@ -2,7 +2,7 @@
 CFC Animal Feed Software Chatbot API
 Main FastAPI application with organized structure
 """
-
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import logging
@@ -34,6 +34,13 @@ app = FastAPI(
     title=settings.API_TITLE,
     version=settings.API_VERSION,
     description="AI-powered help chatbot for animal-feed software with document search and Q&A capabilities"
+)
+
+WEB_DIR = BASE_DIR / "web"
+app.mount(
+    "/ui",
+    StaticFiles(directory=WEB_DIR, html=True),
+    name="ui",
 )
 
 # Add CORS middleware

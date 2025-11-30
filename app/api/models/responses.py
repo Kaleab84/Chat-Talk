@@ -42,6 +42,22 @@ class SearchResult(BaseModel):
     section_path: Optional[str] = None
     section_title: Optional[str] = None
     image_paths: Optional[List[str]] = None
+    start_seconds: Optional[float] = None
+    end_seconds: Optional[float] = None
+    video_url: Optional[str] = None
+    txt_url: Optional[str] = None
+    srt_url: Optional[str] = None
+    vtt_url: Optional[str] = None
+
+class VideoReference(BaseModel):
+    """Video clip metadata surfaced with answers."""
+    video_url: str
+    start_seconds: Optional[float] = None
+    end_seconds: Optional[float] = None
+    timestamp: Optional[str] = None
+    end_timestamp: Optional[str] = None
+    deep_link_url: Optional[str] = None
+    preview: Optional[str] = None
 
 class SearchResponse(BaseModel):
     """Response model for document search."""
@@ -58,6 +74,7 @@ class AskResponse(BaseModel):
     answer: Optional[str] = None
     context_used: List[SearchResult]
     confidence: Optional[float] = None
+    video_context: Optional[List[VideoReference]] = None
     error: Optional[str] = None
 
 class RecommendationItem(BaseModel):

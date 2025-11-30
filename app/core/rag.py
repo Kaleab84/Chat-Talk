@@ -8,6 +8,16 @@ from app.core.vector_store import VectorStore
 logger = logging.getLogger(__name__)
 
 
+def _to_float(value: Any) -> float | None:
+    """Best-effort float conversion that tolerates None/strings."""
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 class RAGPipeline:
     """Retrieval-Augmented Generation pipeline."""
 
@@ -44,6 +54,12 @@ class RAGPipeline:
                     "section_path": metadata.get("section_path"),
                     "image_paths": metadata.get("image_paths", []),
                     "block_ids": metadata.get("block_ids", []),
+                    "start_seconds": _to_float(metadata.get("start_seconds")),
+                    "end_seconds": _to_float(metadata.get("end_seconds")),
+                    "video_url": metadata.get("video_url"),
+                    "txt_url": metadata.get("txt_url"),
+                    "srt_url": metadata.get("srt_url"),
+                    "vtt_url": metadata.get("vtt_url"),
                 })
 
             return context_chunks

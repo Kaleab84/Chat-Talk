@@ -33,6 +33,12 @@ async def search_documents(request: SearchRequest):
                 section_path=item.get("section_path"),
                 section_title=item.get("section_title"),
                 image_paths=item.get("image_paths"),
+                start_seconds=item.get("start_seconds"),
+                end_seconds=item.get("end_seconds"),
+                video_url=item.get("video_url"),
+                txt_url=item.get("txt_url"),
+                srt_url=item.get("srt_url"),
+                vtt_url=item.get("vtt_url"),
             )
             for item in result["results"]
         ]
@@ -73,6 +79,12 @@ async def ask_question(request: AskRequest):
                 section_path=item.get("section_path"),
                 section_title=item.get("section_title"),
                 image_paths=item.get("image_paths"),
+                start_seconds=item.get("start_seconds"),
+                end_seconds=item.get("end_seconds"),
+                video_url=item.get("video_url"),
+                txt_url=item.get("txt_url"),
+                srt_url=item.get("srt_url"),
+                vtt_url=item.get("vtt_url"),
             )
             for item in result["context_used"]
         ]
@@ -82,7 +94,8 @@ async def ask_question(request: AskRequest):
             question=request.question,
             answer=result["answer"],
             context_used=context_results,
-            confidence=result.get("confidence")
+            confidence=result.get("confidence"),
+            video_context=result.get("video_context"),
         )
         
     except HTTPException:

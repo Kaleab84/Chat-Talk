@@ -79,6 +79,7 @@ class ChatService:
             
             # Retrieve relevant context
             context_chunks = self.rag_pipeline.retrieve_context(question, top_k)
+            video_context = self._build_video_context(context_chunks)
             
             if not context_chunks:
                 return {
@@ -102,12 +103,15 @@ class ChatService:
             else:
                 answer = self._generate_simple_answer(question, context_chunks, formatted_context)
 
+            answer = self._attach_video_references(answer, video_context)
+
             return {
                 "success": True,
                 "question": question,
                 "answer": answer,
                 "context_used": context_chunks,
-                "confidence": self._calculate_confidence(context_chunks)
+                "confidence": self._calculate_confidence(context_chunks),
+                "video_context": video_context,
             }
             
         except Exception as e:
@@ -185,6 +189,74 @@ class ChatService:
         confidence = max(0.0, min(1.0, top_score))
         
         return round(confidence, 3)
+
+    def _build_video_context(self, context_chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Collect per-video metadata that callers can render."""
+        clips: List[Dict[str, Any]] = []
+        for chunk in context_chunks:
+            if chunk.get("source_type") != "video":
+                continue
+            video_url = chunk.get("video_url")
+            if not video_url:
+                continue
+
+            start = chunk.get("start_seconds")
+            end = chunk.get("end_seconds")
+            clip = {
+                "video_url": video_url,
+                "start_seconds": start,
+                "end_seconds": end,
+                "timestamp": self._format_timestamp(start),
+                "end_timestamp": self._format_timestamp(end),
+                "deep_link_url": self._build_video_link(video_url, start),
+                "preview": (chunk.get("text") or "")[:240],
+            }
+            clips.append(clip)
+        return clips
+
+    def _format_timestamp(self, seconds: Optional[float]) -> Optional[str]:
+        """Return HH:MM:SS timestamp for display."""
+        if seconds is None:
+            return None
+        try:
+            seconds = max(0, int(float(seconds)))
+        except (TypeError, ValueError):
+            return None
+        h, rem = divmod(seconds, 3600)
+        m, s = divmod(rem, 60)
+        if h:
+            return f"{h:02d}:{m:02d}:{s:02d}"
+        return f"{m:02d}:{s:02d}"
+
+    def _build_video_link(self, video_url: str, start_seconds: Optional[float]) -> str:
+        """Append a fragment so web players can seek directly."""
+        if start_seconds is None:
+            return video_url
+        try:
+            start = max(0, int(float(start_seconds)))
+        except (TypeError, ValueError):
+            return video_url
+        return f"{video_url}#t={start}"
+
+    def _attach_video_references(self, answer: str, video_context: List[Dict[str, Any]]) -> str:
+        """Append human-readable video references to the answer text."""
+        if not video_context:
+            return answer
+
+        lines = ["Video reference:" if len(video_context) == 1 else "Video references:"]
+        for clip in video_context[:3]:
+            timestamp = clip.get("timestamp") or f"{int(clip.get('start_seconds', 0))}s"
+            link = clip.get("deep_link_url") or clip.get("video_url")
+            if not link:
+                continue
+            lines.append(f"- {timestamp}: {link}")
+
+        if len(lines) == 1:
+            return answer
+        joiner = "\n".join(lines)
+        if answer.endswith("\n"):
+            return f"{answer.rstrip()}\n\n{joiner}"
+        return f"{answer}\n\n{joiner}"
     
     def get_recommendations(self, query: str, content_type: str = "all") -> Dict[str, Any]:
         """Get content recommendations based on query."""
