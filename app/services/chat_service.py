@@ -1,4 +1,5 @@
 from typing import List, Dict, Any, Optional
+import re
 import logging
 from app.core.rag import RAGPipeline
 from app.core.vector_store import VectorStore
@@ -183,17 +184,7 @@ class ChatService:
                     **self._extract_primary_video_reference([]),
                 }
 
-            formatted_context = self.video_rag_pipeline.format_context(context_chunks)
-
-            if settings.OPENAI_API_KEY:
-                try:
-                    answer = self._generate_gpt_answer(question, formatted_context)
-                except Exception as gpt_exc:
-                    logger.warning(f"OpenAI generation failed for video question, falling back to stub: {gpt_exc}")
-                    answer = self._generate_simple_answer(question, context_chunks, formatted_context)
-            else:
-                answer = self._generate_simple_answer(question, context_chunks, formatted_context)
-
+            answer = self._format_video_resource_answer(context_chunks)
             answer = self._attach_video_references(answer, video_context)
 
             return {
@@ -232,6 +223,129 @@ class ChatService:
             answer += f"\n\nAdditional relevant information is available from {len(context_chunks) - 1} other sources."
         
         return answer
+
+    def _format_video_resource_answer(self, context_chunks: List[Dict[str, Any]]) -> str:
+        """List relevant video clips with timestamps and short descriptions."""
+        entries: List[str] = []
+        seen_keys = set()
+
+        for chunk in context_chunks:
+            video_url = chunk.get("video_url")
+            if not video_url:
+                continue
+
+            key = (video_url, chunk.get("start_seconds"))
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+
+            title = chunk.get("source") or "Video"
+            start_label = self._format_timestamp(chunk.get("start_seconds")) or "00:00"
+            end_label = self._format_timestamp(chunk.get("end_seconds"))
+            time_label = f"{start_label} → {end_label}" if end_label and end_label != start_label else start_label
+            description = self._summarize_clip_text(chunk.get("text") or "")
+
+            entries.append(f"- {title} ({time_label}): {description}")
+            if len(entries) == 4:
+                break
+
+        if not entries:
+            return "I couldn't find any video snippets related to that question."
+
+        return "Here are some video resources that might help you:\n" + "\n".join(entries)
+
+    def _extract_summary_points(self, text: str) -> List[str]:
+        """Split transcript text into paraphrased bullet-friendly statements."""
+        sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+        points: List[str] = []
+        for sentence in sentences:
+            cleaned = self._paraphrase_sentence(sentence)
+            if not cleaned:
+                continue
+            if len(cleaned.split()) < 5:
+                continue
+            points.append(cleaned)
+        return points
+
+    def _paraphrase_sentence(self, sentence: str) -> str:
+        """Lightly paraphrase a transcript sentence so it reads like a summary."""
+        if not sentence:
+            return ""
+        text = sentence.strip()
+        if not text:
+            return ""
+
+        text = re.sub(r"^[\"“”']+", "", text)
+        text = re.sub(r"^(\s*(so|and|but|then)[, ]+)+", "", text, flags=re.IGNORECASE)
+
+        replacements = [
+            (r"\bwe're\b", "the presenter is"),
+            (r"\bwe are\b", "the presenter is"),
+            (r"\bwe\b", "the team"),
+            (r"\byou can\b", "users can"),
+            (r"\byou\b", "users"),
+            (r"\byour\b", "a user's"),
+            (r"\bI'm\b", "The presenter is"),
+            (r"\bI'll\b", "The presenter will"),
+            (r"\bwe've\b", "the team has"),
+            (r"\bwe'll\b", "the team will"),
+            (r"\blet's\b", "the workflow"),
+            (r"\bright\b", ""),
+        ]
+        for pattern, repl in replacements:
+            text = re.sub(pattern, repl, text, flags=re.IGNORECASE)
+
+        text = re.sub(
+            r"^The presenter is going to (?:go ahead and )?",
+            "Demonstrates how to ",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^The presenter is (?:going to )?",
+            "Explains how to ",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^The presenter will",
+            "Shows how to",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^Users can",
+            "Highlights how users can",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^Users",
+            "Highlights how users",
+            text,
+            flags=re.IGNORECASE,
+        )
+
+        text = re.sub(r"go ahead and\s+", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\b(?:right|okay|um|uh)\b", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\s+", " ", text).strip(" ,.-")
+        if not text:
+            return ""
+        if not text[0].isupper():
+            text = text[0].upper() + text[1:]
+        if not text.endswith("."):
+            text += "."
+        return text
+
+    def _summarize_clip_text(self, text: str) -> str:
+        """Return a concise description for a transcript chunk."""
+        points = self._extract_summary_points(text)
+        if points:
+            return points[0]
+        snippet = (text or "").strip()
+        if len(snippet) > 200:
+            snippet = snippet[:197].rstrip() + "..."
+        return snippet or "Describes the relevant workflow in the clip."
 
     def _generate_gpt_answer(self, question: str, formatted_context: str) -> str:
         """Use OpenAI Chat Completions to generate a grounded answer from context."""
