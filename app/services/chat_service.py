@@ -1,4 +1,5 @@
 from typing import List, Dict, Any, Optional
+import re
 import logging
 from app.core.rag import RAGPipeline
 from app.core.vector_store import VectorStore
@@ -12,9 +13,26 @@ class ChatService:
     """Main service for chatbot interactions."""
     
     def __init__(self):
-        self.rag_pipeline = RAGPipeline()
-        self.vector_store = VectorStore()
         self.embedding_model = EmbeddingModel()
+        self.vector_store = VectorStore()
+        self.document_rag_pipeline = RAGPipeline(
+            vector_store=self.vector_store,
+            embedding_model=self.embedding_model,
+        )
+
+        video_index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", self.vector_store.index_name)
+        if video_index_name == self.vector_store.index_name:
+            self.video_vector_store = self.vector_store
+        else:
+            self.video_vector_store = VectorStore(index_name=video_index_name)
+        self.video_rag_pipeline = RAGPipeline(
+            vector_store=self.video_vector_store,
+            embedding_model=self.embedding_model,
+        )
+
+        self._log_vector_store_details(self.vector_store, "Document")
+        self._log_vector_store_details(self.video_vector_store, "Video")
+
         self.document_processor = DocumentProcessor()
     
     def search_documents(self, query: str, top_k: int = None) -> Dict[str, Any]:
@@ -33,7 +51,7 @@ class ChatService:
                     "error": "No documents have been ingested yet. Please use the /ingest endpoint to upload and process documents."
                 }
             
-            context_chunks = self.rag_pipeline.retrieve_context(query, top_k)
+            context_chunks = self.document_rag_pipeline.retrieve_context(query, top_k)
             
             if not context_chunks:
                 return {
@@ -61,7 +79,7 @@ class ChatService:
             }
     
     def ask_question(self, question: str, top_k: int = None) -> Dict[str, Any]:
-        """Get context-aware response to a question."""
+        """Get context-aware response to a question (documents + general knowledge)."""
         try:
             if top_k is None:
                 top_k = settings.DEFAULT_TOP_K
@@ -78,7 +96,7 @@ class ChatService:
                 }
             
             # Retrieve relevant context
-            context_chunks = self.rag_pipeline.retrieve_context(question, top_k)
+            context_chunks = self.document_rag_pipeline.retrieve_context(question, top_k)
             
             if not context_chunks:
                 return {
@@ -90,7 +108,7 @@ class ChatService:
                 }
             
             # Format context
-            formatted_context = self.rag_pipeline.format_context(context_chunks)
+            formatted_context = self.document_rag_pipeline.format_context(context_chunks)
 
             # If OpenAI is configured, generate a grounded answer; otherwise use simple stub
             if settings.OPENAI_API_KEY:
@@ -107,11 +125,80 @@ class ChatService:
                 "question": question,
                 "answer": answer,
                 "context_used": context_chunks,
-                "confidence": self._calculate_confidence(context_chunks)
+                "confidence": self._calculate_confidence(context_chunks),
+                **self._extract_primary_video_reference([]),
             }
             
         except Exception as e:
             logger.error(f"Error answering question: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "question": question,
+                "answer": None
+            }
+
+    def ask_video_question(self, question: str, top_k: int = None) -> Dict[str, Any]:
+        """Answer a question using only video transcript context."""
+        try:
+            if top_k is None:
+                top_k = settings.DEFAULT_TOP_K
+
+            if self._is_vector_store_empty(self.video_vector_store):
+                return {
+                    "success": False,
+                    "question": question,
+                    "answer": "No content has been ingested yet. Please upload and process video transcripts before asking questions.",
+                    "context_used": [],
+                    "confidence": 0.0,
+                    "error": "empty_vector_store"
+                }
+
+            metadata_filter = {"source_type": {"$eq": "video"}}
+            logger.info(
+                "ask_video_question retrieval -> index=%s namespace=%s filter=%s",
+                self.video_vector_store.index_name,
+                getattr(self.video_vector_store, "namespace", None) or "default",
+                metadata_filter,
+            )
+
+            context_chunks = self.video_rag_pipeline.retrieve_context(
+                question,
+                top_k,
+                metadata_filter=metadata_filter,
+            )
+            if not context_chunks:
+                logger.warning("No video matches found with metadata filter; retrying without filter for diagnostics.")
+                context_chunks = self.video_rag_pipeline.retrieve_context(question, top_k)
+
+            video_context = self._build_video_context(context_chunks)
+
+            if not context_chunks:
+                return {
+                    "success": True,
+                    "question": question,
+                    "answer": "I couldn't find any video transcripts related to that question. Please try rephrasing or pick another video topic.",
+                    "context_used": [],
+                    "confidence": 0.0,
+                    "video_context": [],
+                    **self._extract_primary_video_reference([]),
+                }
+
+            answer = self._format_video_resource_answer(context_chunks)
+            answer = self._attach_video_references(answer, video_context)
+
+            return {
+                "success": True,
+                "question": question,
+                "answer": answer,
+                "context_used": context_chunks,
+                "confidence": self._calculate_confidence(context_chunks),
+                "video_context": video_context,
+                **self._extract_primary_video_reference(video_context),
+            }
+
+        except Exception as e:
+            logger.error(f"Error answering video question: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -136,6 +223,129 @@ class ChatService:
             answer += f"\n\nAdditional relevant information is available from {len(context_chunks) - 1} other sources."
         
         return answer
+
+    def _format_video_resource_answer(self, context_chunks: List[Dict[str, Any]]) -> str:
+        """List relevant video clips with timestamps and short descriptions."""
+        entries: List[str] = []
+        seen_keys = set()
+
+        for chunk in context_chunks:
+            video_url = chunk.get("video_url")
+            if not video_url:
+                continue
+
+            key = (video_url, chunk.get("start_seconds"))
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+
+            title = chunk.get("source") or "Video"
+            start_label = self._format_timestamp(chunk.get("start_seconds")) or "00:00"
+            end_label = self._format_timestamp(chunk.get("end_seconds"))
+            time_label = f"{start_label} → {end_label}" if end_label and end_label != start_label else start_label
+            description = self._summarize_clip_text(chunk.get("text") or "")
+
+            entries.append(f"- {title} ({time_label}): {description}")
+            if len(entries) == 4:
+                break
+
+        if not entries:
+            return "I couldn't find any video snippets related to that question."
+
+        return "Here are some video resources that might help you:\n" + "\n".join(entries)
+
+    def _extract_summary_points(self, text: str) -> List[str]:
+        """Split transcript text into paraphrased bullet-friendly statements."""
+        sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+        points: List[str] = []
+        for sentence in sentences:
+            cleaned = self._paraphrase_sentence(sentence)
+            if not cleaned:
+                continue
+            if len(cleaned.split()) < 5:
+                continue
+            points.append(cleaned)
+        return points
+
+    def _paraphrase_sentence(self, sentence: str) -> str:
+        """Lightly paraphrase a transcript sentence so it reads like a summary."""
+        if not sentence:
+            return ""
+        text = sentence.strip()
+        if not text:
+            return ""
+
+        text = re.sub(r"^[\"“”']+", "", text)
+        text = re.sub(r"^(\s*(so|and|but|then)[, ]+)+", "", text, flags=re.IGNORECASE)
+
+        replacements = [
+            (r"\bwe're\b", "the presenter is"),
+            (r"\bwe are\b", "the presenter is"),
+            (r"\bwe\b", "the team"),
+            (r"\byou can\b", "users can"),
+            (r"\byou\b", "users"),
+            (r"\byour\b", "a user's"),
+            (r"\bI'm\b", "The presenter is"),
+            (r"\bI'll\b", "The presenter will"),
+            (r"\bwe've\b", "the team has"),
+            (r"\bwe'll\b", "the team will"),
+            (r"\blet's\b", "the workflow"),
+            (r"\bright\b", ""),
+        ]
+        for pattern, repl in replacements:
+            text = re.sub(pattern, repl, text, flags=re.IGNORECASE)
+
+        text = re.sub(
+            r"^The presenter is going to (?:go ahead and )?",
+            "Demonstrates how to ",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^The presenter is (?:going to )?",
+            "Explains how to ",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^The presenter will",
+            "Shows how to",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^Users can",
+            "Highlights how users can",
+            text,
+            flags=re.IGNORECASE,
+        )
+        text = re.sub(
+            r"^Users",
+            "Highlights how users",
+            text,
+            flags=re.IGNORECASE,
+        )
+
+        text = re.sub(r"go ahead and\s+", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\b(?:right|okay|um|uh)\b", "", text, flags=re.IGNORECASE)
+        text = re.sub(r"\s+", " ", text).strip(" ,.-")
+        if not text:
+            return ""
+        if not text[0].isupper():
+            text = text[0].upper() + text[1:]
+        if not text.endswith("."):
+            text += "."
+        return text
+
+    def _summarize_clip_text(self, text: str) -> str:
+        """Return a concise description for a transcript chunk."""
+        points = self._extract_summary_points(text)
+        if points:
+            return points[0]
+        snippet = (text or "").strip()
+        if len(snippet) > 200:
+            snippet = snippet[:197].rstrip() + "..."
+        return snippet or "Describes the relevant workflow in the clip."
 
     def _generate_gpt_answer(self, question: str, formatted_context: str) -> str:
         """Use OpenAI Chat Completions to generate a grounded answer from context."""
@@ -185,6 +395,99 @@ class ChatService:
         confidence = max(0.0, min(1.0, top_score))
         
         return round(confidence, 3)
+
+    def _build_video_context(self, context_chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Collect per-video metadata that callers can render."""
+        clips: List[Dict[str, Any]] = []
+        for chunk in context_chunks:
+            if chunk.get("source_type") != "video":
+                continue
+            video_url = chunk.get("video_url")
+            if not video_url:
+                continue
+
+            start = chunk.get("start_seconds")
+            end = chunk.get("end_seconds")
+            clip = {
+                "video_url": video_url,
+                "start_seconds": start,
+                "end_seconds": end,
+                "timestamp": self._format_timestamp(start),
+                "end_timestamp": self._format_timestamp(end),
+                "deep_link_url": self._build_video_link(video_url, start),
+                "preview": (chunk.get("text") or "")[:240],
+            }
+            clips.append(clip)
+        return clips
+
+    def _format_timestamp(self, seconds: Optional[float]) -> Optional[str]:
+        """Return HH:MM:SS timestamp for display."""
+        if seconds is None:
+            return None
+        try:
+            seconds = max(0, int(float(seconds)))
+        except (TypeError, ValueError):
+            return None
+        h, rem = divmod(seconds, 3600)
+        m, s = divmod(rem, 60)
+        if h:
+            return f"{h:02d}:{m:02d}:{s:02d}"
+        return f"{m:02d}:{s:02d}"
+
+    def _build_video_link(self, video_url: str, start_seconds: Optional[float]) -> str:
+        """Append a fragment so web players can seek directly."""
+        if start_seconds is None:
+            return video_url
+        try:
+            start = max(0, int(float(start_seconds)))
+        except (TypeError, ValueError):
+            return video_url
+        return f"{video_url}#t={start}"
+
+    def _attach_video_references(self, answer: str, video_context: List[Dict[str, Any]]) -> str:
+        """Append human-readable video references to the answer text."""
+        if not video_context:
+            return answer
+
+        lines = ["Video reference:" if len(video_context) == 1 else "Video references:"]
+        for clip in video_context[:3]:
+            timestamp = clip.get("timestamp") or f"{int(clip.get('start_seconds', 0))}s"
+            link = clip.get("deep_link_url") or clip.get("video_url")
+            if not link:
+                continue
+            lines.append(f"- {timestamp}: {link}")
+
+        if len(lines) == 1:
+            return answer
+        joiner = "\n".join(lines)
+        if answer.endswith("\n"):
+            return f"{answer.rstrip()}\n\n{joiner}"
+        return f"{answer}\n\n{joiner}"
+    
+    def _extract_primary_video_reference(self, video_context: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Return a single clip descriptor for clients that only need one video/timestamp."""
+        default = {
+            "answer_video_url": None,
+            "answer_start_seconds": None,
+            "answer_end_seconds": None,
+            "answer_timestamp": None,
+            "answer_end_timestamp": None,
+        }
+        if not video_context:
+            return default
+        clip = video_context[0]
+        return {
+            "answer_video_url": clip.get("deep_link_url") or clip.get("video_url"),
+            "answer_start_seconds": clip.get("start_seconds"),
+            "answer_end_seconds": clip.get("end_seconds"),
+            "answer_timestamp": clip.get("timestamp"),
+            "answer_end_timestamp": clip.get("end_timestamp"),
+        }
+
+    def _log_vector_store_details(self, store: VectorStore, label: str) -> None:
+        """Log which Pinecone index/namespace a store is targeting."""
+        namespace = getattr(store, "namespace", None) or "default"
+        logger.info("%s vector store configured -> index=%s namespace=%s", label, store.index_name, namespace)
     
     def get_recommendations(self, query: str, content_type: str = "all") -> Dict[str, Any]:
         """Get content recommendations based on query."""
@@ -242,10 +545,11 @@ class ChatService:
                 "recommendations": {"documents": [], "videos": [], "related_topics": []}
             }
     
-    def _is_vector_store_empty(self) -> bool:
+    def _is_vector_store_empty(self, store: Optional[VectorStore] = None) -> bool:
         """Return True when the vector store has no stored vectors."""
         try:
-            stats = self.vector_store.get_index_stats()
+            target_store = store or self.vector_store
+            stats = target_store.get_index_stats()
         except AttributeError:
             logger.warning("VectorStore is missing get_index_stats(); skipping empty-store check.")
             return False

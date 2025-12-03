@@ -221,6 +221,54 @@ const appendMsg = (text, who = 'bot', extraClass = '') => {
   return div;
 };
 
+const formatTimestamp = (seconds) => {
+  if (seconds === undefined || seconds === null || Number.isNaN(seconds)) return null;
+  const total = Math.max(0, Math.floor(Number(seconds)));
+  const hrs = Math.floor(total / 3600);
+  const mins = Math.floor((total % 3600) / 60);
+  const secs = total % 60;
+  const parts = hrs ? [hrs, mins, secs] : [mins, secs];
+  return parts.map((part, idx) => {
+    if (idx === 0 && !hrs) return String(part).padStart(2, '0');
+    return String(part).padStart(2, '0');
+  }).join(':');
+};
+
+const appendVideoCard = (clip) => {
+  if (!clip || !clip.video_url) return;
+  const card = document.createElement('div');
+  card.className = 'msg bot video-card';
+
+  const label = document.createElement('div');
+  label.className = 'video-label';
+  label.textContent = 'Video reference';
+
+  const time = document.createElement('div');
+  time.className = 'video-time';
+  const ts = clip.timestamp || formatTimestamp(clip.start_seconds) || 'Timestamp unavailable';
+  const endTs = clip.end_timestamp || (clip.end_seconds != null ? formatTimestamp(clip.end_seconds) : null);
+  time.textContent = endTs && endTs !== ts ? `${ts} → ${endTs}` : ts;
+
+  const link = document.createElement('a');
+  link.href = clip.deep_link_url || clip.video_url;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.className = 'video-link';
+  link.textContent = 'Open video';
+
+  const preview = document.createElement('p');
+  preview.className = 'video-preview';
+  preview.textContent = clip.preview || '';
+
+  card.appendChild(label);
+  card.appendChild(time);
+  card.appendChild(link);
+  if (preview.textContent) card.appendChild(preview);
+
+  askThread.appendChild(card);
+  askThread.scrollTop = askThread.scrollHeight;
+};
+
 askForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const q = askQuestion.value.trim();
@@ -238,6 +286,9 @@ askForm.addEventListener('submit', async (e) => {
     typing.remove();
     if (data.success) {
       appendMsg(data.answer || 'No answer available', 'bot');
+      if (Array.isArray(data.video_context)) {
+        data.video_context.forEach(clip => appendVideoCard(clip));
+      }
     } else {
       appendMsg(data.detail || 'Error', 'bot');
     }

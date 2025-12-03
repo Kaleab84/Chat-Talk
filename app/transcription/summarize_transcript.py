@@ -1,3 +1,10 @@
+"""
+CLI utility used by the video ingestion flow to transcribe a local file with
+Whisper, emit txt/srt/vtt/json transcripts, and build a lightweight markdown
+summary. Related runtime pieces live in app/api/endpoints/videos.py and
+app/services/supabase_content_repository.py.
+"""
+
 import os
 import json
 import argparse
@@ -14,7 +21,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 # ---------- helpers ----------
 def hhmmss(seconds: float) -> str:
-    # SRT-style 00:00:00,000
+    """Return an SRT-style timestamp (00:00:00,000)."""
     td = timedelta(seconds=float(seconds))
     total_seconds = int(td.total_seconds())
     ms = int((float(seconds) - int(seconds)) * 1000)
@@ -24,7 +31,7 @@ def hhmmss(seconds: float) -> str:
     return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
 
 def vtt_ts(seconds: float) -> str:
-    # VTT-style 00:00:00.000
+    """Return a WebVTT-style timestamp (00:00:00.000)."""
     td = timedelta(seconds=float(seconds))
     total_seconds = int(td.total_seconds())
     ms = int((float(seconds) - int(seconds)) * 1000)
@@ -34,15 +41,18 @@ def vtt_ts(seconds: float) -> str:
     return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"
 
 def write_txt(segments, path_txt):
+    """Write plain text transcript with inline timestamps."""
     with open(path_txt, "w", encoding="utf-8") as f:
         for seg in segments:
             f.write(f"[{vtt_ts(seg['start'])} --> {vtt_ts(seg['end'])}]  {seg['text'].strip()}\n")
 
 def write_json(segments, path_json):
+    """Persist raw Whisper segments for downstream processing."""
     with open(path_json, "w", encoding="utf-8") as f:
         json.dump(segments, f, ensure_ascii=False, indent=2)
 
 def write_srt(segments, path_srt):
+    """Render the transcript in SubRip (.srt) format."""
     with open(path_srt, "w", encoding="utf-8") as f:
         for i, seg in enumerate(segments, 1):
             f.write(str(i) + "\n")
@@ -50,6 +60,7 @@ def write_srt(segments, path_srt):
             f.write(seg["text"].strip() + "\n\n")
 
 def write_vtt(segments, path_vtt):
+    """Render the transcript in WebVTT format."""
     with open(path_vtt, "w", encoding="utf-8") as f:
         f.write("WEBVTT\n\n")
         for seg in segments:
@@ -58,8 +69,11 @@ def write_vtt(segments, path_vtt):
 
 # ---------- simple topic grouper ----------
 def group_by_gap(segments, gap_seconds=20.0, max_section_minutes=8):
-    """Join consecutive captions into larger sections when there's a pause > gap_seconds
-       or a section grows too long."""
+    """
+    Join consecutive captions into larger sections when there's a long pause or
+    the current section exceeds a max duration. Provides chunked context for
+    summarization.
+    """
     sections = []
     if not segments:
         return sections
@@ -85,7 +99,7 @@ def group_by_gap(segments, gap_seconds=20.0, max_section_minutes=8):
     return sections
 
 def summarize_section(text, max_bullets=4):
-    # TF-IDF pick of the most contentful sentences (order-preserving)
+    """Select the most contentful sentences from a section using TF-IDF scores."""
     sents = re.split(r"(?<=[.!?])\s+", text.strip())
     sents = [s.strip() for s in sents if s.strip()]
     if not sents:
@@ -105,6 +119,7 @@ def summarize_section(text, max_bullets=4):
     return [sents[i] for i in picks]
 
 def write_topic_summary(sections, out_path, markdown=True):
+    """Write the final summary file with timestamps and bullet points."""
     lines = []
     title = "# Topic Summary" if markdown else "Topic Summary"
     lines.append(title)
@@ -131,6 +146,7 @@ def write_topic_summary(sections, out_path, markdown=True):
 
 # ---------- main ----------
 def main():
+    """CLI entry point: transcribe, emit artifacts, and build the summary file."""
     ap = argparse.ArgumentParser(description="Transcribe and summarize a video with Whisper (Python).")
     ap.add_argument("--input", "-i", required=True, help="Path to video/audio file (e.g., C:\\path\\to\\file.mp4)")
     ap.add_argument("--model", default="small", help="Whisper model: tiny/base/small/medium/large (CPU users: small/base recommended)")

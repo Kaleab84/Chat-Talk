@@ -2,10 +2,9 @@
 CFC Animal Feed Software Chatbot API
 Main FastAPI application with organized structure
 """
-
+from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 import logging
 from pathlib import Path
 from dotenv import load_dotenv
@@ -16,7 +15,7 @@ load_dotenv(BASE_DIR / ".env")
 
 # Import the organized modules
 from app.config import settings
-from app.api.endpoints import health, ingest, chat, visibility, transcripts
+from app.api.endpoints import health, ingest, chat, visibility, videos
 
 from app.api.endpoints.upload import router as upload_router
 
@@ -37,6 +36,13 @@ app = FastAPI(
     description="AI-powered help chatbot for animal-feed software with document search and Q&A capabilities"
 )
 
+WEB_DIR = BASE_DIR / "web"
+app.mount(
+    "/ui",
+    StaticFiles(directory=WEB_DIR, html=True),
+    name="ui",
+)
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -51,13 +57,9 @@ app.include_router(health.router)
 app.include_router(ingest.router)
 app.include_router(chat.router)
 app.include_router(visibility.router)
-app.include_router(transcripts.router)
 app.include_router(upload_router, prefix="/files", tags=["Files"])
+app.include_router(videos.router)
 
-# Serve a simple web UI at /ui
-web_dir = BASE_DIR / "web"
-if web_dir.exists():
-    app.mount("/ui", StaticFiles(directory=str(web_dir), html=True), name="ui")
 
 @app.on_event("startup")
 async def startup_event():
@@ -78,7 +80,6 @@ async def startup_event():
     logger.info("Data directories initialized")
     logger.info(f"API running at http://{settings.API_HOST}:{settings.API_PORT}")
     logger.info(f"API documentation available at http://{settings.API_HOST}:{settings.API_PORT}/docs")
-    logger.info(f"Web UI available at http://{settings.API_HOST}:{settings.API_PORT}/ui")
 
 @app.on_event("shutdown")
 async def shutdown_event():

@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import logging
 
 from app.config import settings
@@ -8,14 +8,33 @@ from app.core.vector_store import VectorStore
 logger = logging.getLogger(__name__)
 
 
+def _to_float(value: Any) -> float | None:
+    """Best-effort float conversion that tolerates None/strings."""
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 class RAGPipeline:
     """Retrieval-Augmented Generation pipeline."""
 
-    def __init__(self) -> None:
-        self.vector_store = VectorStore()
-        self.embedding_model = EmbeddingModel()
+    def __init__(
+        self,
+        vector_store: Optional[VectorStore] = None,
+        embedding_model: Optional[EmbeddingModel] = None,
+    ) -> None:
+        self.vector_store = vector_store or VectorStore()
+        self.embedding_model = embedding_model or EmbeddingModel()
 
-    def retrieve_context(self, query: str, top_k: int = None) -> List[Dict[str, Any]]:
+    def retrieve_context(
+        self,
+        query: str,
+        top_k: int = None,
+        metadata_filter: Dict[str, Any] | None = None,
+    ) -> List[Dict[str, Any]]:
         """Retrieve relevant context for a query."""
         if top_k is None:
             top_k = settings.DEFAULT_TOP_K
@@ -26,6 +45,7 @@ class RAGPipeline:
                 vector=query_embedding,
                 top_k=top_k,
                 include_metadata=True,
+                metadata_filter=metadata_filter,
             )
 
             context_chunks: List[Dict[str, Any]] = []
@@ -44,6 +64,12 @@ class RAGPipeline:
                     "section_path": metadata.get("section_path"),
                     "image_paths": metadata.get("image_paths", []),
                     "block_ids": metadata.get("block_ids", []),
+                    "start_seconds": _to_float(metadata.get("start_seconds")),
+                    "end_seconds": _to_float(metadata.get("end_seconds")),
+                    "video_url": metadata.get("video_url"),
+                    "txt_url": metadata.get("txt_url"),
+                    "srt_url": metadata.get("srt_url"),
+                    "vtt_url": metadata.get("vtt_url"),
                 })
 
             return context_chunks

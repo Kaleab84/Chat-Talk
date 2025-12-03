@@ -44,3 +44,10 @@ code { background:#0f1834; border:1px solid #22305d; border-radius:8px; padding:
 .typing { align-self:flex-start; color: var(--muted); font-style: italic; }
 .dots::after { content: '…'; animation: blink 1.2s infinite; }
 @keyframes blink { 0%, 100% { opacity:.2 } 50% { opacity: 1 } }
+
+.video-card { border-left:3px solid var(--brand); background:#0c1430; }
+.video-label { font-size:12px; letter-spacing:.6px; text-transform:uppercase; color:var(--brand); margin-bottom:4px; }
+.video-time { font-size:12px; color:var(--muted); margin-bottom:6px; }
+.video-link { color: var(--accent); font-weight:600; text-decoration:none; }
+.video-link:hover { text-decoration:underline; }
+.video-preview { margin:6px 0 0; color: var(--muted); font-size:12px; line-height:1.3; }
