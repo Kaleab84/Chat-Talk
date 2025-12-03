@@ -12,9 +12,26 @@ class ChatService:
     """Main service for chatbot interactions."""
     
     def __init__(self):
-        self.rag_pipeline = RAGPipeline()
-        self.vector_store = VectorStore()
         self.embedding_model = EmbeddingModel()
+        self.vector_store = VectorStore()
+        self.document_rag_pipeline = RAGPipeline(
+            vector_store=self.vector_store,
+            embedding_model=self.embedding_model,
+        )
+
+        video_index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", self.vector_store.index_name)
+        if video_index_name == self.vector_store.index_name:
+            self.video_vector_store = self.vector_store
+        else:
+            self.video_vector_store = VectorStore(index_name=video_index_name)
+        self.video_rag_pipeline = RAGPipeline(
+            vector_store=self.video_vector_store,
+            embedding_model=self.embedding_model,
+        )
+
+        self._log_vector_store_details(self.vector_store, "Document")
+        self._log_vector_store_details(self.video_vector_store, "Video")
+
         self.document_processor = DocumentProcessor()
     
     def search_documents(self, query: str, top_k: int = None) -> Dict[str, Any]:
@@ -33,7 +50,7 @@ class ChatService:
                     "error": "No documents have been ingested yet. Please use the /ingest endpoint to upload and process documents."
                 }
             
-            context_chunks = self.rag_pipeline.retrieve_context(query, top_k)
+            context_chunks = self.document_rag_pipeline.retrieve_context(query, top_k)
             
             if not context_chunks:
                 return {
@@ -61,7 +78,7 @@ class ChatService:
             }
     
     def ask_question(self, question: str, top_k: int = None) -> Dict[str, Any]:
-        """Get context-aware response to a question."""
+        """Get context-aware response to a question (documents + general knowledge)."""
         try:
             if top_k is None:
                 top_k = settings.DEFAULT_TOP_K
@@ -78,8 +95,7 @@ class ChatService:
                 }
             
             # Retrieve relevant context
-            context_chunks = self.rag_pipeline.retrieve_context(question, top_k)
-            video_context = self._build_video_context(context_chunks)
+            context_chunks = self.document_rag_pipeline.retrieve_context(question, top_k)
             
             if not context_chunks:
                 return {
@@ -91,7 +107,7 @@ class ChatService:
                 }
             
             # Format context
-            formatted_context = self.rag_pipeline.format_context(context_chunks)
+            formatted_context = self.document_rag_pipeline.format_context(context_chunks)
 
             # If OpenAI is configured, generate a grounded answer; otherwise use simple stub
             if settings.OPENAI_API_KEY:
@@ -99,6 +115,81 @@ class ChatService:
                     answer = self._generate_gpt_answer(question, formatted_context)
                 except Exception as gpt_exc:
                     logger.warning(f"OpenAI generation failed, falling back to stub: {gpt_exc}")
+                    answer = self._generate_simple_answer(question, context_chunks, formatted_context)
+            else:
+                answer = self._generate_simple_answer(question, context_chunks, formatted_context)
+
+            return {
+                "success": True,
+                "question": question,
+                "answer": answer,
+                "context_used": context_chunks,
+                "confidence": self._calculate_confidence(context_chunks),
+                **self._extract_primary_video_reference([]),
+            }
+            
+        except Exception as e:
+            logger.error(f"Error answering question: {e}")
+            return {
+                "success": False,
+                "error": str(e),
+                "question": question,
+                "answer": None
+            }
+
+    def ask_video_question(self, question: str, top_k: int = None) -> Dict[str, Any]:
+        """Answer a question using only video transcript context."""
+        try:
+            if top_k is None:
+                top_k = settings.DEFAULT_TOP_K
+
+            if self._is_vector_store_empty(self.video_vector_store):
+                return {
+                    "success": False,
+                    "question": question,
+                    "answer": "No content has been ingested yet. Please upload and process video transcripts before asking questions.",
+                    "context_used": [],
+                    "confidence": 0.0,
+                    "error": "empty_vector_store"
+                }
+
+            metadata_filter = {"source_type": {"$eq": "video"}}
+            logger.info(
+                "ask_video_question retrieval -> index=%s namespace=%s filter=%s",
+                self.video_vector_store.index_name,
+                getattr(self.video_vector_store, "namespace", None) or "default",
+                metadata_filter,
+            )
+
+            context_chunks = self.video_rag_pipeline.retrieve_context(
+                question,
+                top_k,
+                metadata_filter=metadata_filter,
+            )
+            if not context_chunks:
+                logger.warning("No video matches found with metadata filter; retrying without filter for diagnostics.")
+                context_chunks = self.video_rag_pipeline.retrieve_context(question, top_k)
+
+            video_context = self._build_video_context(context_chunks)
+
+            if not context_chunks:
+                return {
+                    "success": True,
+                    "question": question,
+                    "answer": "I couldn't find any video transcripts related to that question. Please try rephrasing or pick another video topic.",
+                    "context_used": [],
+                    "confidence": 0.0,
+                    "video_context": [],
+                    **self._extract_primary_video_reference([]),
+                }
+
+            formatted_context = self.video_rag_pipeline.format_context(context_chunks)
+
+            if settings.OPENAI_API_KEY:
+                try:
+                    answer = self._generate_gpt_answer(question, formatted_context)
+                except Exception as gpt_exc:
+                    logger.warning(f"OpenAI generation failed for video question, falling back to stub: {gpt_exc}")
                     answer = self._generate_simple_answer(question, context_chunks, formatted_context)
             else:
                 answer = self._generate_simple_answer(question, context_chunks, formatted_context)
@@ -112,10 +203,11 @@ class ChatService:
                 "context_used": context_chunks,
                 "confidence": self._calculate_confidence(context_chunks),
                 "video_context": video_context,
+                **self._extract_primary_video_reference(video_context),
             }
-            
+
         except Exception as e:
-            logger.error(f"Error answering question: {e}")
+            logger.error(f"Error answering video question: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -258,6 +350,31 @@ class ChatService:
             return f"{answer.rstrip()}\n\n{joiner}"
         return f"{answer}\n\n{joiner}"
     
+    def _extract_primary_video_reference(self, video_context: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Return a single clip descriptor for clients that only need one video/timestamp."""
+        default = {
+            "answer_video_url": None,
+            "answer_start_seconds": None,
+            "answer_end_seconds": None,
+            "answer_timestamp": None,
+            "answer_end_timestamp": None,
+        }
+        if not video_context:
+            return default
+        clip = video_context[0]
+        return {
+            "answer_video_url": clip.get("deep_link_url") or clip.get("video_url"),
+            "answer_start_seconds": clip.get("start_seconds"),
+            "answer_end_seconds": clip.get("end_seconds"),
+            "answer_timestamp": clip.get("timestamp"),
+            "answer_end_timestamp": clip.get("end_timestamp"),
+        }
+
+    def _log_vector_store_details(self, store: VectorStore, label: str) -> None:
+        """Log which Pinecone index/namespace a store is targeting."""
+        namespace = getattr(store, "namespace", None) or "default"
+        logger.info("%s vector store configured -> index=%s namespace=%s", label, store.index_name, namespace)
+    
     def get_recommendations(self, query: str, content_type: str = "all") -> Dict[str, Any]:
         """Get content recommendations based on query."""
         try:
@@ -314,10 +431,11 @@ class ChatService:
                 "recommendations": {"documents": [], "videos": [], "related_topics": []}
             }
     
-    def _is_vector_store_empty(self) -> bool:
+    def _is_vector_store_empty(self, store: Optional[VectorStore] = None) -> bool:
         """Return True when the vector store has no stored vectors."""
         try:
-            stats = self.vector_store.get_index_stats()
+            target_store = store or self.vector_store
+            stats = target_store.get_index_stats()
         except AttributeError:
             logger.warning("VectorStore is missing get_index_stats(); skipping empty-store check.")
             return False

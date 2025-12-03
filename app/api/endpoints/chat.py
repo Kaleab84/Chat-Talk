@@ -96,6 +96,63 @@ async def ask_question(request: AskRequest):
             context_used=context_results,
             confidence=result.get("confidence"),
             video_context=result.get("video_context"),
+            answer_video_url=result.get("answer_video_url"),
+            answer_start_seconds=result.get("answer_start_seconds"),
+            answer_end_seconds=result.get("answer_end_seconds"),
+            answer_timestamp=result.get("answer_timestamp"),
+            answer_end_timestamp=result.get("answer_end_timestamp"),
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error answering question: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/ask/video", response_model=AskResponse)
+async def ask_video_question(request: AskRequest):
+    """Ask a question that should only use video transcripts for context."""
+    try:
+        result = chat_service.ask_video_question(request.question, request.top_k)
+        
+        if not result["success"]:
+            raise HTTPException(status_code=500, detail=result.get("error") or "Unable to answer video question")
+        
+        context_results = [
+            SearchResult(
+                rank=item["rank"],
+                score=item["score"],
+                text=item["text"],
+                source=item["source"],
+                source_type=item.get("source_type", "video"),
+                chunk_id=item["chunk_id"],
+                doc_id=item.get("doc_id"),
+                section_id=item.get("section_id"),
+                section_path=item.get("section_path"),
+                section_title=item.get("section_title"),
+                image_paths=item.get("image_paths"),
+                start_seconds=item.get("start_seconds"),
+                end_seconds=item.get("end_seconds"),
+                video_url=item.get("video_url"),
+                txt_url=item.get("txt_url"),
+                srt_url=item.get("srt_url"),
+                vtt_url=item.get("vtt_url"),
+            )
+            for item in result["context_used"]
+        ]
+        
+        return AskResponse(
+            success=True,
+            question=request.question,
+            answer=result["answer"],
+            context_used=context_results,
+            confidence=result.get("confidence"),
+            video_context=result.get("video_context"),
+            answer_video_url=result.get("answer_video_url"),
+            answer_start_seconds=result.get("answer_start_seconds"),
+            answer_end_seconds=result.get("answer_end_seconds"),
+            answer_timestamp=result.get("answer_timestamp"),
+            answer_end_timestamp=result.get("answer_end_timestamp"),
         )
         
     except HTTPException:

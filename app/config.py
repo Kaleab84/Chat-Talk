@@ -30,6 +30,11 @@ class Settings:
     PINECONE_CLOUD = os.getenv("PINECONE_CLOUD", "aws")
     PINECONE_REGION = os.getenv("PINECONE_REGION", "us-east-1")
     USE_PINECONE = bool(PINECONE_API_KEY)  # Fallback flag to disable Pinecone if no API key
+    PINECONE_VIDEO_INDEX_NAME = os.getenv(
+        "PINECONE_VIDEO_INDEX_NAME",
+        os.getenv("PINECONE_INDEX", PINECONE_INDEX_NAME)
+    )
+    PINECONE_NAMESPACE: Optional[str] = os.getenv("PINECONE_NAMESPACE")
     
     # Supabase / Content Storage Settings
     SUPABASE_URL: Optional[str] = os.getenv("SUPABASE_URL")

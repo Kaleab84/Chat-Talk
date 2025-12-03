@@ -8,9 +8,10 @@ logger = logging.getLogger(__name__)
 class VectorStore:
     """Pinecone vector store management."""
     
-    def __init__(self):
+    def __init__(self, index_name: Optional[str] = None, namespace: Optional[str] = None):
         self.pc = Pinecone(api_key=settings.PINECONE_API_KEY)
-        self.index_name = settings.PINECONE_INDEX_NAME
+        self.index_name = index_name or settings.PINECONE_INDEX_NAME
+        self.namespace = namespace if namespace is not None else getattr(settings, "PINECONE_NAMESPACE", None)
         self.index = None
         self._initialize_index()
     
@@ -40,21 +41,36 @@ class VectorStore:
     def upsert_vectors(self, vectors: List[tuple]) -> Dict[str, Any]:
         """Upsert vectors to Pinecone index."""
         try:
-            response = self.index.upsert(vectors)
+            kwargs = {}
+            if self.namespace:
+                kwargs["namespace"] = self.namespace
+            response = self.index.upsert(vectors=vectors, **kwargs)
             logger.info(f"Upserted {len(vectors)} vectors to index")
             return response
         except Exception as e:
             logger.error(f"Failed to upsert vectors: {e}")
             raise
     
-    def query(self, vector: List[float], top_k: int = 5, include_metadata: bool = True) -> Dict[str, Any]:
+    def query(
+        self,
+        vector: List[float],
+        top_k: int = 5,
+        include_metadata: bool = True,
+        metadata_filter: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Query similar vectors from Pinecone index."""
         try:
-            response = self.index.query(
-                vector=vector,
-                top_k=top_k,
-                include_metadata=include_metadata
-            )
+            kwargs = {
+                "vector": vector,
+                "top_k": top_k,
+                "include_metadata": include_metadata,
+            }
+            if metadata_filter:
+                kwargs["filter"] = metadata_filter
+            if self.namespace:
+                kwargs["namespace"] = self.namespace
+
+            response = self.index.query(**kwargs)
             return response
         except Exception as e:
             logger.error(f"Failed to query vectors: {e}")

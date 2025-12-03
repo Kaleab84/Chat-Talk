@@ -273,7 +273,7 @@ def _pinecone():
 def _pinecone_index():
     """Return the configured Pinecone index handle."""
     pc = _pinecone()
-    index_name = os.getenv("PINECONE_INDEX", "cfc-videos")
+    index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", os.getenv("PINECONE_INDEX", "cfc-videos"))
     return pc.Index(index_name)
 
 # ---------- Embeddings & Pinecone ----------
@@ -291,7 +291,7 @@ def _pinecone():
 
 def _pinecone_index():
     pc = _pinecone()
-    index_name = os.getenv("PINECONE_INDEX", "cfc-videos")
+    index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", os.getenv("PINECONE_INDEX", "cfc-videos"))
     return pc.Index(index_name)
 
 def _pinecone_namespace():

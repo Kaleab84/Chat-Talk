@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import logging
 
 from app.config import settings
@@ -21,11 +21,20 @@ def _to_float(value: Any) -> float | None:
 class RAGPipeline:
     """Retrieval-Augmented Generation pipeline."""
 
-    def __init__(self) -> None:
-        self.vector_store = VectorStore()
-        self.embedding_model = EmbeddingModel()
+    def __init__(
+        self,
+        vector_store: Optional[VectorStore] = None,
+        embedding_model: Optional[EmbeddingModel] = None,
+    ) -> None:
+        self.vector_store = vector_store or VectorStore()
+        self.embedding_model = embedding_model or EmbeddingModel()
 
-    def retrieve_context(self, query: str, top_k: int = None) -> List[Dict[str, Any]]:
+    def retrieve_context(
+        self,
+        query: str,
+        top_k: int = None,
+        metadata_filter: Dict[str, Any] | None = None,
+    ) -> List[Dict[str, Any]]:
         """Retrieve relevant context for a query."""
         if top_k is None:
             top_k = settings.DEFAULT_TOP_K
@@ -36,6 +45,7 @@ class RAGPipeline:
                 vector=query_embedding,
                 top_k=top_k,
                 include_metadata=True,
+                metadata_filter=metadata_filter,
             )
 
             context_chunks: List[Dict[str, Any]] = []

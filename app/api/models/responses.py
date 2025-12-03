@@ -75,6 +75,11 @@ class AskResponse(BaseModel):
     context_used: List[SearchResult]
     confidence: Optional[float] = None
     video_context: Optional[List[VideoReference]] = None
+    answer_video_url: Optional[str] = None
+    answer_start_seconds: Optional[float] = None
+    answer_end_seconds: Optional[float] = None
+    answer_timestamp: Optional[str] = None
+    answer_end_timestamp: Optional[str] = None
     error: Optional[str] = None
 
 class RecommendationItem(BaseModel):
