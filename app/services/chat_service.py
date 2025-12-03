@@ -341,11 +341,51 @@ class ChatService:
         """Return a concise description for a transcript chunk."""
         points = self._extract_summary_points(text)
         if points:
-            return points[0]
+            return self._normalize_description(points[0])
+
         snippet = (text or "").strip()
-        if len(snippet) > 200:
-            snippet = snippet[:197].rstrip() + "..."
-        return snippet or "Describes the relevant workflow in the clip."
+        snippet = re.sub(r"\s+", " ", snippet)
+        snippet = re.sub(r"[\"“”']", "", snippet)
+        snippet = snippet.rstrip(".!?")
+        if len(snippet) > 160:
+            snippet = snippet[:157].rstrip() + "..."
+        if not snippet:
+            return "Describes the relevant workflow in the clip."
+        return f"Focuses on {snippet.lower()}."
+
+    def _normalize_description(self, statement: str) -> str:
+        """Convert a paraphrased sentence into a short descriptive clause."""
+        desc = statement.strip()
+        if not desc:
+            return "Describes the relevant workflow in the clip."
+
+        desc = desc.rstrip(".!?")
+        desc = re.sub(
+            r"^(Explains|Demonstrates|Shows|Highlights|Describes)\s+how\s+to\s+",
+            "",
+            desc,
+            flags=re.IGNORECASE,
+        )
+        desc = re.sub(
+            r"^(Explains|Demonstrates|Shows|Highlights|Describes)\s+",
+            "",
+            desc,
+            flags=re.IGNORECASE,
+        )
+        desc = re.sub(
+            r"^(Focuses on|Details|Covers)\s+",
+            "",
+            desc,
+            flags=re.IGNORECASE,
+        )
+        desc = re.sub(r"\b(?:right|okay|um|uh)\b", "", desc, flags=re.IGNORECASE)
+        desc = re.sub(r"\s+", " ", desc).strip(" ,.-")
+
+        if not desc:
+            return "Describes the relevant workflow in the clip."
+
+        lower = desc[0].lower() + desc[1:] if len(desc) > 1 else desc.lower()
+        return f"Focuses on {lower}."
 
     def _generate_gpt_answer(self, question: str, formatted_context: str) -> str:
         """Use OpenAI Chat Completions to generate a grounded answer from context."""
@@ -575,7 +615,6 @@ class ChatService:
                 unique_items.append(item)
         
         return unique_items[:5]  # Limit to top 5
-
 
 
 

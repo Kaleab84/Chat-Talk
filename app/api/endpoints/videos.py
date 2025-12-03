@@ -99,7 +99,7 @@ def _supabase():
 
 def _bucket_name() -> str:
     """Return the bucket name used for all video-related assets."""
-    bucket = os.getenv("SUPABASE_BUCKET", "cfc-videos")
+    bucket = getattr(settings, "SUPABASE_BUCKET_VIDEOS", None) or os.getenv("SUPABASE_BUCKET_VIDEOS") or os.getenv("SUPABASE_BUCKET") or "cfc-videos"
     return bucket.strip() if bucket else "cfc-videos"
 
 def _upload_bytes(bucket: str, storage_path: str, data: bytes, content_type: str | None = None) -> str:
@@ -273,7 +273,7 @@ def _pinecone():
 def _pinecone_index():
     """Return the configured Pinecone index handle."""
     pc = _pinecone()
-    index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", os.getenv("PINECONE_INDEX", "cfc-videos"))
+    index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", settings.PINECONE_INDEX_NAME)
     return pc.Index(index_name)
 
 # ---------- Embeddings & Pinecone ----------
@@ -291,7 +291,7 @@ def _pinecone():
 
 def _pinecone_index():
     pc = _pinecone()
-    index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", os.getenv("PINECONE_INDEX", "cfc-videos"))
+    index_name = getattr(settings, "PINECONE_VIDEO_INDEX_NAME", settings.PINECONE_INDEX_NAME)
     return pc.Index(index_name)
 
 def _pinecone_namespace():
