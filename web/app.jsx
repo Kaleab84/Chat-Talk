@@ -1035,6 +1035,7 @@ function TransitionPage() {
           <h1 className="transition-title">Welcome, {firstName}!</h1>
           <p className="muted">
             We&apos;re getting everything ready for you.
+            <br />
             This will only take a moment.
           </p>
           <div className="transition-pill">Preparing your workspace</div>
