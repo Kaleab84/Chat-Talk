@@ -1,5 +1,6 @@
 fastapi
 uvicorn[standard]
+openai-whisper
 pydantic
 pinecone
 sentence-transformers
