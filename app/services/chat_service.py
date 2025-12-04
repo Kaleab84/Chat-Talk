@@ -98,17 +98,8 @@ class ChatService:
             # Retrieve relevant context
             context_chunks = self.document_rag_pipeline.retrieve_context(question, top_k)
             
-            if not context_chunks:
-                return {
-                    "success": True,
-                    "question": question,
-                    "answer": "I couldn't find relevant information to answer your question. This might be because the question is outside the scope of the ingested documents. Please try rephrasing or asking about topics covered in the uploaded documents.",
-                    "context_used": [],
-                    "confidence": 0.0
-                }
-            
-            # Format context
-            formatted_context = self.document_rag_pipeline.format_context(context_chunks)
+            # Format context (will be empty string if no chunks)
+            formatted_context = self.document_rag_pipeline.format_context(context_chunks) if context_chunks else ""
 
             # If an LLM is configured, generate a grounded answer; otherwise use simple stub
             if settings.OPENAI_API_KEY or settings.GEMINI_API_KEY:
@@ -116,6 +107,7 @@ class ChatService:
                     answer = self._generate_llm_answer(question, formatted_context)
                 except Exception as llm_exc:
                     logger.warning(f"LLM generation failed, falling back to stub: {llm_exc}")
+                    # Fallback to simple answer (handles empty chunks)
                     answer = self._generate_simple_answer(question, context_chunks, formatted_context)
             else:
                 answer = self._generate_simple_answer(question, context_chunks, formatted_context)
@@ -389,7 +381,8 @@ class ChatService:
         """Use OpenAI or Gemini to generate a grounded answer from context."""
         system_prompt = (
             "You are a helpful assistant that answers strictly based on the provided context. "
-            "If the context does not contain the answer, say you do not have enough information. "
+            "If the context does not contain the answer, say that you're not sure and offer to help with something else. "
+            "If the question is any kind of small talk, such as a greeting or thanking you, respond accordingly and kindly. "
             "Respond clearly and concisely."
         )
         user_prompt = (

@@ -834,8 +834,16 @@ function ChatPage() {
   const [input, setInput] = React.useState('');
   const [sending, setSending] = React.useState(false);
   const [attachedImages, setAttachedImages] = React.useState([]);
+  const chatThreadRef = React.useRef(null);
 
   const { open: openModal, modal } = useModal();
+
+  // Auto-scroll to bottom when messages change
+  React.useEffect(() => {
+    if (chatThreadRef.current) {
+      chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -871,6 +879,10 @@ function ChatPage() {
             : m,
         ),
       );
+      // Scroll to bottom during streaming
+      if (chatThreadRef.current) {
+        chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
+      }
       if (idx >= chars.length) {
         clearInterval(interval);
       }
@@ -982,7 +994,7 @@ function ChatPage() {
         </div>
 
         <Card className="chat-card">
-          <div className="chat-thread" id="chatThread">
+          <div className="chat-thread" id="chatThread" ref={chatThreadRef}>
             {messages.map((m) => (
               <ChatMessage
                 key={m.id}
