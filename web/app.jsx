@@ -95,6 +95,35 @@ function Layout({ children }) {
   const { route, navigate, visualState } = useRouter();
 
   const showBackToLogin = route !== 'login' && route !== 'transition';
+  const [greetingName, setGreetingName] = React.useState('');
+  const [hasAnimatedGreeting, setHasAnimatedGreeting] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!user?.name) {
+      setGreetingName('');
+      setHasAnimatedGreeting(false);
+      return;
+    }
+    const target = (user.name.split(' ')[0] || '').toString();
+
+    // Only animate once when transitioning from login -> transition
+    if (route === 'transition' && !hasAnimatedGreeting) {
+      let idx = 0;
+      setGreetingName('');
+      const interval = setInterval(() => {
+        idx += 1;
+        setGreetingName(target.slice(0, idx));
+        if (idx >= target.length) {
+          clearInterval(interval);
+          setHasAnimatedGreeting(true);
+        }
+      }, 140);
+      return () => clearInterval(interval);
+    }
+
+    // For other route changes, just show full name without animating
+    setGreetingName(target);
+  }, [user?.name, route, hasAnimatedGreeting]);
 
   return (
     <div className="app-root">
@@ -113,7 +142,7 @@ function Layout({ children }) {
         <div className="app-header-right">
           {user?.name ? (
             <span className="app-greeting">
-              Hi, {user.name.split(' ')[0]}!
+              {greetingName ? `Hi, ${greetingName}!` : 'Hi,'}
             </span>
           ) : (
             <span className="app-greeting muted">Hi there!</span>
@@ -226,6 +255,7 @@ function LoginPage() {
           <h1>Welcome to CFC AI</h1>
           <p>
             A focused assistant for Concept5 and CFC knowledge.
+            <br />
             Ask clear questions and get concise, guided answers in seconds.
           </p>
           <div className="login-badges">
