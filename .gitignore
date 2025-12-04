@@ -1,64 +1,78 @@
-node_modules
-dist
-build
-.cache
-.vite
-.parcel-cache
+########################################
+#       Node / Build Artifacts
+########################################
+node_modules/
+dist/
+build/
+.cache/
+.vite/
+.parcel-cache/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+########################################
+#       OS / Editor / IDE Files
+########################################
 .DS_Store
-*.local
+Thumbs.db
+.vscode/
+.idea/
+*.code-workspace
 
+########################################
+#       Environment Files
+########################################
+# ❗ Keep .env & variants ignored for security
 .env
 .env.*
+# ✔ Allow example file to be committed
+!.env.example
 
-coverage
-.pytest_cache
-
-# Virtual environments
-.venv/
-venv/
-
-# Python cache & logs
+########################################
+#       Python Specific
+########################################
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 *.log
+.pytest_cache/
 
-# Editor / IDE files
-.vscode/
-.idea/
-*.code-workspace
+# Virtual environments
+.venv/
+venv/
 
-# Environment files
-.env
-.env.*
+########################################
+#       Test Coverage
+########################################
+coverage/
 
-# Generated data
-# Keep the data folder structure but ignore processed artifacts
-!/data/
-/data/processed/
-/data/processed/**
+########################################
+#       Data & Generated Files
+########################################
+!data/
+data/processed/
+data/processed/**
 
-# OS junk
-.DS_Store
-Thumbs.db
-
-# === Transcription outputs ===
-# Ignore Whisper or summarized transcription files
-/data/videos/transcripts/
-/data/videos/meta/*.whisper.json
+########################################
+#       Transcription Outputs
+########################################
+data/videos/transcripts/
+data/videos/meta/*.whisper.json
 *.srt
 *.vtt
 *.txt
 *.json
 
-#Ignore large media files
+########################################
+#       Media (large files)
+########################################
 *.mp4
 *.wav
 *.m4a
+
+# Docs that shouldn't be tracked
 CFC Nutrient Ratio Templates Guide.docx

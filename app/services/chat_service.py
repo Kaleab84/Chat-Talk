@@ -110,12 +110,12 @@ class ChatService:
             # Format context
             formatted_context = self.document_rag_pipeline.format_context(context_chunks)
 
-            # If OpenAI is configured, generate a grounded answer; otherwise use simple stub
-            if settings.OPENAI_API_KEY:
+            # If an LLM is configured, generate a grounded answer; otherwise use simple stub
+            if settings.OPENAI_API_KEY or settings.GEMINI_API_KEY:
                 try:
-                    answer = self._generate_gpt_answer(question, formatted_context)
-                except Exception as gpt_exc:
-                    logger.warning(f"OpenAI generation failed, falling back to stub: {gpt_exc}")
+                    answer = self._generate_llm_answer(question, formatted_context)
+                except Exception as llm_exc:
+                    logger.warning(f"LLM generation failed, falling back to stub: {llm_exc}")
                     answer = self._generate_simple_answer(question, context_chunks, formatted_context)
             else:
                 answer = self._generate_simple_answer(question, context_chunks, formatted_context)
@@ -207,22 +207,20 @@ class ChatService:
             }
     
     def _generate_simple_answer(self, question: str, context_chunks: List[Dict[str, Any]], formatted_context: str) -> str:
-        """Generate a simple answer from context (placeholder for GPT integration)."""
-        # This is a placeholder implementation
-        # In the full version, this would integrate with OpenAI GPT
-        
+        """Generate a concise answer from context when no LLM is available."""
         if not context_chunks:
-            return "No relevant information found."
-        
-        # Return the most relevant chunk with some formatting
-        best_match = context_chunks[0]
-        answer = f"Based on the documentation, here's what I found:\n\n"
-        answer += f"{best_match['text'][:500]}..."
-        
-        if len(context_chunks) > 1:
-            answer += f"\n\nAdditional relevant information is available from {len(context_chunks) - 1} other sources."
-        
-        return answer
+            return "I couldn't find relevant information in the uploaded content for that question."
+
+        top_chunks = context_chunks[:3]
+        summaries: List[str] = []
+        for chunk in top_chunks:
+            source = chunk.get("section_title") or chunk.get("source") or "Document"
+            snippet = (chunk.get("text") or "").strip()
+            if len(snippet) > 260:
+                snippet = snippet[:257].rstrip() + "..."
+            summaries.append(f"{source}: {snippet}")
+
+        return "\n\n".join(summaries)
 
     def _format_video_resource_answer(self, context_chunks: List[Dict[str, Any]]) -> str:
         """List relevant video clips with timestamps and short descriptions."""
@@ -387,16 +385,8 @@ class ChatService:
         lower = desc[0].lower() + desc[1:] if len(desc) > 1 else desc.lower()
         return f"Focuses on {lower}."
 
-    def _generate_gpt_answer(self, question: str, formatted_context: str) -> str:
-        """Use OpenAI Chat Completions to generate a grounded answer from context."""
-        # Lazy import to avoid hard dependency if key is unset
-        try:
-            from openai import OpenAI  # type: ignore
-        except Exception as exc:
-            raise RuntimeError(f"OpenAI SDK not available: {exc}")
-
-        client = OpenAI()
-
+    def _generate_llm_answer(self, question: str, formatted_context: str) -> str:
+        """Use OpenAI or Gemini to generate a grounded answer from context."""
         system_prompt = (
             "You are a helpful assistant that answers strictly based on the provided context. "
             "If the context does not contain the answer, say you do not have enough information. "
@@ -408,20 +398,45 @@ class ChatService:
             "Answer:"
         )
 
-        resp = client.chat.completions.create(
-            model=getattr(settings, "OPENAI_MODEL", "gpt-3.5-turbo"),
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.2,
-            max_tokens=500,
-        )
+        if settings.OPENAI_API_KEY:
+            try:
+                from openai import OpenAI  # type: ignore
+            except Exception as exc:
+                raise RuntimeError(f"OpenAI SDK not available: {exc}")
 
-        content = resp.choices[0].message.content if resp and resp.choices else None
-        if not content:
-            raise RuntimeError("Empty response from OpenAI")
-        return content.strip()
+            client = OpenAI()
+            resp = client.chat.completions.create(
+                model=getattr(settings, "OPENAI_MODEL", "gpt-3.5-turbo"),
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                temperature=0.2,
+                max_tokens=500,
+            )
+            content = resp.choices[0].message.content if resp and resp.choices else None
+            if not content:
+                raise RuntimeError("Empty response from OpenAI")
+            return content.strip()
+
+        if settings.GEMINI_API_KEY:
+            try:
+                import google.generativeai as genai  # type: ignore
+            except Exception as exc:
+                raise RuntimeError(f"Gemini SDK not available: {exc}")
+
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-2.0-flash")
+            model = genai.GenerativeModel(model_name)
+            # Gemini models expect a single user message; fold system guidance into the user content.
+            combined = f"{system_prompt}\n\n{user_prompt}"
+            resp = model.generate_content([{"role": "user", "parts": [combined]}])
+            content = getattr(resp, "text", None)
+            if not content:
+                raise RuntimeError("Empty response from Gemini")
+            return content.strip()
+
+        raise RuntimeError("No LLM API key configured")
     
     def _calculate_confidence(self, context_chunks: List[Dict[str, Any]]) -> float:
         """Calculate confidence score based on context quality."""
