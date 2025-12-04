@@ -644,6 +644,56 @@ function useModal() {
 function ChatMessage({ message, onImageClick, onVideoClick }) {
   const isUser = message.role === 'user';
 
+  const escapeHtml = (text) =>
+    text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+  const renderMarkdown = React.useCallback((text) => {
+    if (!text) return '';
+    const escaped = escapeHtml(text);
+    const lines = escaped.split(/\r?\n/);
+    const blocks = [];
+    let list = [];
+
+    const flushList = () => {
+      if (list.length) {
+        blocks.push(`<ul>${list.map((item) => `<li>${item}</li>`).join('')}</ul>`);
+        list = [];
+      }
+    };
+
+    const formatInline = (value) =>
+      value
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+    lines.forEach((raw) => {
+      const line = raw.trim();
+      if (!line) {
+        flushList();
+        return;
+      }
+      const bullet = line.match(/^[-*]\s+(.*)/);
+      if (bullet) {
+        list.push(formatInline(bullet[1]));
+        return;
+      }
+      flushList();
+      blocks.push(`<p>${formatInline(line)}</p>`);
+    });
+    flushList();
+    return blocks.join('\n');
+  }, []);
+
+  const MarkdownText = ({ text }) => {
+    const html = React.useMemo(() => renderMarkdown(text), [text, renderMarkdown]);
+    return <div className="chat-text markdown" dangerouslySetInnerHTML={{ __html: html }} />;
+  };
+
   if (message.typing) {
     return (
       <div className="chat-message bot">
@@ -662,11 +712,7 @@ function ChatMessage({ message, onImageClick, onVideoClick }) {
         {message.segments && message.segments.length ? (
           message.segments.map((seg, idx) => {
             if (seg.type === 'text') {
-              return (
-                <p key={idx} className="chat-text">
-                  {seg.text}
-                </p>
-              );
+              return <MarkdownText key={idx} text={seg.text} />;
             }
             if (seg.type === 'image') {
               return (
@@ -691,7 +737,7 @@ function ChatMessage({ message, onImageClick, onVideoClick }) {
             return null;
           })
         ) : (
-          <p className="chat-text">{message.text}</p>
+          <MarkdownText text={message.text} />
         )}
       </div>
     </div>
