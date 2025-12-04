@@ -3,78 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Chat‑Talk Admin UI</title>
+    <title>CFC Chat‑Talk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/ui/styles.css" />
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body>
-    <header class="container header">
-      <div class="brand">📄 Chat‑Talk</div>
-      <nav class="tabs" role="tablist">
-        <button class="tab active" data-target="#ask">Ask</button>
-        <button class="tab" data-target="#upload">Upload</button>
-        <button class="tab" data-target="#bulk">Bulk Upload</button>
-        <button class="tab" data-target="#search">Search</button>
-      </nav>
-    </header>
-
-    <main class="container">
-      <!-- Ask (default/home) -->
-      <section id="ask" class="panel active">
-        <h2>Chat</h2>
-        <div class="chat">
-          <div id="askThread" class="thread" aria-live="polite" aria-relevant="additions"></div>
-          <form id="askForm" class="chat-input">
-            <input id="askQuestion" type="text" placeholder="Ask anything about your docs…" autocomplete="off" required />
-            <button class="btn" id="askSend" type="submit">Send</button>
-          </form>
-        </div>
-      </section>
-
-      <!-- Upload -->
-      <section id="upload" class="panel">
-        <h2>Upload & Ingest</h2>
-        <p>Drop a file here or click to select. Upload automatically triggers ingestion.</p>
-        <div id="dropzone" class="dropzone" tabindex="0">
-          <div class="dz-inner">
-            <div class="dz-icon">⬆️</div>
-            <div>Drag & drop file, or <span class="link">browse</span></div>
-          </div>
-          <input id="fileInput" type="file" hidden />
-        </div>
-        <div id="uploads" class="results"></div>
-      </section>
-
-      <!-- Bulk Upload -->
-      <section id="bulk" class="panel">
-        <h2>Bulk Upload & Ingest</h2>
-        <p>Select multiple files. Each will be uploaded and ingested.</p>
-        <div class="controls">
-          <input id="bulkInput" type="file" multiple />
-          <button id="bulkStart" class="btn">Start Upload</button>
-        </div>
-        <div id="bulkUploads" class="results"></div>
-      </section>
-
-      <!-- Search -->
-      <section id="search" class="panel">
-        <h2>Search</h2>
-        <form id="searchForm" class="inline">
-          <input id="searchQuery" type="text" placeholder="Search query..." required />
-          <button class="btn" type="submit">Search</button>
-        </form>
-        <div id="searchResults" class="results"></div>
-      </section>
-
-      
-    </main>
-
-    <footer class="container footer">
-      <div>API Docs: <a href="/docs" target="_blank">/docs</a></div>
-    </footer>
-
-    <script src="/ui/app.js"></script>
+    <div id="root"></div>
+    <script type="text/babel" data-presets="env,react" src="/ui/app.jsx"></script>
   </body>
   </html>
+
+
