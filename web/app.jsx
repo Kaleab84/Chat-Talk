@@ -50,19 +50,121 @@ function UserProvider({ children }) {
   );
 }
 
+// ---- Theme Context ----
+const ThemeContext = React.createContext(null);
+
+function useTheme() {
+  return React.useContext(ThemeContext);
+}
+
+function ThemeProvider({ children }) {
+  const [isDark, setIsDark] = React.useState(() => {
+    try {
+      const saved = window.localStorage.getItem('cfc-theme');
+      const shouldBeDark = saved === 'dark';
+      // Set class immediately on initialization to prevent flash
+      document.documentElement.classList.toggle('dark-mode', shouldBeDark);
+      return shouldBeDark;
+    } catch {
+      return false;
+    }
+  });
+
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark-mode', isDark);
+    try {
+      window.localStorage.setItem('cfc-theme', isDark ? 'dark' : 'light');
+    } catch {
+      // ignore
+    }
+  }, [isDark]);
+
+  const toggleTheme = React.useCallback(() => {
+    setIsDark((prev) => !prev);
+  }, []);
+
+  return (
+    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
 // ---- Simple in-app router (no external dependency) ----
 const RouterContext = React.createContext(null);
 
+// Helper function to determine default route based on email
+function getDefaultRouteForEmail(email) {
+  if (!email) return 'login';
+  const lower = email.toLowerCase();
+  if (lower === 'admin@cfctech.com') return 'admin';
+  if (lower === 'dev@cfctech.com') return 'docs';
+  return 'chat';
+}
+
 function RouterProvider({ children }) {
-  const [route, setRoute] = React.useState('login'); // 'login' | 'docs' | 'admin' | 'chat' | 'transition'
+  const { user } = useUser();
+  
+  // Initialize route from localStorage (synchronously)
+  const getInitialRoute = () => {
+    try {
+      const savedRoute = window.localStorage.getItem('cfc-route');
+      if (savedRoute && savedRoute !== 'transition') {
+        return savedRoute;
+      }
+    } catch {
+      // ignore
+    }
+    return 'login';
+  };
+
+  const [route, setRoute] = React.useState(getInitialRoute); // 'login' | 'docs' | 'admin' | 'chat' | 'transition'
   const [nextRoute, setNextRoute] = React.useState(null);
   const [visualState, setVisualState] = React.useState('idle'); // idle | fade-out | fade-in
+  const hasInitialized = React.useRef(false);
+
+  // Initialize or restore route on mount and when user changes
+  React.useEffect(() => {
+    if (!user) {
+      // User logged out - clear route and go to login
+      setRoute('login');
+      try {
+        window.localStorage.removeItem('cfc-route');
+      } catch {
+        // ignore
+      }
+      hasInitialized.current = false;
+    } else {
+      // User exists - check if we need to restore or set default route
+      try {
+        const savedRoute = window.localStorage.getItem('cfc-route');
+        if (savedRoute && savedRoute !== 'transition') {
+          // Restore saved route
+          setRoute(savedRoute);
+        } else if (!hasInitialized.current) {
+          // First time with this user - calculate default based on email
+          const defaultRoute = getDefaultRouteForEmail(user.email);
+          setRoute(defaultRoute);
+          window.localStorage.setItem('cfc-route', defaultRoute);
+        }
+      } catch {
+        // ignore
+      }
+      hasInitialized.current = true;
+    }
+  }, [user]); // Only depend on user, not route to avoid loops
 
   const performNavigation = React.useCallback((next, options = {}) => {
     if (next === 'transition') {
       setNextRoute(options.to || null);
     } else {
       setNextRoute(null);
+      // Save route to localStorage (except 'transition' which is temporary)
+      try {
+        window.localStorage.setItem('cfc-route', next);
+      } catch {
+        // ignore
+      }
     }
     setRoute(next);
     requestAnimationFrame(() => setVisualState('fade-in'));
@@ -147,6 +249,7 @@ function Layout({ children }) {
           ) : (
             <span className="app-greeting muted">Hi there!</span>
           )}
+          <DarkModeToggle />
         </div>
       </header>
 
@@ -166,6 +269,61 @@ function Layout({ children }) {
         )}
       </footer>
     </div>
+  );
+}
+
+// ---- Dark Mode Toggle ----
+function DarkModeToggle() {
+  const { isDark, toggleTheme } = useTheme();
+
+  return (
+    <button
+      type="button"
+      className={`theme-toggle ${isDark ? 'dark' : 'light'}`}
+      onClick={toggleTheme}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+    >
+      <span className="theme-toggle-track">
+        <span className="theme-toggle-thumb">
+          {isDark ? (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          ) : (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+          )}
+        </span>
+      </span>
+    </button>
   );
 }
 
@@ -295,6 +453,307 @@ function LoginPage() {
 
 // ---- Developer / Docs Page ----
 function DocsPage() {
+  const { isDark } = useTheme();
+  const iframeRef = React.useRef(null);
+
+  // Inject dark mode CSS and apply theme
+  React.useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const applyDarkMode = () => {
+      try {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (!iframeDoc) return;
+
+        // Add or remove dark mode class on iframe's html element
+        if (isDark) {
+          iframeDoc.documentElement.classList.add('dark-mode');
+        } else {
+          iframeDoc.documentElement.classList.remove('dark-mode');
+        }
+
+        // Inject dark mode CSS if not already injected
+        let styleEl = iframeDoc.getElementById('swagger-dark-mode-styles');
+        if (!styleEl) {
+          styleEl = iframeDoc.createElement('style');
+          styleEl.id = 'swagger-dark-mode-styles';
+          iframeDoc.head.appendChild(styleEl);
+        }
+
+        // Dark mode CSS for Swagger UI
+        styleEl.textContent = `
+          .dark-mode body {
+            background: #1F2937 !important;
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui {
+            background: #1F2937 !important;
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .topbar {
+            background: #111827 !important;
+            border-bottom: 1px solid #374151 !important;
+          }
+          .dark-mode .swagger-ui .info {
+            background: #1F2937 !important;
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .info .title {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .info .description,
+          .dark-mode .swagger-ui .info p,
+          .dark-mode .swagger-ui .info .base-url {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .scheme-container {
+            background: #1F2937 !important;
+            border-color: #374151 !important;
+          }
+          .dark-mode .swagger-ui .scheme-container label {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .opblock {
+            background: #374151 !important;
+            border-color: #4B5563 !important;
+          }
+          .dark-mode .swagger-ui .opblock.opblock-get {
+            border-color: #4065AE !important;
+            background: rgba(64, 101, 174, 0.1) !important;
+          }
+          .dark-mode .swagger-ui .opblock.opblock-post {
+            border-color: #379D63 !important;
+            background: rgba(55, 157, 99, 0.1) !important;
+          }
+          .dark-mode .swagger-ui .opblock.opblock-put {
+            border-color: #D0A97C !important;
+            background: rgba(208, 169, 124, 0.1) !important;
+          }
+          .dark-mode .swagger-ui .opblock.opblock-delete {
+            border-color: #EF4444 !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+          }
+          .dark-mode .swagger-ui .opblock-tag {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .opblock-tag small {
+            color: #9CA3AF !important;
+          }
+          .dark-mode .swagger-ui .opblock-summary {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .opblock-summary-path,
+          .dark-mode .swagger-ui .opblock-summary-path__deprecated {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .opblock-summary-description {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .opblock-description-wrapper p,
+          .dark-mode .swagger-ui .opblock-description-wrapper code {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .opblock-description-wrapper,
+          .dark-mode .swagger-ui .opblock-description {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .parameter__name,
+          .dark-mode .swagger-ui .parameter__type {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .parameter__in,
+          .dark-mode .swagger-ui .parameter__extension,
+          .dark-mode .swagger-ui .parameter__deprecated {
+            color: #9CA3AF !important;
+          }
+          .dark-mode .swagger-ui .response-col_status {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .response-col_description {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .response-col_links {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .model-box {
+            background: #374151 !important;
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .model-title {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .prop-name {
+            color: #9CA3AF !important;
+          }
+          .dark-mode .swagger-ui .prop-type {
+            color: #60A5FA !important;
+          }
+          .dark-mode .swagger-ui table thead tr th {
+            background: #374151 !important;
+            color: #F9FAFB !important;
+            border-color: #4B5563 !important;
+          }
+          .dark-mode .swagger-ui table tbody tr td {
+            background: #1F2937 !important;
+            color: #D1D5DB !important;
+            border-color: #374151 !important;
+          }
+          .dark-mode .swagger-ui .btn {
+            background: #4065AE !important;
+            color: #FFFFFF !important;
+            border-color: #4065AE !important;
+          }
+          .dark-mode .swagger-ui .btn:hover {
+            background: #4A73C4 !important;
+          }
+          .dark-mode .swagger-ui input[type="text"],
+          .dark-mode .swagger-ui input[type="email"],
+          .dark-mode .swagger-ui input[type="password"],
+          .dark-mode .swagger-ui textarea,
+          .dark-mode .swagger-ui select {
+            background: #374151 !important;
+            color: #F9FAFB !important;
+            border-color: #4B5563 !important;
+          }
+          .dark-mode .swagger-ui .highlight-code {
+            background: #111827 !important;
+          }
+          .dark-mode .swagger-ui code {
+            background: #111827 !important;
+            color: #D1D5DB !important;
+            border-color: #374151 !important;
+          }
+          .dark-mode .swagger-ui a {
+            color: #60A5FA !important;
+          }
+          .dark-mode .swagger-ui a:hover {
+            color: #93C5FD !important;
+          }
+          .dark-mode .swagger-ui .markdown p,
+          .dark-mode .swagger-ui .markdown code,
+          .dark-mode .swagger-ui .markdown pre {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .renderedMarkdown p {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui label {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .parameter__name.required {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .parameter__name.required::after {
+            color: #EF4444 !important;
+          }
+          .dark-mode .swagger-ui .models {
+            background: #1F2937 !important;
+            border-color: #374151 !important;
+          }
+          .dark-mode .swagger-ui .models-control {
+            background: #374151 !important;
+            border-color: #4B5563 !important;
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .models-control label {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .model-container {
+            background: #374151 !important;
+            border-color: #4B5563 !important;
+          }
+          .dark-mode .swagger-ui .model-box {
+            background: #374151 !important;
+            border-color: #4B5563 !important;
+          }
+          .dark-mode .swagger-ui .model-toggle {
+            background: #374151 !important;
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .model-toggle:hover {
+            background: #4B5563 !important;
+          }
+          .dark-mode .swagger-ui .model-jump-to-path {
+            color: #60A5FA !important;
+          }
+          .dark-mode .swagger-ui .model-title {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .model-title__text {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .prop {
+            border-color: #4B5563 !important;
+          }
+          .dark-mode .swagger-ui .prop-name {
+            color: #9CA3AF !important;
+          }
+          .dark-mode .swagger-ui .prop-type {
+            color: #60A5FA !important;
+          }
+          .dark-mode .swagger-ui .prop-format {
+            color: #9CA3AF !important;
+          }
+          .dark-mode .swagger-ui .prop-enum {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .model-box-control {
+            color: #60A5FA !important;
+          }
+          .dark-mode .swagger-ui .model-box-control:hover {
+            color: #93C5FD !important;
+          }
+          .dark-mode .swagger-ui .model-hint {
+            color: #9CA3AF !important;
+          }
+          .dark-mode .swagger-ui .renderedMarkdown,
+          .dark-mode .swagger-ui .renderedMarkdown p {
+            color: #D1D5DB !important;
+          }
+          .dark-mode .swagger-ui .model-box-control,
+          .dark-mode .swagger-ui .model-toggle {
+            color: #60A5FA !important;
+            text-decoration: none !important;
+          }
+          .dark-mode .swagger-ui .model-toggle::after {
+            color: #60A5FA !important;
+          }
+          .dark-mode .swagger-ui .model-jump-to-path {
+            color: #60A5FA !important;
+          }
+          .dark-mode .swagger-ui .model-jump-to-path:hover {
+            color: #93C5FD !important;
+          }
+          .dark-mode .swagger-ui .opblock-summary-control {
+            color: #F9FAFB !important;
+          }
+          .dark-mode .swagger-ui .opblock-summary-control path {
+            fill: #F9FAFB !important;
+          }
+        `;
+      } catch (err) {
+        // Silently fail if iframe is not accessible (cross-origin or not loaded)
+        console.debug('Could not apply dark mode to iframe:', err);
+      }
+    };
+
+    // Apply immediately if iframe is already loaded
+    if (iframe.contentDocument?.readyState === 'complete') {
+      applyDarkMode();
+    } else {
+      // Wait for iframe to load
+      iframe.addEventListener('load', applyDarkMode);
+    }
+
+    // Also apply when dark mode changes
+    applyDarkMode();
+
+    return () => {
+      iframe.removeEventListener('load', applyDarkMode);
+    };
+  }, [isDark]);
+
   return (
     <Layout>
       <div className="page docs-page">
@@ -317,6 +776,7 @@ function DocsPage() {
             </p>
             <div className="docs-iframe-wrapper">
               <iframe
+                ref={iframeRef}
                 src="/docs"
                 title="API docs"
                 className="docs-iframe"
@@ -327,9 +787,14 @@ function DocsPage() {
           <Card className="docs-card notes-card">
             <h2>Implementation notes</h2>
             <ul className="notes-list">
+              <br />
               <li>Search and chat endpoints backed by your RAG pipeline.</li>
+              <br />
               <li>Video ingestion with Whisper and Pinecone indexing.</li>
+              <br />
               <li>Admin uploads immediately trigger ingestion workflows.</li>
+              <br />
+              <li>Some elements of the interactive API docs may not display correctly in dark mode because of Swagger. Toggling dark mode on and off can sometimes fix this.</li>
             </ul>
           </Card>
         </div>
@@ -1054,11 +1519,13 @@ function ChatPage() {
 // ---- App & routing ----
 function App() {
   return (
-    <UserProvider>
-      <RouterProvider>
-        <AppRoutes />
-      </RouterProvider>
-    </UserProvider>
+    <ThemeProvider>
+      <UserProvider>
+        <RouterProvider>
+          <AppRoutes />
+        </RouterProvider>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 
