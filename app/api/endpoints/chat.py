@@ -73,7 +73,12 @@ async def search_documents(request: SearchRequest):
 async def ask_question(request: AskRequest):
     """Ask a question and get an AI-powered answer."""
     try:
-        result = chat_service.ask_question(request.question, request.top_k)
+        # Convert conversation_history if provided
+        history = None
+        if request.conversation_history:
+            history = [{"role": msg.role, "content": msg.content} for msg in request.conversation_history]
+        
+        result = chat_service.ask_question(request.question, request.top_k, conversation_history=history)
         
         if not result["success"]:
             raise HTTPException(status_code=500, detail=result["error"])

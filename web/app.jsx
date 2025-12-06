@@ -1163,9 +1163,14 @@ function ChatMessage({ message, onImageClick, onVideoClick }) {
     return (
       <div className="chat-message bot">
         <div className="chat-bubble typing-bubble">
-          <span className="typing-dot" />
-          <span className="typing-dot" />
-          <span className="typing-dot" />
+          <div className="typing-dots-container">
+            <span className="typing-dot" />
+            <span className="typing-dot" />
+            <span className="typing-dot" />
+          </div>
+          {message.showThinking && (
+            <span className="typing-message">Assistant is thinking</span>
+          )}
         </div>
       </div>
     );
@@ -1324,14 +1329,89 @@ function ChatPage() {
   const [sending, setSending] = React.useState(false);
   const [attachedImages, setAttachedImages] = React.useState([]);
   const chatThreadRef = React.useRef(null);
+  const thinkingTimeoutsRef = React.useRef({});
 
   const { open: openModal, modal } = useModal();
+
+  // Prepare conversation history using "first + recent" strategy
+  const prepareConversationHistory = (messages, maxMessages = 8) => {
+    // Filter to only user and assistant messages
+    const filtered = messages.filter(m => m.role === 'user' || m.role === 'assistant');
+    
+    if (filtered.length <= maxMessages) {
+      return filtered;
+    }
+    
+    // Get first 2-3 messages (conversation anchor)
+    const firstCount = Math.min(3, Math.floor(filtered.length / 3));
+    const firstMessages = filtered.slice(0, firstCount);
+    
+    // Get most recent messages (immediate context)
+    const recentCount = maxMessages - firstCount;
+    const recentMessages = filtered.slice(-recentCount);
+    
+    // Combine and deduplicate by message ID
+    const combined = [...firstMessages];
+    const firstIds = new Set(firstMessages.map(m => m.id));
+    
+    for (const msg of recentMessages) {
+      if (!firstIds.has(msg.id)) {
+        combined.push(msg);
+      }
+    }
+    
+    return combined;
+  };
 
   // Auto-scroll to bottom when messages change
   React.useEffect(() => {
     if (chatThreadRef.current) {
       chatThreadRef.current.scrollTop = chatThreadRef.current.scrollHeight;
     }
+  }, [messages]);
+
+  // Show "Assistant is thinking" message after 7 seconds for typing messages
+  React.useEffect(() => {
+    messages.forEach((msg) => {
+      if (msg.typing && !msg.showThinking) {
+        // Set a timeout to show thinking message after 3 seconds
+        if (!thinkingTimeoutsRef.current[msg.id]) {
+          thinkingTimeoutsRef.current[msg.id] = setTimeout(() => {
+            setMessages((prev) => {
+              // Only show thinking message if message is still typing
+              const currentMsg = prev.find((m) => m.id === msg.id);
+              if (currentMsg && currentMsg.typing) {
+                return prev.map((m) =>
+                  m.id === msg.id ? { ...m, showThinking: true } : m
+                );
+              }
+              return prev;
+            });
+          }, 7000);
+        }
+      } else if (!msg.typing) {
+        // Clear timeout and remove thinking message when typing stops
+        if (thinkingTimeoutsRef.current[msg.id]) {
+          clearTimeout(thinkingTimeoutsRef.current[msg.id]);
+          delete thinkingTimeoutsRef.current[msg.id];
+        }
+        if (msg.showThinking) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === msg.id ? { ...m, showThinking: false } : m
+            )
+          );
+        }
+      }
+    });
+
+    // Cleanup function to clear timeouts when component unmounts
+    return () => {
+      Object.values(thinkingTimeoutsRef.current).forEach((timeout) => {
+        if (timeout) clearTimeout(timeout);
+      });
+      thinkingTimeoutsRef.current = {};
+    };
   }, [messages]);
 
   const handleImageChange = (e) => {
@@ -1477,12 +1557,21 @@ function ChatPage() {
     });
 
     try {
+      // Prepare conversation history using "first + recent" strategy
+      const conversationHistory = prepareConversationHistory(
+        messages.filter(m => m.role === 'user' || m.role === 'assistant')
+      ).map(m => ({
+        role: m.role,
+        content: m.text
+      }));
+      
       const res = await fetch('/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: q + (imagesForBackend.length ? ` (images: ${imagesForBackend.join(', ')})` : ''),
           top_k: 4,
+          conversation_history: conversationHistory.length > 0 ? conversationHistory : undefined,
         }),
       });
       const data = await res.json();
@@ -1562,6 +1651,29 @@ function ChatPage() {
           </div>
           <form className="chat-composer" onSubmit={handleSubmit}>
             <div className="composer-row">
+              <button
+                type="button"
+                className={`composer-info-icon ${messages.length > 12 ? 'visible' : ''}`}
+                onClick={() => openModal(
+                  <div className="conversation-info-modal">
+                    <h3>Long Conversation Notice</h3>
+                    <p>
+                      This conversation is getting long. CFC AI may begin to lose sight of the original goal in very long conversations.
+                    </p>
+                    <p>
+                      For separate questions or new topics, consider refreshing the page to start a new conversation. This ensures the most reliable and focused responses.
+                    </p>
+                  </div>
+                )}
+                title="Conversation length info"
+                aria-label="Conversation length information"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                  <path d="M10 7V10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  <circle cx="10" cy="13" r="1" fill="currentColor"/>
+                </svg>
+              </button>
               <input
                 type="text"
                 className="composer-input"

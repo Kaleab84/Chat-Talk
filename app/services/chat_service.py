@@ -78,8 +78,14 @@ class ChatService:
                 "results": []
             }
     
-    def ask_question(self, question: str, top_k: int = None) -> Dict[str, Any]:
-        """Get context-aware response to a question (documents + general knowledge)."""
+    def ask_question(self, question: str, top_k: int = None, conversation_history: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
+        """Get context-aware response to a question (documents + general knowledge).
+        
+        Args:
+            question: User's question
+            top_k: Number of context chunks to retrieve
+            conversation_history: Optional list of previous messages in format [{"role": "user"|"assistant", "content": "text"}]
+        """
         try:
             if top_k is None:
                 top_k = settings.DEFAULT_TOP_K
@@ -109,7 +115,7 @@ class ChatService:
             image_positions = []
             if settings.OPENAI_API_KEY or settings.GEMINI_API_KEY:
                 try:
-                    answer, image_positions = self._generate_llm_answer(question, formatted_context, relevant_images)
+                    answer, image_positions = self._generate_llm_answer(question, formatted_context, relevant_images, conversation_history)
                     # Remove image markers from answer text
                     import re
                     answer = re.sub(r'\[IMAGE:\s*[^\]]+\]', '', answer).strip()
@@ -410,13 +416,14 @@ class ChatService:
         lower = desc[0].lower() + desc[1:] if len(desc) > 1 else desc.lower()
         return f"Focuses on {lower}."
 
-    def _generate_llm_answer(self, question: str, formatted_context: str, available_images: List[Dict[str, Any]] = None) -> Tuple[str, List[Dict[str, Any]]]:
+    def _generate_llm_answer(self, question: str, formatted_context: str, available_images: List[Dict[str, Any]] = None, conversation_history: Optional[List[Dict[str, str]]] = None) -> Tuple[str, List[Dict[str, Any]]]:
         """Use OpenAI or Gemini to generate a grounded answer from context.
         
         Args:
             question: User's question
             formatted_context: Formatted context text
             available_images: List of available images with metadata
+            conversation_history: Optional list of previous messages in format [{"role": "user"|"assistant", "content": "text"}]
         
         Returns:
             Tuple of (answer_text, image_positions) where image_positions is a list of
@@ -461,12 +468,24 @@ class ChatService:
                 raise RuntimeError(f"OpenAI SDK not available: {exc}")
 
             client = OpenAI()
+            
+            # Build messages array with conversation history
+            messages = [{"role": "system", "content": system_prompt}]
+            
+            # Add conversation history if provided
+            if conversation_history:
+                for msg in conversation_history:
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
+                    if role in ["user", "assistant"] and content:
+                        messages.append({"role": role, "content": content})
+            
+            # Add current question
+            messages.append({"role": "user", "content": user_prompt})
+            
             resp = client.chat.completions.create(
                 model=getattr(settings, "OPENAI_MODEL", "gpt-3.5-turbo"),
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
+                messages=messages,
                 temperature=0.2,
                 max_tokens=500,
             )
@@ -486,8 +505,22 @@ class ChatService:
             genai.configure(api_key=settings.GEMINI_API_KEY)
             model_name = getattr(settings, "GEMINI_MODEL", "gemini-2.0-flash")
             model = genai.GenerativeModel(model_name)
-            # Gemini models expect a single user message; fold system guidance into the user content.
-            combined = f"{system_prompt}\n\n{user_prompt}"
+            
+            # Gemini models expect a single user message; fold system guidance and conversation history into the user content.
+            # Build conversation history text if provided
+            history_text = ""
+            if conversation_history:
+                history_lines = []
+                for msg in conversation_history:
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
+                    if role in ["user", "assistant"] and content:
+                        role_label = "User" if role == "user" else "Assistant"
+                        history_lines.append(f"{role_label}: {content}")
+                if history_lines:
+                    history_text = "\n\nPrevious conversation:\n" + "\n".join(history_lines) + "\n"
+            
+            combined = f"{system_prompt}{history_text}\n\n{user_prompt}"
             resp = model.generate_content([{"role": "user", "parts": [combined]}])
             content = getattr(resp, "text", None)
             if not content:
