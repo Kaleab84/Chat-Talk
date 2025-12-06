@@ -59,6 +59,14 @@ class VideoReference(BaseModel):
     deep_link_url: Optional[str] = None
     preview: Optional[str] = None
 
+class ImageReference(BaseModel):
+    """Image metadata with position information for inline display."""
+    path: str
+    position: Optional[int] = None  # Character position in answer text where image should appear
+    alt_text: Optional[str] = None
+    relevance_score: Optional[float] = None
+    context_text: Optional[str] = None  # Associated text from chunk
+
 class SearchResponse(BaseModel):
     """Response model for document search."""
     success: bool
@@ -75,6 +83,7 @@ class AskResponse(BaseModel):
     context_used: List[SearchResult]
     confidence: Optional[float] = None
     video_context: Optional[List[VideoReference]] = None
+    relevant_images: Optional[List[ImageReference]] = None
     answer_video_url: Optional[str] = None
     answer_start_seconds: Optional[float] = None
     answer_end_seconds: Optional[float] = None

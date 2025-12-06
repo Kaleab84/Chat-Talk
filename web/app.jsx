@@ -1294,6 +1294,30 @@ function buildVideoSegmentsFromAnswer(data) {
   ];
 }
 
+function buildImageSegmentsFromAnswer(data) {
+  // Use relevant_images from backend if available (filtered and ranked)
+  if (data.relevant_images && Array.isArray(data.relevant_images) && data.relevant_images.length > 0) {
+    return data.relevant_images.map((img) => {
+      const path = img.path || '';
+      // Convert storage path to accessible URL
+      const url = path.startsWith('http://') || path.startsWith('https://')
+        ? path
+        : `/content/images/${path}`;
+      
+      return {
+        type: 'image',
+        url,
+        alt: img.alt_text || 'Document image',
+        position: img.position, // Character position in text, or -1 for end
+        path: path,
+      };
+    });
+  }
+  
+  // Fallback: if no relevant_images, return empty (don't show all images)
+  return [];
+}
+
 function ChatPage() {
   const [messages, setMessages] = React.useState([]);
   const [input, setInput] = React.useState('');
@@ -1329,17 +1353,81 @@ function ChatPage() {
     let idx = 0;
     const speed = 18;
 
+    // Separate images with positions from other segments (videos, etc.)
+    const imageSegments = extraSegments.filter((seg) => seg.type === 'image');
+    const otherSegments = extraSegments.filter((seg) => seg.type !== 'image');
+    
+    // Sort images by position (ascending), -1 (end) goes last
+    const sortedImages = [...imageSegments].sort((a, b) => {
+      const posA = a.position ?? -1;
+      const posB = b.position ?? -1;
+      if (posA === -1) return 1; // -1 goes to end
+      if (posB === -1) return -1;
+      return posA - posB;
+    });
+
+    const buildSegments = (textLength) => {
+      const segments = [];
+      let textStart = 0;
+      const insertedImages = new Set(); // Track which images we've inserted
+      
+      // Process images that should appear within the current text
+      for (const img of sortedImages) {
+        const imgPos = img.position ?? -1;
+        
+        // Skip images at end or beyond current text length (will add later)
+        if (imgPos === -1 || imgPos >= textLength) {
+          continue;
+        }
+        
+        // Add text before image
+        if (imgPos > textStart) {
+          const textBefore = fullText.slice(textStart, imgPos);
+          if (textBefore.trim()) {
+            segments.push({ type: 'text', text: textBefore });
+          }
+        }
+        
+        // Add image
+        segments.push(img);
+        insertedImages.add(img.path || img.url);
+        textStart = imgPos;
+      }
+      
+      // Add remaining text up to current length
+      if (textStart < textLength) {
+        const remainingText = fullText.slice(textStart, textLength);
+        if (remainingText.trim()) {
+          segments.push({ type: 'text', text: remainingText });
+        }
+      }
+      
+      // Add images that should appear at end (position -1 or beyond current text)
+      for (const img of sortedImages) {
+        if (!insertedImages.has(img.path || img.url)) {
+          segments.push(img);
+        }
+      }
+      
+      // Add other segments (videos) at the end
+      segments.push(...otherSegments);
+      
+      return segments;
+    };
+
     const interval = setInterval(() => {
       idx += 3;
-      const current = chars.slice(0, idx).join('');
+      const currentLength = Math.min(idx, chars.length);
+      const segments = buildSegments(currentLength);
+      
       setMessages((prev) =>
         prev.map((m) =>
           m.id === baseMessageId
             ? {
                 ...m,
                 typing: false,
-                text: current,
-                segments: [{ type: 'text', text: current }, ...extraSegments],
+                text: fullText.slice(0, currentLength),
+                segments: segments,
               }
             : m,
         ),
@@ -1404,7 +1492,10 @@ function ChatPage() {
 
       const answer = data.answer || 'No answer available.';
       const videoSegments = buildVideoSegmentsFromAnswer(data);
-      simulateStreaming(answer, botId, videoSegments);
+      const imageSegments = buildImageSegmentsFromAnswer(data);
+      // Combine video and image segments, images first so they appear above text
+      const allSegments = [...imageSegments, ...videoSegments];
+      simulateStreaming(answer, botId, allSegments);
     } catch (err) {
       setMessages((prev) =>
         prev.map((m) =>
