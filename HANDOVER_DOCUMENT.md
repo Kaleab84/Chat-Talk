@@ -157,9 +157,9 @@ flowchart TD
     Validate -->|Invalid| Login
     Validate -->|Valid| CheckEmail{Check Email}
     
-    CheckEmail -->|admin@cfctech.com| AdminPage[Admin Console]
-    CheckEmail -->|dev@cfctech.com| DocsPage[Developer Docs]
-    CheckEmail -->|Other| ChatPage[Chat Interface]
+    CheckEmail -->|Admin Email| AdminPage[Admin Console]
+    CheckEmail -->|Dev Email| DocsPage[Developer Docs]
+    CheckEmail -->|Other Email| ChatPage[Chat Interface]
     
     AdminPage --> Upload[Upload File]
     Upload -->|Video| VideoUpload[Video Processing<br/>Whisper Transcription]
