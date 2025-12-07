@@ -450,9 +450,10 @@ class ChatService:
                 "\n\nAvailable relevant images (include [IMAGE: path] markers in your response when appropriate):\n"
                 + "\n".join(image_list) + 
                 "\n\nWhen your answer would benefit from showing an image, include [IMAGE: path] at the "
-                "natural point in your response where the image should appear. Only reference images that are "
-                "directly relevant to answering the question. Be sure not to place an image marker between a "
-                "sentence and its corresponding punctuation."
+                "point in your response where the image should appear. Place images immediately after the sentence "
+                "that describes what the corresponding image illustrates. Only reference images that are "
+                "directly relevant to answering the question. Do not place an image marker between a sentence and "
+                "its corresponding punctuation. Do not place an image marker somewhere that will break up a sentence."
             )
         
         user_prompt = (
