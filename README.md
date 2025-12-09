@@ -243,13 +243,7 @@ GEMINI_MODEL=gemini-2.0-flash
    - You'll receive: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and bucket names
    - These are optional - the system works with local file storage if Supabase is not configured
 
-3. **OpenAI API Key** (Optional):
-   - Sign up at [platform.openai.com](https://platform.openai.com)
-   - Generate an API key in your account settings
-   - Required for `/ask` endpoint to generate AI answers
-   - **Note**: You can use Gemini instead if preferred
-
-4. **Gemini API Key** (Optional - Alternative to OpenAI):
+3. **Gemini API Key** (Optional - Alternative to OpenAI):
    - Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
    - Can be used instead of OpenAI for answer generation
 
