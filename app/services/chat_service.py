@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import re
 import logging
 from app.core.rag import RAGPipeline
@@ -78,8 +78,14 @@ class ChatService:
                 "results": []
             }
     
-    def ask_question(self, question: str, top_k: int = None) -> Dict[str, Any]:
-        """Get context-aware response to a question (documents + general knowledge)."""
+    def ask_question(self, question: str, top_k: int = None, conversation_history: Optional[List[Dict[str, str]]] = None) -> Dict[str, Any]:
+        """Get context-aware response to a question (documents + general knowledge).
+        
+        Args:
+            question: User's question
+            top_k: Number of context chunks to retrieve
+            conversation_history: Optional list of previous messages in format [{"role": "user"|"assistant", "content": "text"}]
+        """
         try:
             if top_k is None:
                 top_k = settings.DEFAULT_TOP_K
@@ -98,27 +104,51 @@ class ChatService:
             # Retrieve relevant context
             context_chunks = self.document_rag_pipeline.retrieve_context(question, top_k)
             
-            if not context_chunks:
-                return {
-                    "success": True,
-                    "question": question,
-                    "answer": "I couldn't find relevant information to answer your question. This might be because the question is outside the scope of the ingested documents. Please try rephrasing or asking about topics covered in the uploaded documents.",
-                    "context_used": [],
-                    "confidence": 0.0
-                }
+            # Filter and rank images from context chunks
+            relevant_images = self._filter_and_rank_images(context_chunks, max_images=3, min_score=0.3)
             
-            # Format context
-            formatted_context = self.document_rag_pipeline.format_context(context_chunks)
+            # Format context (will be empty string if no chunks)
+            formatted_context = self.document_rag_pipeline.format_context(context_chunks) if context_chunks else ""
 
-            # If OpenAI is configured, generate a grounded answer; otherwise use simple stub
-            if settings.OPENAI_API_KEY:
+            # If an LLM is configured, generate a grounded answer; otherwise use simple stub
+            answer = ""
+            image_positions = []
+            if settings.OPENAI_API_KEY or settings.GEMINI_API_KEY:
                 try:
-                    answer = self._generate_gpt_answer(question, formatted_context)
-                except Exception as gpt_exc:
-                    logger.warning(f"OpenAI generation failed, falling back to stub: {gpt_exc}")
+                    answer, image_positions = self._generate_llm_answer(question, formatted_context, relevant_images, conversation_history)
+                    # Remove image markers from answer text
+                    import re
+                    answer = re.sub(r'\[IMAGE:\s*[^\]]+\]', '', answer).strip()
+                except Exception as llm_exc:
+                    logger.warning(f"LLM generation failed, falling back to stub: {llm_exc}")
+                    # Fallback to simple answer (handles empty chunks)
                     answer = self._generate_simple_answer(question, context_chunks, formatted_context)
             else:
                 answer = self._generate_simple_answer(question, context_chunks, formatted_context)
+            
+            # Build image references with positions
+            image_references = []
+            if relevant_images:
+                # Create a map of path to image metadata
+                image_map = {img['path']: img for img in relevant_images}
+                
+                # If we have positions from LLM, use them
+                if image_positions:
+                    for pos_info in image_positions:
+                        path = pos_info['path']
+                        if path in image_map:
+                            img_meta = image_map[path]
+                            image_references.append({
+                                'path': path,
+                                'position': pos_info['position'],
+                                'alt_text': img_meta.get('section_title', 'Document image'),
+                                'relevance_score': img_meta.get('score'),
+                                'context_text': img_meta.get('context_text', ''),
+                            })
+                else:
+                    # No positions from LLM - Gemini determined images aren't relevant
+                    # Don't show any images (respect Gemini's decision)
+                    pass
 
             return {
                 "success": True,
@@ -126,6 +156,7 @@ class ChatService:
                 "answer": answer,
                 "context_used": context_chunks,
                 "confidence": self._calculate_confidence(context_chunks),
+                "relevant_images": image_references,
                 **self._extract_primary_video_reference([]),
             }
             
@@ -207,22 +238,20 @@ class ChatService:
             }
     
     def _generate_simple_answer(self, question: str, context_chunks: List[Dict[str, Any]], formatted_context: str) -> str:
-        """Generate a simple answer from context (placeholder for GPT integration)."""
-        # This is a placeholder implementation
-        # In the full version, this would integrate with OpenAI GPT
-        
+        """Generate a concise answer from context when no LLM is available."""
         if not context_chunks:
-            return "No relevant information found."
-        
-        # Return the most relevant chunk with some formatting
-        best_match = context_chunks[0]
-        answer = f"Based on the documentation, here's what I found:\n\n"
-        answer += f"{best_match['text'][:500]}..."
-        
-        if len(context_chunks) > 1:
-            answer += f"\n\nAdditional relevant information is available from {len(context_chunks) - 1} other sources."
-        
-        return answer
+            return "I couldn't find relevant information in the uploaded content for that question."
+
+        top_chunks = context_chunks[:3]
+        summaries: List[str] = []
+        for chunk in top_chunks:
+            source = chunk.get("section_title") or chunk.get("source") or "Document"
+            snippet = (chunk.get("text") or "").strip()
+            if len(snippet) > 260:
+                snippet = snippet[:257].rstrip() + "..."
+            summaries.append(f"{source}: {snippet}")
+
+        return "\n\n".join(summaries)
 
     def _format_video_resource_answer(self, context_chunks: List[Dict[str, Any]]) -> str:
         """List relevant video clips with timestamps and short descriptions."""
@@ -387,41 +416,212 @@ class ChatService:
         lower = desc[0].lower() + desc[1:] if len(desc) > 1 else desc.lower()
         return f"Focuses on {lower}."
 
-    def _generate_gpt_answer(self, question: str, formatted_context: str) -> str:
-        """Use OpenAI Chat Completions to generate a grounded answer from context."""
-        # Lazy import to avoid hard dependency if key is unset
-        try:
-            from openai import OpenAI  # type: ignore
-        except Exception as exc:
-            raise RuntimeError(f"OpenAI SDK not available: {exc}")
-
-        client = OpenAI()
-
+    def _generate_llm_answer(self, question: str, formatted_context: str, available_images: List[Dict[str, Any]] = None, conversation_history: Optional[List[Dict[str, str]]] = None) -> Tuple[str, List[Dict[str, Any]]]:
+        """Use OpenAI or Gemini to generate a grounded answer from context.
+        
+        Args:
+            question: User's question
+            formatted_context: Formatted context text
+            available_images: List of available images with metadata
+            conversation_history: Optional list of previous messages in format [{"role": "user"|"assistant", "content": "text"}]
+        
+        Returns:
+            Tuple of (answer_text, image_positions) where image_positions is a list of
+            dicts with 'position' (int) and 'path' (str) keys
+        """
         system_prompt = (
-            "You are a helpful assistant that answers strictly based on the provided context. "
-            "If the context does not contain the answer, say you do not have enough information. "
+            "You are a helpful assistant that answers questions with help from the provided context. "
+            "If the context does not directly contain the answer, use the context to answer to the best of your ability. "
+            "If the question is any kind of small talk, such as a greeting or thanking you, respond accordingly and kindly. "
+            "If the question is very clearly unrelated to the context, say that you're unsure and offer to help with something else. "
             "Respond clearly and concisely."
         )
+        
+        # Build image context if available
+        image_context = ""
+        if available_images:
+            image_list = []
+            for img in available_images:
+                path = img.get('path', '')
+                context_text = img.get('context_text', '')[:150]  # Truncate for prompt
+                image_list.append(f"- [IMAGE: {path}] - Context: {context_text}")
+            
+            image_context = (
+                "\n\nAvailable relevant images (include [IMAGE: path] markers in your response when appropriate):\n"
+                + "\n".join(image_list) + 
+                "\n\nWhen your answer would benefit from showing an image, include [IMAGE: path] at the "
+                "point in your response where the image should appear. Place images immediately after the sentence "
+                "that describes what the corresponding image illustrates. Only reference images that are "
+                "directly relevant to answering the question. Do not place an image marker between a sentence and "
+                "its corresponding punctuation. Do not place an image marker somewhere that will break up a sentence."
+            )
+        
         user_prompt = (
             f"Question:\n{question}\n\n"
-            f"Context (extracts from company docs):\n{formatted_context}\n\n"
+            f"Context (extracts from company docs):\n{formatted_context}{image_context}\n\n"
             "Answer:"
         )
 
-        resp = client.chat.completions.create(
-            model=getattr(settings, "OPENAI_MODEL", "gpt-3.5-turbo"),
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            temperature=0.2,
-            max_tokens=500,
-        )
+        if settings.OPENAI_API_KEY:
+            try:
+                from openai import OpenAI  # type: ignore
+            except Exception as exc:
+                raise RuntimeError(f"OpenAI SDK not available: {exc}")
 
-        content = resp.choices[0].message.content if resp and resp.choices else None
-        if not content:
-            raise RuntimeError("Empty response from OpenAI")
-        return content.strip()
+            client = OpenAI()
+            
+            # Build messages array with conversation history
+            messages = [{"role": "system", "content": system_prompt}]
+            
+            # Add conversation history if provided
+            if conversation_history:
+                for msg in conversation_history:
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
+                    if role in ["user", "assistant"] and content:
+                        messages.append({"role": role, "content": content})
+            
+            # Add current question
+            messages.append({"role": "user", "content": user_prompt})
+            
+            resp = client.chat.completions.create(
+                model=getattr(settings, "OPENAI_MODEL", "gpt-3.5-turbo"),
+                messages=messages,
+                temperature=0.2,
+                max_tokens=500,
+            )
+            content = resp.choices[0].message.content if resp and resp.choices else None
+            if not content:
+                raise RuntimeError("Empty response from OpenAI")
+            answer_text = content.strip()
+            image_positions = self._parse_image_references(answer_text, available_images or [])
+            return answer_text, image_positions
+
+        if settings.GEMINI_API_KEY:
+            try:
+                import google.generativeai as genai  # type: ignore
+            except Exception as exc:
+                raise RuntimeError(f"Gemini SDK not available: {exc}")
+
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model_name = getattr(settings, "GEMINI_MODEL", "gemini-2.0-flash")
+            model = genai.GenerativeModel(model_name)
+            
+            # Gemini models expect a single user message; fold system guidance and conversation history into the user content.
+            # Build conversation history text if provided
+            history_text = ""
+            if conversation_history:
+                history_lines = []
+                for msg in conversation_history:
+                    role = msg.get("role", "user")
+                    content = msg.get("content", "")
+                    if role in ["user", "assistant"] and content:
+                        role_label = "User" if role == "user" else "Assistant"
+                        history_lines.append(f"{role_label}: {content}")
+                if history_lines:
+                    history_text = "\n\nPrevious conversation:\n" + "\n".join(history_lines) + "\n"
+            
+            combined = f"{system_prompt}{history_text}\n\n{user_prompt}"
+            resp = model.generate_content([{"role": "user", "parts": [combined]}])
+            content = getattr(resp, "text", None)
+            if not content:
+                raise RuntimeError("Empty response from Gemini")
+            answer_text = content.strip()
+            image_positions = self._parse_image_references(answer_text, available_images or [])
+            return answer_text, image_positions
+
+        raise RuntimeError("No LLM API key configured")
+    
+    def _parse_image_references(self, answer_text: str, available_images: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Parse [IMAGE: path] markers from LLM response and return positions.
+        
+        Args:
+            answer_text: LLM response text that may contain [IMAGE: path] markers
+            available_images: List of available images to validate against
+        
+        Returns:
+            List of dicts with 'position' (character index) and 'path' (image path)
+        """
+        import re
+        
+        # Create a set of valid image paths for quick lookup
+        valid_paths = {img.get('path', '') for img in available_images}
+        
+        # Find all [IMAGE: path] markers
+        pattern = r'\[IMAGE:\s*([^\]]+)\]'
+        matches = list(re.finditer(pattern, answer_text, re.IGNORECASE))
+        
+        image_positions = []
+        for match in matches:
+            path = match.group(1).strip()
+            # Only include if path is in available images
+            if path in valid_paths:
+                position = match.start()  # Position where marker starts
+                image_positions.append({
+                    'position': position,
+                    'path': path
+                })
+        
+        # Sort by position
+        image_positions.sort(key=lambda x: x['position'])
+        
+        return image_positions
+    
+    def _filter_and_rank_images(self, context_chunks: List[Dict[str, Any]], max_images: int = 3, min_score: float = 0.3) -> List[Dict[str, Any]]:
+        """Filter and rank images from context chunks by relevance.
+        
+        Args:
+            context_chunks: List of context chunks with image_paths
+            max_images: Maximum number of images to return (default 3)
+            min_score: Minimum relevance score threshold (default 0.3)
+        
+        Returns:
+            List of image metadata dictionaries with path, score, rank, context_text, etc.
+        """
+        image_candidates = []
+        
+        for chunk in context_chunks:
+            score = chunk.get('score', 0.0)
+            # Skip low-relevance chunks
+            if score < min_score:
+                continue
+            
+            image_paths = chunk.get('image_paths', [])
+            if not image_paths:
+                continue
+            
+            # Extract context text (first 200 chars for brevity)
+            context_text = (chunk.get('text', '') or '')[:200]
+            section_title = chunk.get('section_title', '')
+            
+            for img_path in image_paths:
+                if not img_path or not isinstance(img_path, str):
+                    continue
+                
+                image_candidates.append({
+                    'path': img_path,
+                    'score': score,
+                    'rank': chunk.get('rank', 999),
+                    'context_text': context_text,
+                    'section_title': section_title,
+                    'chunk_id': chunk.get('chunk_id', ''),
+                })
+        
+        if not image_candidates:
+            return []
+        
+        # Sort by score descending, then by rank ascending (lower rank = better)
+        image_candidates.sort(key=lambda x: (-x['score'], x['rank']))
+        
+        # Deduplicate by path, keeping the one with highest score
+        seen = {}
+        for img in image_candidates:
+            path = img['path']
+            if path not in seen or seen[path]['score'] < img['score']:
+                seen[path] = img
+        
+        # Return top N images
+        return list(seen.values())[:max_images]
     
     def _calculate_confidence(self, context_chunks: List[Dict[str, Any]]) -> float:
         """Calculate confidence score based on context quality."""
