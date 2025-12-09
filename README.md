@@ -13,9 +13,11 @@ A Retrieval-Augmented Generation (RAG) chatbot system for CFC Technologies' anim
 - [API Endpoints](#api-endpoints)
 - [Next Steps & Improvements](#next-steps--improvements)
 - [Support & Contact](#support--contact)
+- [Project Status](#project-status)
 
 ---
 
+<a id="project-overview"></a>
 ## 🎯 Project Overview
 
 **CFC Chat-Talk** is a production-ready MVP that transforms company documentation (DOC/DOCX/TXT) and video transcripts into a searchable knowledge base. Users can ask natural language questions and receive AI-powered answers with source citations.
@@ -41,6 +43,7 @@ A Retrieval-Augmented Generation (RAG) chatbot system for CFC Technologies' anim
 
 ---
 
+<a id="key-components--focus-areas"></a>
 ## 🔧 Key Components & Focus Areas
 
 The next team should prioritize these areas for production readiness:
@@ -128,6 +131,7 @@ The next team should prioritize these areas for production readiness:
 
 ---
 
+<a id="important-files-to-review"></a>
 ## 📁 Important Files to Review
 
 ### Core Application Files
@@ -190,6 +194,7 @@ The next team should prioritize these areas for production readiness:
 
 ---
 
+<a id="credentials--environment-setup"></a>
 ## 🔑 Credentials & Environment Setup
 
 ### Required Environment Variables
@@ -264,6 +269,7 @@ Then edit `.env` and add your credentials.
 
 ---
 
+<a id="quick-start-guide"></a>
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
@@ -332,6 +338,7 @@ Then edit `.env` and add your credentials.
 
 ---
 
+<a id="architecture-overview"></a>
 ## 🏗️ Architecture Overview
 
 ### System Flow
@@ -406,6 +413,7 @@ User Query → ChatService.ask_question()
 
 ---
 
+<a id="api-endpoints"></a>
 ## 📡 API Endpoints
 
 ### Document Management
@@ -446,6 +454,7 @@ Visit [http://localhost:8000/docs](http://localhost:8000/docs) for interactive S
 
 ---
 
+<a id="next-steps--improvements"></a>
 ## 🎯 Next Steps & Improvements
 
 ### Immediate Priorities
@@ -501,6 +510,7 @@ Visit [http://localhost:8000/docs](http://localhost:8000/docs) for interactive S
 
 ---
 
+<a id="support--contact"></a>
 ## 🆘 Support & Contact
 
 ### Questions or Issues?
@@ -549,6 +559,7 @@ For other credentials (OpenAI, Gemini), you can create your own accounts or ask 
 
 ---
 
+<a id="project-status"></a>
 ## 📝 Project Status
 
 **Current Version**: 1.0.0  
